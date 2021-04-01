@@ -29,7 +29,10 @@
 		"kavod-io.vscode-jest-test-adapter",
 		"darkriszty.markdown-table-prettify",
 		"hbenl.vscode-test-explorer",
-		"visualstudioexptteam.vscodeintellicode"
+		"visualstudioexptteam.vscodeintellicode",
+		"zignd.html-css-class-completion",
+		"mrmlnc.vscode-scss",
+		"sibiraj-s.vscode-scss-formatter"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

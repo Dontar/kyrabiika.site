@@ -1,0 +1,16 @@
+@import "../node_modules/bootstrap/scss/bootstrap.scss";
+
+.bg-mainnav {
+    background-color: theme-color-level("primary", 8);
+}
+
+// .main-container {
+//   padding-top: 4rem;
+// }
+
+// .header-container {
+//     .col:last-child {
+//         flex-grow: 0;
+//         padding-top: 0.3rem;
+//     }
+// }
