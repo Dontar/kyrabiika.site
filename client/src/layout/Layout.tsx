@@ -16,7 +16,10 @@ function Layout(props: React.PropsWithChildren<LayoutProps>) {
   return (
     <>
       <Navbar bg="mainnav" expand="lg" sticky="top" variant="dark">
-        <Navbar.Brand href="#home" className="text-light">Buldozer</Navbar.Brand>
+        <Navbar.Brand href="#home" className="text-light">
+          <i className="bi-server mr-2 fs-4"/>
+          <span>Buldozer</span>
+        </Navbar.Brand>
         <Navbar.Toggle aria-controls="basic-navbar-nav" />
         <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
           <Form inline>

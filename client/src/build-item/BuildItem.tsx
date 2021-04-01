@@ -1,12 +1,22 @@
-import { Card } from 'react-bootstrap';
+import { Badge, Card } from 'react-bootstrap';
 import Layout from '../layout/Layout';
+
+function BuildDecor(props: React.PropsWithChildren<any>) {
+  return (
+    <>
+      <Badge pill variant="light"><i className="bi-gear" style={{fontSize: " large"}}/></Badge>
+      <span {...props} className="ml-2"/>
+    </>
+  );
+}
+
 
 function BuildItem() {
   return (
     <Layout>
       <>
         <h2 className="text-secondary">repo1</h2>
-        <Card body>Build #1</Card>
+        <Card body><BuildDecor>Build #1</BuildDecor></Card>
         <pre>
           <code>{`
 + cd client
