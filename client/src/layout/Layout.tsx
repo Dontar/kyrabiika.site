@@ -2,7 +2,7 @@ import React, { Fragment } from 'react';
 import {
   Button,
   Card,
-  Carousel, Container, Nav, Navbar
+  Carousel, Col, Container, Nav, Navbar, Row
 } from 'react-bootstrap';
 import Logo from '../media/main-top.jpg';
 
@@ -40,23 +40,44 @@ export default function Layout(props: React.PropsWithChildren<LayoutProps>) {
           </Carousel.Caption>
         </Carousel.Item>
       </Carousel>
-      <Container id="products">
-        <Card style={{ width: '18rem' }}>
-          <Card.Img variant="top" src="holder.js/100px180" />
-          <Card.Body>
-            <Card.Title>Card Title</Card.Title>
-            <Card.Text>
-              Some quick example text to build on the card title and make up the bulk of
-              the card's content.
-            </Card.Text>
-            <Button variant="primary">Go somewhere</Button>
-          </Card.Body>
-        </Card>
+      <Container id="products" className="mt-5">
+        <h1 className="text-center">Products</h1>
+        <Row>
+          {(new Array(6)).fill(
+            <Col className="mb-3">
+              <Card style={{ width: '18rem' }}>
+                <Card.Img variant="top" src="holder.js/100px180" />
+                <Card.Body>
+                  <Card.Title>Card Title</Card.Title>
+                  <Card.Text>
+                    Some quick example text to build on the card title and make up the bulk of
+                    the card's content.
+                </Card.Text>
+                  <Button variant="primary">Go somewhere</Button>
+                </Card.Body>
+              </Card>
+            </Col>)}
+        </Row>
 
       </Container>
-      <Container id="history">
+      <Container id="history" className="mt-5">
+        <h1 className="text-center">History</h1>
+        <Row>
+          <Col className="text-center">
+            <h5>Who are we?</h5>
+            <h2>Born by acident.</h2>
+            <p>
+              Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+              blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+              blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+              blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah 
+            </p>
+          </Col>
+          <Col></Col>
+        </Row>
       </Container>
-      <Container id="contacts">
+      <Container id="contacts" className="mt-5">
+        <h1>Contacts</h1>
       </Container>
     </Fragment>
   );
