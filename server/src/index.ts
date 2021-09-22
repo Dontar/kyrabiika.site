@@ -1,4 +1,4 @@
-import express, { RequestHandler } from 'express';
+import express from 'express';
 import { AddressInfo } from 'net';
 import cors from 'cors';
 import morgan from 'morgan';
@@ -6,51 +6,62 @@ import { config as envConfig } from 'dotenv';
 import cluster from 'cluster';
 import { cpus } from 'os';
 import { connect, disconnect } from 'mongoose';
-
+import imagesRouter from './images';
+import menuRouter from './menu';
+import { initDb } from './connection';
 
 envConfig();
 
 if (cluster.isPrimary) {
+    initMain();
+} else {
+    initWorker();
+}
 
+async function initMain() {
     onExit(cleanUpWorkers);
 
+    await connect(String(process.env.DB_PATH));
+    await initDb();
+    await disconnect();
+
     const cpuCount = Number(process.env.WORKERS ?? cpus().length);
+    // eslint-disable-next-line no-console
     console.info(`Starting ${cpuCount} workers...`);
     for (let i = 0; i < cpuCount; i++) {
         cluster.fork();
     }
+}
 
-} else {
-
+async function initWorker() {
     onExit(cleanUpDatabase);
+
+    await connect(String(process.env.DB_PATH));
 
     const app = express();
 
     app.use(cors({
         origin: process.env.CORS_ORIGIN
     }));
-
     app.use(morgan('common'));
+    app.use('/images', imagesRouter);
+    app.use('/menu', menuRouter);
 
-    const port = Number(process.env.SERVER_PORT);
-    const host = process.env.SERVER_HOST ?? 'localhost';
+    const serverPort = Number(process.env.SERVER_PORT);
+    const host = String(process.env.SERVER_HOST);
 
-    const server = app.listen(port, host, async () => {
-        await connect(process.env.SERVER_DB ?? 'mongodb://root:example@db:27017/?authSource=admin&readPreference=primary&ssl=false');
+    const server = app.listen(serverPort, host, () => {
         const { address, port } = server.address() as AddressInfo;
-        console.info(`${cluster.worker!.id} Listening on ${address}:${port}`);
+        // eslint-disable-next-line no-console
+        console.info(`${cluster.worker?.id}\tListening on ${address}:${port}`);
     });
 }
 
-function catchAsyncErrors(handler: (...params: Parameters<RequestHandler>) => Promise<void>): RequestHandler {
-    return function (req, res, next) {
-        handler(req, res, next).catch(next);
-    };
-}
-
 function cleanUpWorkers() {
-    for (const [, worker] of Object.entries(cluster.workers!)) {
-        worker?.kill();
+    if (cluster.workers) {
+        for (const [, worker] of Object.entries(cluster.workers)) {
+            worker?.kill();
+        }
     }
 }
 
@@ -59,6 +70,12 @@ async function cleanUpDatabase() {
 }
 
 function onExit(cb: (...args: unknown[]) => void) {
-    const exitEvents = ['exit', 'SIGHUP', 'SIGINT', 'SIGINT', 'SIGTERM'];
-    exitEvents.forEach(e => process.on(e, cb));
+    const exitEvents = [
+        'exit',
+        'SIGHUP',
+        'SIGINT',
+        'SIGINT',
+        'SIGTERM'
+    ];
+    exitEvents.forEach((event) => process.on(event, cb));
 }
