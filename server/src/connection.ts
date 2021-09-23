@@ -17,13 +17,20 @@ export interface MenuItem {
     price: number;
 }
 
-type OrderItem = { item: MenuItem; count: number; };
+type OrderItem = {
+    item: MenuItem;
+    count: number;
+};
 
 export interface Order {
     items: OrderItem[];
     date: Date;
     progress: string;
     user: User;
+}
+
+export interface PromotionItem {
+    item: MenuItem;
 }
 
 export const MenuItemModel = model<MenuItem>('MenuItem', new Schema<MenuItem>({
@@ -61,6 +68,10 @@ export const UserModel = model<User>('User', new Schema<User>({
     password: { type: String, required: true }
 }));
 
+export const PromotionItem = model<PromotionItem>('PromotionItem', new Schema<PromotionItem>({
+    item: { type: Schema.Types.ObjectId, ref: 'MenuItem' }
+}));
+
 export async function initDb(): Promise<void> {
     const count = await MenuItemModel.count();
 
@@ -73,9 +84,9 @@ export async function initDb(): Promise<void> {
             { category: 'мини тарталети и кишове', name: 'тарталети с крем маскарпоне', price: 1 },
             { category: 'мини тарталети и кишове', name: 'тарталети с ментов крем', price: 1 },
             { category: 'мини тарталети и кишове', name: 'чийзкейк в гнездо с горски плодове', price: 1 },
-            { category: 'мъфини и къпкайкове', name: 'банофи пай', price: 1 },
-            { category: 'мъфини и къпкайкове', name: 'къпкейк с шамфъстък', price: 1 },
-            { category: 'мъфини и къпкайкове', name: 'мъфин с морков', price: 1 },
+            { category: 'мъфини и къпкейкове', name: 'банофи пай', price: 1 },
+            { category: 'мъфини и къпкейкове', name: 'къпкейк с шамфъстък', price: 1 },
+            { category: 'мъфини и къпкейкове', name: 'мъфин с морков', price: 1 },
             { category: 'торти', name: 'тарт с плодове', price: 1 }
         ]);
     }

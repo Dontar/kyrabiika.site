@@ -2,17 +2,16 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import './index.scss';
 import reportWebVitals from './reportWebVitals';
-import Layout from './layout/Layout';
-// import { HashRouter as Router, Route } from 'react-router-dom';
+import Home from './home';
+import Order from './order';
+import { Router } from '@reach/router';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Layout />
-    {/* <Router>
-      <Route exact path="/">
-        <Layout />
-      </Route>
-    </Router> */}
+    <Router>
+        <Home default path="/" />
+        <Order path="/order"/>
+    </Router>
   </React.StrictMode>,
   document.getElementById('root')
 );
