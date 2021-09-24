@@ -9,7 +9,7 @@ import mufin_nut from '../data/mufin_nut.jpg';
 
 import { RouteComponentProps, Link } from '@reach/router';
 
-interface HomeProps extends RouteComponentProps {}
+interface HomeProps extends RouteComponentProps { }
 
 const formatter = new Intl.NumberFormat('bg-BG', { style: 'currency', currency: 'BGN' });
 
@@ -63,6 +63,9 @@ export default function Home(_props: React.PropsWithChildren<HomeProps>) {
             </Col>
           ))}
         </Row>
+        <div className="text-center mt-5">
+          <Button variant="success" to="order" as={Link} style={{width: '20em'}}>Order</Button>
+        </div>
       </Container>
       <Container id="history" className="mt-5">
         <h1 className="text-center">Born by acident.</h1>

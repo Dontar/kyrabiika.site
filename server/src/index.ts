@@ -13,69 +13,69 @@ import { initDb } from './connection';
 envConfig();
 
 if (cluster.isPrimary) {
-    initMain();
+  initMain();
 } else {
-    initWorker();
+  initWorker();
 }
 
 async function initMain() {
-    onExit(cleanUpWorkers);
+  onExit(cleanUpWorkers);
 
-    await connect(String(process.env.DB_PATH));
-    await initDb();
-    await disconnect();
+  await connect(String(process.env.DB_PATH));
+  await initDb();
+  await disconnect();
 
-    const cpuCount = Number(process.env.WORKERS ?? cpus().length);
-    // eslint-disable-next-line no-console
-    console.info(`Starting ${cpuCount} workers...`);
-    for (let i = 0; i < cpuCount; i++) {
-        cluster.fork();
-    }
+  const cpuCount = Number(process.env.WORKERS ?? cpus().length);
+  // eslint-disable-next-line no-console
+  console.info(`Starting ${cpuCount} workers...`);
+  for (let i = 0; i < cpuCount; i++) {
+    cluster.fork();
+  }
 }
 
 async function initWorker() {
-    onExit(cleanUpDatabase);
+  onExit(cleanUpDatabase);
 
-    await connect(String(process.env.DB_PATH));
+  await connect(String(process.env.DB_PATH));
 
-    const app = express();
+  const app = express();
 
-    app.use(cors({
-        origin: process.env.CORS_ORIGIN
-    }));
-    app.use(morgan('common'));
-    app.use('/images', imagesRouter);
-    app.use('/menu', menuRouter);
+  app.use(cors({
+    origin: process.env.CORS_ORIGIN
+  }));
+  app.use(morgan('common'));
+  app.use('/images', imagesRouter);
+  app.use('/menu', menuRouter);
 
-    const serverPort = Number(process.env.SERVER_PORT);
-    const host = String(process.env.SERVER_HOST);
+  const serverPort = Number(process.env.SERVER_PORT);
+  const host = String(process.env.SERVER_HOST);
 
-    const server = app.listen(serverPort, host, () => {
-        const { address, port } = server.address() as AddressInfo;
-        // eslint-disable-next-line no-console
-        console.info(`${cluster.worker?.id}\tListening on ${address}:${port}`);
-    });
+  const server = app.listen(serverPort, host, () => {
+    const { address, port } = server.address() as AddressInfo;
+    // eslint-disable-next-line no-console
+    console.info(`${cluster.worker?.id}\tListening on ${address}:${port}`);
+  });
 }
 
 function cleanUpWorkers() {
-    if (cluster.workers) {
-        for (const [, worker] of Object.entries(cluster.workers)) {
-            worker?.kill();
-        }
+  if (cluster.workers) {
+    for (const [, worker] of Object.entries(cluster.workers)) {
+      worker?.kill();
     }
+  }
 }
 
 async function cleanUpDatabase() {
-    await disconnect();
+  await disconnect();
 }
 
 function onExit(cb: (...args: unknown[]) => void) {
-    const exitEvents = [
-        'exit',
-        'SIGHUP',
-        'SIGINT',
-        'SIGINT',
-        'SIGTERM'
-    ];
-    exitEvents.forEach((event) => process.on(event, cb));
+  const exitEvents = [
+    'exit',
+    'SIGHUP',
+    'SIGINT',
+    'SIGINT',
+    'SIGTERM'
+  ];
+  exitEvents.forEach((event) => process.on(event, cb));
 }

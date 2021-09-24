@@ -4,13 +4,17 @@ import './index.scss';
 import reportWebVitals from './reportWebVitals';
 import Home from './home';
 import Order from './order';
+import OrderSummary from './order/order-summary';
+import OrderProgress from './order/order-progress';
 import { Router } from '@reach/router';
 
 ReactDOM.render(
   <React.StrictMode>
     <Router>
-        <Home default path="/" />
-        <Order path="/order"/>
+        <Home default />
+        <Order path="order"/>
+        <OrderSummary path="order/summary"/>
+        <OrderProgress path="order/progress"/>
     </Router>
   </React.StrictMode>,
   document.getElementById('root')
