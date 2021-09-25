@@ -1,19 +1,22 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button, Card, Carousel, Col, Container, Nav, Row } from 'react-bootstrap';
 
 import Layout from '../layout';
-import Logo from '../media/main-top.jpg';
-import data from '../data/data.json';
-import mufin_carrot from '../data/mufin_carrot.jpg';
-import mufin_nut from '../data/mufin_nut.jpg';
 
 import { RouteComponentProps, Link } from '@reach/router';
+import { useDataContext } from '../share/DataContext';
 
 interface HomeProps extends RouteComponentProps { }
 
 const formatter = new Intl.NumberFormat('bg-BG', { style: 'currency', currency: 'BGN' });
 
 export default function Home(_props: React.PropsWithChildren<HomeProps>) {
+  const [data, actions] = useDataContext();
+
+  useEffect(() => {
+    actions.loadMenuItems();
+  });
+
   return (
     <Layout
       navLinks={
@@ -31,7 +34,7 @@ export default function Home(_props: React.PropsWithChildren<HomeProps>) {
           <img
             // style={{ height: "300px" }}
             className="d-block w-100"
-            src={Logo}
+            src="http://localhost:3001/images/main-top.jpg"
             alt="First slide"
           />
           <Carousel.Caption>
@@ -44,10 +47,10 @@ export default function Home(_props: React.PropsWithChildren<HomeProps>) {
         <h1>Products</h1>
         <hr />
         <Row>
-          {data.slice(0, 6).map(item => (
+          {data.menuItems.slice(0, 6).map(item => (
             <Col className="mb-3" lg={4} md={6} key={item._id}>
               <Card>
-                <Card.Img variant="top" src={(Math.random() < .4) ? mufin_carrot : mufin_nut} />
+                <Card.Img variant="top" src={actions.createMenuItemImage(item)} />
                 <Card.Body>
                   <Card.Title>{item.name}</Card.Title>
                   <Card.Text>

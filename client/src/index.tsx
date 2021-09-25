@@ -7,15 +7,18 @@ import Order from './order';
 import OrderSummary from './order/order-summary';
 import OrderProgress from './order/order-progress';
 import { Router } from '@reach/router';
+import DataContext from './share/DataContext';
 
 ReactDOM.render(
   <React.StrictMode>
-    <Router>
+    <DataContext>
+      <Router>
         <Home default />
-        <Order path="order"/>
-        <OrderSummary path="order/summary"/>
-        <OrderProgress path="order/progress"/>
-    </Router>
+        <Order path="order" />
+        <OrderSummary path="order/summary" />
+        <OrderProgress path="order/progress" />
+      </Router>
+    </DataContext>
   </React.StrictMode>,
   document.getElementById('root')
 );
