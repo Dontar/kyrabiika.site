@@ -1,20 +1,22 @@
 import React, { useState } from 'react';
 import { Link, RouteComponentProps } from '@reach/router';
-import { Badge, Button, Card, Col, Container, ListGroup, Modal, Nav, OverlayTrigger, Row } from 'react-bootstrap';
+import { Button, Card, Col, Container, ListGroup, Modal, Nav, OverlayTrigger, Row } from 'react-bootstrap';
 
 import Layout from '../layout';
 
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
-import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import { faGreaterThan, faCalendar, faClock } from '@fortawesome/free-solid-svg-icons';
-
-const formatter = new Intl.NumberFormat('bg-BG', { style: 'currency', currency: 'BGN' });
+import { formatter, useDataContext } from '../share/DataContext';
+import { OrderItemsList } from './OrderItemsList';
 
 export default function OrderSummary(_props: React.PropsWithChildren<RouteComponentProps<{}>>) {
   const [menuShoed, setShowMenu] = useState(false);
   const [modalShow, setModalShow] = useState(false);
 
   const handleClose = () => setModalShow(false);
+
+  const [data, actions] = useDataContext();
+
   return (
     <Layout navLinks={
       <Nav>
@@ -27,24 +29,13 @@ export default function OrderSummary(_props: React.PropsWithChildren<RouteCompon
             <h4>Products</h4>
             <hr />
             <ListGroup className="mb-3">
-              {[1, 2, 3, 4, 5, 6].map(idx => (
-                <ListGroup.Item className="d-flex" key={idx}>
-                  <div className="mr-1">
-                    <img src={(Math.random() < .4) ? muffin_nut : muffin_carrot} alt="" className="rounded" style={{ width: "5em" }} />
-                  </div>
-                  <div className="flex-fill">
-                    <span>баничка със сирене и подправки</span>
-                  </div>
-                  <div className="mr-1">
-                    <Badge variant="secondary"> 1x </Badge>
-                  </div>
-                  <span className="mr-2">{formatter.format(1)}</span>
-                  <div>
-                    <Button variant="outline-danger" size="sm">
-                      <Icon icon={faCircleXmark} />
-                    </Button>
-                  </div>
-                </ListGroup.Item>
+              {Array.from(data.order.items).map(([idx, item]) => (
+                <OrderItemsList
+                  key={idx}
+                  item={item}
+                  imageUrl={actions.createMenuItemImage(item.item)}
+                  onRemove={() => actions.delMenuItemFromOrder(item.item)}
+                />
               ))}
             </ListGroup>
             <h4>Details</h4>
@@ -88,20 +79,26 @@ export default function OrderSummary(_props: React.PropsWithChildren<RouteCompon
                   <ListGroup variant="flush">
                     <ListGroup.Item className="d-flex justify-content-between">
                       <span className="font-weight-bold">Products</span>
-                      <span>лв.34,26</span>
+                      <span>{formatter.format(actions.orderPrice)}</span>
                     </ListGroup.Item>
                     <ListGroup.Item className="d-flex justify-content-between">
                       <span className="font-weight-bold">Delivery</span>
-                      <span>FREE</span>
+                      <span>{formatter.format(actions.deliveryTax)}</span>
                     </ListGroup.Item>
                     <ListGroup.Item className="d-flex justify-content-between">
                       <span className="font-weight-bold">TOTAL</span>
-                      <span>лв.34,26</span>
+                      <span>{formatter.format(actions.finalOrderPrice)}</span>
                     </ListGroup.Item>
                   </ListGroup>
                 </Card.Body>
                 <Card.Footer className="d-flex justify-content-end">
-                  <Button variant="success" to="/order/progress" as={Link}>Confirm order</Button>
+                  <Button
+                    variant="success"
+                    to="/order/progress" as={Link}
+                    onClick={() => actions.confirmOrder("Confirmed")}
+                  >
+                    Confirm order
+                  </Button>
                 </Card.Footer>
               </Card>
             </div>
@@ -114,7 +111,7 @@ export default function OrderSummary(_props: React.PropsWithChildren<RouteCompon
         </Modal.Header>
         <Modal.Body>
           <Row>
-            <Col style={{maxHeight: "20em"}} className="overflow-auto">
+            <Col style={{ maxHeight: "20em" }} className="overflow-auto">
               <Icon className="text-muted" icon={faCalendar} />
               <span>Start date</span>
               <ListGroup variant="flush">
@@ -136,7 +133,7 @@ export default function OrderSummary(_props: React.PropsWithChildren<RouteCompon
                 <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
               </ListGroup>
             </Col>
-            <Col style={{maxHeight: "20em"}} className="overflow-auto">
+            <Col style={{ maxHeight: "20em" }} className="overflow-auto">
               <Icon className="text-muted" icon={faClock} />
               <span>Start time</span>
               <ListGroup variant="flush">

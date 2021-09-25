@@ -31,8 +31,22 @@ export default function DataContext({ children }: React.PropsWithChildren<unknow
   );
 }
 
+export const formatter = new Intl.NumberFormat('bg-BG', { style: 'currency', currency: 'BGN' });
+
 function actions(data: IDataContext, dispatch: React.Dispatch<DispatchAction>) {
   return {
+    get finalOrderPrice() {
+      return this.orderPrice + this.deliveryTax;
+    },
+    get deliveryTax() {
+      return 2;
+    },
+    get orderPrice() {
+      return Array.from(data.order.items).reduce((a, [, item]) => {
+        a += item.item.price * item.count;
+        return a;
+      }, 0);
+    },
     async loadMenuItems() {
       if (data.menuItems.length === 0) {
         const payload = await fetch('http://localhost:3001/menu').then(res => res.json());
@@ -83,6 +97,12 @@ function actions(data: IDataContext, dispatch: React.Dispatch<DispatchAction>) {
           items
         }
       })
+    },
+    confirmOrder(progress: OrderProgress) {
+      dispatch({type: "order", payload: {
+        ...data.order,
+        progress
+      }});
     }
   }
 }

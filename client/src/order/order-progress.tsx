@@ -7,10 +7,16 @@ import Layout from '../layout';
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import { faListAlt } from '@fortawesome/free-regular-svg-icons';
 import { faCheese, faTruck } from '@fortawesome/free-solid-svg-icons';
+import { classes } from '../share/utils';
+import { useDataContext } from '../share/DataContext';
 
 // const formatter = new Intl.NumberFormat('bg-BG', { style: 'currency', currency: 'BGN' });
 
+
 export default function OrderProgress(_props: React.PropsWithChildren<RouteComponentProps<{}>>) {
+  const [data] = useDataContext();
+  // const [now, setNow] = useState(0);
+
   return (
     <Layout navLinks={
       <Nav>
@@ -21,32 +27,39 @@ export default function OrderProgress(_props: React.PropsWithChildren<RouteCompo
         <h2 className="text-center">Delivery</h2>
         <div style={{ height: "8em" }} />
         <Row className="mb-2">
-          <Col className="text-center">
+          <Col className={classes({ 'text-center': true, 'text-muted': data.order.progress !== 'Processing' })}>
             <div>
               <Icon size="5x" icon={faListAlt} />
             </div>
             Processing
           </Col>
-          <Col className="text-center">
+          <Col className={classes({ 'text-center': true, 'text-muted': data.order.progress !== 'Preparing' })}>
             <div>
               <Icon size="5x" icon={faCheese} />
             </div>
             Preparing
           </Col>
-          <Col className="text-center">
+          <Col className={classes({ 'text-center': true, 'text-muted': data.order.progress !== 'Delivering' })}>
             <div>
               <Icon size="5x" icon={faTruck} />
             </div>
             Delivering
           </Col>
         </Row>
-        <ProgressBar style={{ height: "3em" }}>
-          <ProgressBar striped variant="danger" now={34} />
-          <ProgressBar striped variant="warning" now={34} />
-          <ProgressBar striped variant="success" now={34} />
-        </ProgressBar>
+        <ProgressBars now={40}/>
         <div style={{ height: "12em" }} />
       </Container>
     </Layout>
+  );
+}
+
+function ProgressBars({ now }: { now: number }) {
+  const sec = 100 / 3;
+  return (
+    <ProgressBar style={{ height: "3em" }}>
+      <ProgressBar striped variant="danger" now={(now > sec) ? sec : now} />
+      <ProgressBar striped variant="warning" now={(now > (sec * 2)) ? (sec * 2) : (now - sec)} />
+      <ProgressBar striped variant="success" now={(now > (sec * 3)) ? (sec * 3) : (now - sec * 2)} />
+    </ProgressBar>
   );
 }

@@ -1,6 +1,6 @@
 import React, { useEffect } from 'react';
 import { Link, RouteComponentProps } from '@reach/router';
-import { Badge, Button, Card, Col, Container, ListGroup, Nav, Row } from 'react-bootstrap';
+import { Button, Card, Col, Container, ListGroup, Nav, Row } from 'react-bootstrap';
 
 import Layout from '../layout';
 
@@ -8,11 +8,8 @@ import Layout from '../layout';
 // import mufin_carrot from '../data/mufin_carrot.jpg';
 // import mufin_nut from '../data/mufin_nut.jpg';
 
-import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
-import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
-import { MenuItem, OrderItem, useDataContext } from '../share/DataContext';
-
-const formatter = new Intl.NumberFormat('bg-BG', { style: 'currency', currency: 'BGN' });
+import { formatter, MenuItem, useDataContext } from '../share/DataContext';
+import { OrderItemsList } from './OrderItemsList';
 
 export default function Order(_props: React.PropsWithChildren<RouteComponentProps<{}>>) {
   const [data, actions] = useDataContext();
@@ -59,15 +56,12 @@ export default function Order(_props: React.PropsWithChildren<RouteComponentProp
               <ListGroup.Item className="d-flex bg-light align-items-center">
                 <div className="flex-fill">
                   <span>
-                    {formatter.format(Array.from(data.order.items).reduce((a, [, item]) => {
-                      a += item.item.price * item.count;
-                      return a;
-                    }, 0))}
+                    {formatter.format(actions.orderPrice)}
                   </span>
                 </div>
                 <div>
-                  <Button disabled={data.order.items.size === 0} variant="outline-primary" to="/order/summary" as={Link}>
-                    Order {data.order.items.size}
+                  <Button className={(data.order.items.size === 0) ? 'disabled' : ''} variant="outline-primary" to="/order/summary" as={Link}>
+                    Order
                   </Button>
                 </div>
               </ListGroup.Item>
@@ -76,35 +70,6 @@ export default function Order(_props: React.PropsWithChildren<RouteComponentProp
         </Row>
       </Container>
     </Layout>
-  );
-}
-
-type OrderItemsListProps = {
-  key: React.Key;
-  item: OrderItem;
-  imageUrl: string;
-  onRemove: React.MouseEventHandler<HTMLElement>;
-}
-
-function OrderItemsList({ item, imageUrl, onRemove, key }: OrderItemsListProps): JSX.Element {
-  return (
-    <ListGroup.Item className="d-flex" key={key}>
-      <div className="mr-1">
-        <img src={imageUrl} alt="" className="rounded" style={{ width: "5em" }} />
-      </div>
-      <div className="flex-fill">
-        <span>{item.item.name}</span>
-      </div>
-      <div className="mr-1">
-        <Badge variant="secondary">{`${item.count}x`}</Badge>
-      </div>
-      <span className="mr-2">{formatter.format(item.item.price * item.count)}</span>
-      <div>
-        <Button variant="outline-danger" size="sm" onClick={onRemove}>
-          <Icon icon={faCircleXmark} />
-        </Button>
-      </div>
-    </ListGroup.Item>
   );
 }
 
