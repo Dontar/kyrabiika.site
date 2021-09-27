@@ -86,7 +86,7 @@ export async function initDb(): Promise<void> {
   const count = await MenuItemModel.count();
 
   if (count < 1) {
-    MenuItemModel.insertMany([
+    await MenuItemModel.insertMany([
       { category: 'банички и соленки', name: 'баничка с козе сирене и спанак', price: 1 },
       { category: 'банички и соленки', name: 'баничка със сирене и подправки', price: 1 },
       { category: 'курабийки и бисквити', name: 'курабийки', price: 1 },
