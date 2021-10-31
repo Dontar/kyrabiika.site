@@ -1,17 +1,17 @@
 import React, { useEffect } from 'react';
-import { Link, RouteComponentProps } from '@reach/router';
+import Link from 'next/link';
 import { Button, Card, Col, Container, ListGroup, Nav, Row } from 'react-bootstrap';
 
-import Layout from '../layout';
+import Layout from '../../components/layout';
 
 // import data from '../data/data.json';
 // import mufin_carrot from '../data/mufin_carrot.jpg';
 // import mufin_nut from '../data/mufin_nut.jpg';
 
-import { formatter, MenuItem, useDataContext } from '../share/DataContext';
-import { OrderItemsList } from './OrderItemsList';
+import { formatter, MenuItem, useDataContext } from '../../components/DataContext';
+import { OrderItemsList } from '../../components/OrderItemsList';
 
-export default function Order(_props: React.PropsWithChildren<RouteComponentProps<{}>>) {
+export default function Order() {
   const [data, actions] = useDataContext();
   const categories = data.menuItems.reduce<Set<string>>((result, item) => {
     result.add(item.category);
@@ -25,7 +25,7 @@ export default function Order(_props: React.PropsWithChildren<RouteComponentProp
   return (
     <Layout navLinks={
       <Nav>
-        <Nav.Link to="/" as={Link}>Home</Nav.Link>
+        <Nav.Link href="/" as={Link}>Home</Nav.Link>
       </Nav>
     }>
       <Container fluid className="mt-2">
@@ -35,8 +35,8 @@ export default function Order(_props: React.PropsWithChildren<RouteComponentProp
           </Col>
           <Col>
             <Row>
-              {data.menuItems.map(item => (
-                <MenuItemsList
+              {data.menuItems.map((item, idx) => (
+                <MenuItemsList key={idx}
                   item={item}
                   imageUrl={actions.createMenuItemImage(item)}
                   onBuy={() => actions.addMenuItemToOrder(item)} />
@@ -60,7 +60,7 @@ export default function Order(_props: React.PropsWithChildren<RouteComponentProp
                   </span>
                 </div>
                 <div>
-                  <Button className={(data.order.items.size === 0) ? 'disabled' : ''} variant="outline-primary" to="/order/summary" as={Link}>
+                  <Button className={(data.order.items.size === 0) ? 'disabled' : ''} variant="outline-primary" href="/order/summary" as={Link}>
                     Order
                   </Button>
                 </div>
@@ -88,7 +88,7 @@ function MenuItemsList({ item, imageUrl, onBuy }: MenuItemsListProps): JSX.Eleme
           <Card.Title>{item.name}</Card.Title>
           <Card.Text>
             Some quick example text to build on the card title and make up the bulk of
-            the card's content.
+            the card&apos;s content.
           </Card.Text>
         </Card.Body>
         <Card.Footer className="d-flex align-items-center">

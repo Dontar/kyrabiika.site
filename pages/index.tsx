@@ -1,16 +1,17 @@
 import React, { useEffect } from 'react';
 import { Button, Card, Carousel, Col, Container, Nav, Row } from 'react-bootstrap';
 
-import Layout from '../layout';
+import Layout from '../components/layout';
 
-import { RouteComponentProps, Link } from '@reach/router';
-import { useDataContext } from '../share/DataContext';
+import Link from 'next/link';
+import Image from 'next/image';
+import { useDataContext } from '../components/DataContext';
 
-interface HomeProps extends RouteComponentProps { }
+// interface HomeProps extends RouteComponentProps { }
 
 const formatter = new Intl.NumberFormat('bg-BG', { style: 'currency', currency: 'BGN' });
 
-export default function Home(_props: React.PropsWithChildren<HomeProps>) {
+export default function Home() {
   const [data, actions] = useDataContext();
 
   useEffect(() => {
@@ -25,13 +26,13 @@ export default function Home(_props: React.PropsWithChildren<HomeProps>) {
           <Nav.Link href="#products">Products</Nav.Link>
           <Nav.Link href="#history">History</Nav.Link>
           <Nav.Link href="#contacts">Contacts</Nav.Link>
-          <Nav.Link to="order" as={Link}>Order</Nav.Link>
+          <Nav.Link href="/order" as={Link}>Order</Nav.Link>
         </Nav>
       }
     >
       <Carousel id="home">
         <Carousel.Item>
-          <img
+          <Image
             // style={{ height: "300px" }}
             className="d-block w-100"
             src="http://localhost:3001/images/main-top.jpg"
@@ -55,7 +56,7 @@ export default function Home(_props: React.PropsWithChildren<HomeProps>) {
                   <Card.Title>{item.name}</Card.Title>
                   <Card.Text>
                     Some quick example text to build on the card title and make up the bulk of
-                    the card's content.
+                    the card&apos;s content.
                   </Card.Text>
                 </Card.Body>
                 <Card.Footer className="d-flex align-items-center">
@@ -67,7 +68,7 @@ export default function Home(_props: React.PropsWithChildren<HomeProps>) {
           ))}
         </Row>
         <div className="text-center mt-5">
-          <Button variant="success" to="order" as={Link} style={{width: '20em'}}>Order</Button>
+          <Button variant="success" href="/order" as={Link} style={{ width: '20em' }}>Order</Button>
         </div>
       </Container>
       <Container id="history" className="mt-5">
@@ -96,3 +97,4 @@ export default function Home(_props: React.PropsWithChildren<HomeProps>) {
     </Layout>
   );
 }
+

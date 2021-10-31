@@ -1,15 +1,15 @@
 import React, { useState } from 'react';
-import { Link, RouteComponentProps } from '@reach/router';
+import Link from 'next/link';
 import { Button, Card, Col, Container, ListGroup, Modal, Nav, OverlayTrigger, Row } from 'react-bootstrap';
 
-import Layout from '../layout';
+import Layout from '../../components/layout';
 
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import { faGreaterThan, faCalendar, faClock } from '@fortawesome/free-solid-svg-icons';
-import { formatter, useDataContext } from '../share/DataContext';
-import { OrderItemsList } from './OrderItemsList';
+import { formatter, useDataContext } from '../../components/DataContext';
+import { OrderItemsList } from '../../components/OrderItemsList';
 
-export default function OrderSummary(_props: React.PropsWithChildren<RouteComponentProps<{}>>) {
+export default function OrderSummary() {
   const [menuShoed, setShowMenu] = useState(false);
   const [modalShow, setModalShow] = useState(false);
 
@@ -20,7 +20,7 @@ export default function OrderSummary(_props: React.PropsWithChildren<RouteCompon
   return (
     <Layout navLinks={
       <Nav>
-        <Nav.Link to="/" as={Link}>Home</Nav.Link>
+        <Nav.Link href="/" as={Link}>Home</Nav.Link>
       </Nav>
     }>
       <Container className="mt-5" onClickCapture={() => setShowMenu(false)}>
@@ -94,7 +94,7 @@ export default function OrderSummary(_props: React.PropsWithChildren<RouteCompon
                 <Card.Footer className="d-flex justify-content-end">
                   <Button
                     variant="success"
-                    to="/order/progress" as={Link}
+                    href="/order/progress" as={Link}
                     onClick={() => actions.confirmOrder("Confirmed")}
                   >
                     Confirm order

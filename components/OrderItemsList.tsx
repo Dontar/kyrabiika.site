@@ -2,7 +2,8 @@ import React from 'react';
 import { Badge, Button, ListGroup } from 'react-bootstrap';
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
-import { OrderItem } from '../share/DataContext';
+import { OrderItem } from './DataContext';
+import Image from 'next/image';
 
 const formatter = new Intl.NumberFormat('bg-BG', { style: 'currency', currency: 'BGN' });
 
@@ -16,7 +17,7 @@ export function OrderItemsList({ item, imageUrl, onRemove}: OrderItemsListProps)
   return (
     <ListGroup.Item className="d-flex">
       <div className="mr-1">
-        <img src={imageUrl} alt="" className="rounded" style={{ width: "5em" }} />
+        <Image src={imageUrl} alt="" className="rounded" />
       </div>
       <div className="flex-fill">
         <span>{item.item.name}</span>
