@@ -26,7 +26,8 @@
 		"visualstudioexptteam.vscodeintellicode",
 		"zignd.html-css-class-completion",
 		"mrmlnc.vscode-scss",
-		"sibiraj-s.vscode-scss-formatter"
+		"sibiraj-s.vscode-scss-formatter",
+		"streetsidesoftware.code-spell-checker"
 	],
 
 	// Use 'forwardPorts' to make a list of ports inside the container available locally.

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button, Card, Col, Container, ListGroup, Modal, Nav, OverlayTrigger, Row } from 'react-bootstrap';
 
-import Layout from '../../components/layout';
+import Layout from '../../components/Layout';
 
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import { faGreaterThan, faCalendar, faClock } from '@fortawesome/free-solid-svg-icons';

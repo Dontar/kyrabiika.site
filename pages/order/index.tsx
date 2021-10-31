@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import Link from 'next/link';
 import { Button, Card, Col, Container, ListGroup, Nav, Row } from 'react-bootstrap';
 
-import Layout from '../../components/layout';
+import Layout from '../../components/Layout';
 
 // import data from '../data/data.json';
 // import mufin_carrot from '../data/mufin_carrot.jpg';

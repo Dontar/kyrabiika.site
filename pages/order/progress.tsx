@@ -2,12 +2,12 @@ import React from 'react';
 import Link from 'next/link';
 import { Col, Container, Nav, ProgressBar, Row } from 'react-bootstrap';
 
-import Layout from '../../components/layout';
+import Layout from '../../components/Layout';
 
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import { faListAlt } from '@fortawesome/free-regular-svg-icons';
 import { faCheese, faTruck } from '@fortawesome/free-solid-svg-icons';
-import { classes } from '../../components/utils';
+import { classes } from '../../components/Utils';
 import { useDataContext } from '../../components/DataContext';
 
 // const formatter = new Intl.NumberFormat('bg-BG', { style: 'currency', currency: 'BGN' });

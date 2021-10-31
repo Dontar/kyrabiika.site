@@ -23,3 +23,5 @@ RUN curl -sSL "https://www.mongodb.org/static/pgp/server-${MONGO_TOOLS_VERSION}.
     && apt-get update && export DEBIAN_FRONTEND=noninteractive \
     && apt-get install -y mongodb-org-tools mongodb-org-shell \
     && apt-get clean -y && rm -rf /var/lib/apt/lists/*
+
+COPY .bash_aliases /home/node

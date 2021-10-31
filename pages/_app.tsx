@@ -1,6 +1,6 @@
-import '../styles/globals.scss'
+import '../styles/global.scss'
 import type { AppProps } from 'next/app'
-import reportWebVitals from '../components/reportWebVitals';
+import reportWebVitals from '../components/ReportWebVitals';
 
 function MyApp({ Component, pageProps }: AppProps) {
   return <Component {...pageProps} />

@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { Button, Card, Carousel, Col, Container, Nav, Row } from 'react-bootstrap';
 
-import Layout from '../components/layout';
+import Layout from '../components/Layout';
 
 import Link from 'next/link';
 import Image from 'next/image';

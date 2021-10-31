@@ -1,45 +1,5 @@
-import { model, Schema } from 'mongoose';
-
-export interface User {
-  firstName: string;
-  lastName: string;
-  mail: string;
-  password: string;
-  admin?: boolean;
-  phone?: string;
-  address?: string;
-  orders: Order[];
-}
-
-export interface MenuItem {
-  name: string;
-  category: string;
-  price: number;
-}
-
-type OrderItem = {
-  item: MenuItem;
-  count: number;
-};
-
-type OrderProgress =
-  'Confirmed' |
-  'Processing' |
-  'Preparing' |
-  'Delivering' |
-  'Delivered'
-
-
-export interface Order {
-  items: OrderItem[];
-  date: Date;
-  progress: OrderProgress;
-  user: User;
-}
-
-export interface PromotionItem {
-  item: MenuItem;
-}
+import { model, Schema, connect } from 'mongoose';
+import { MenuItem, Order, User, PromotionItem } from './DbTypes';
 
 export const MenuItemModel = model<MenuItem>('MenuItem', new Schema<MenuItem>({
   name: { type: String, required: true, unique: true },
@@ -78,7 +38,7 @@ export const UserModel = model<User>('User', new Schema<User>({
   password: { type: String, required: true }
 }));
 
-export const PromotionItem = model<PromotionItem>('PromotionItem', new Schema<PromotionItem>({
+export const PromotionItemModel = model<PromotionItem>('PromotionItem', new Schema<PromotionItem>({
   item: { type: Schema.Types.ObjectId, ref: 'MenuItem' }
 }));
 
@@ -101,3 +61,5 @@ export async function initDb(): Promise<void> {
     ]);
   }
 }
+
+connect(process.env.SERVER_DB ?? 'mongodb://root:example@db:27017/?authSource=admin&readPreference=primary&ssl=false');
