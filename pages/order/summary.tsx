@@ -2,20 +2,21 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button, Card, Col, Container, ListGroup, Modal, Nav, OverlayTrigger, Row } from 'react-bootstrap';
 
-import Layout from '../../components/Layout';
+import Layout from '../../lib/Layout';
 
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import { faGreaterThan, faCalendar, faClock } from '@fortawesome/free-solid-svg-icons';
-import { formatter, useDataContext } from '../../components/DataContext';
-import { OrderItemsList } from '../../components/OrderItemsList';
+import { OrderItemsList } from '../../lib/OrderItemsList';
+import { useOrderContext } from '../../lib/OrderContext';
+import { formatter } from '../../lib/Utils';
 
 export default function OrderSummary() {
-  const [menuShoed, setShowMenu] = useState(false);
+  const [menuShowed, setShowMenu] = useState(false);
   const [modalShow, setModalShow] = useState(false);
 
   const handleClose = () => setModalShow(false);
 
-  const [data, actions] = useDataContext();
+  const order = useOrderContext();
 
   return (
     <Layout navLinks={
@@ -29,12 +30,12 @@ export default function OrderSummary() {
             <h4>Products</h4>
             <hr />
             <ListGroup className="mb-3">
-              {Array.from(data.order.items).map(([idx, item]) => (
+              {Array.from(order.items).map((item, idx) => (
                 <OrderItemsList
                   key={idx}
                   item={item}
-                  imageUrl={actions.createMenuItemImage(item.item)}
-                  onRemove={() => actions.delMenuItemFromOrder(item.item)}
+                  imageUrl={`/api/images/${item.item.name}`}
+                  onRemove={() => order.delItem(item)}
                 />
               ))}
             </ListGroup>
@@ -43,7 +44,7 @@ export default function OrderSummary() {
             <ListGroup className="mb-3">
               <ListGroup.Item> <div style={{ height: "300px" }} className="bg-light border">Google Map</div> </ListGroup.Item>
               <OverlayTrigger
-                show={menuShoed}
+                show={menuShowed}
                 onToggle={(nextShow) => { setShowMenu(nextShow) }}
                 placement="bottom-start"
                 trigger="click"
@@ -79,15 +80,15 @@ export default function OrderSummary() {
                   <ListGroup variant="flush">
                     <ListGroup.Item className="d-flex justify-content-between">
                       <span className="font-weight-bold">Products</span>
-                      <span>{formatter.format(actions.orderPrice)}</span>
+                      <span>{formatter.format(order.orderPrice)}</span>
                     </ListGroup.Item>
                     <ListGroup.Item className="d-flex justify-content-between">
                       <span className="font-weight-bold">Delivery</span>
-                      <span>{formatter.format(actions.deliveryTax)}</span>
+                      <span>{formatter.format(order.deliveryTax)}</span>
                     </ListGroup.Item>
                     <ListGroup.Item className="d-flex justify-content-between">
                       <span className="font-weight-bold">TOTAL</span>
-                      <span>{formatter.format(actions.finalOrderPrice)}</span>
+                      <span>{formatter.format(order.finalOrderPrice)}</span>
                     </ListGroup.Item>
                   </ListGroup>
                 </Card.Body>
@@ -95,7 +96,7 @@ export default function OrderSummary() {
                   <Button
                     variant="success"
                     href="/order/progress" as={Link}
-                    onClick={() => actions.confirmOrder("Confirmed")}
+                    onClick={() => order.setProgress("Confirmed")}
                   >
                     Confirm order
                   </Button>

@@ -1,22 +1,31 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import { Button, Card, Carousel, Col, Container, Nav, Row } from 'react-bootstrap';
 
-import Layout from '../components/Layout';
+import Layout from '../lib/Layout';
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { useDataContext } from '../components/DataContext';
+import { GetStaticProps } from 'next';
+import { connect } from 'mongoose';
+import { connectionString, MenuItemModel } from '../lib/Connection';
+import { MenuItem } from '../lib/DbTypes';
+import { formatter } from '../lib/Utils';
 
-// interface HomeProps extends RouteComponentProps { }
+type HomeProps = {
+  menuItems: MenuItem[];
+}
 
-const formatter = new Intl.NumberFormat('bg-BG', { style: 'currency', currency: 'BGN' });
+export const getStaticProps: GetStaticProps<HomeProps> = async (_context) => {
+  await connect(connectionString);
+  const items = await MenuItemModel.find();
+  return {
+    props: {
+      menuItems: items
+    }
+  }
+}
 
-export default function Home() {
-  const [data, actions] = useDataContext();
-
-  useEffect(() => {
-    actions.loadMenuItems();
-  });
+export default function Home({ menuItems }: HomeProps) {
 
   return (
     <Layout
@@ -35,7 +44,7 @@ export default function Home() {
           <Image
             // style={{ height: "300px" }}
             className="d-block w-100"
-            src="http://localhost:3001/images/main-top.jpg"
+            src="/api/images/main-top"
             alt="First slide"
           />
           <Carousel.Caption>
@@ -48,10 +57,10 @@ export default function Home() {
         <h1>Products</h1>
         <hr />
         <Row>
-          {data.menuItems.slice(0, 6).map(item => (
-            <Col className="mb-3" lg={4} md={6} key={item._id}>
+          {menuItems.slice(0, 6).map((item, idx) => (
+            <Col className="mb-3" lg={4} md={6} key={idx}>
               <Card>
-                <Card.Img variant="top" src={actions.createMenuItemImage(item)} />
+                <Card.Img as={Image} variant="top" src={`/api/images/${item.name}`} />
                 <Card.Body>
                   <Card.Title>{item.name}</Card.Title>
                   <Card.Text>
@@ -97,4 +106,3 @@ export default function Home() {
     </Layout>
   );
 }
-

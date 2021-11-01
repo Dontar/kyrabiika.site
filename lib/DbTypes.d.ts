@@ -1,4 +1,10 @@
-export interface User {
+import { Require_id } from "mongoose";
+
+interface MongoId {
+  _id?: any;
+}
+
+export interface User extends MongoId {
   firstName: string;
   lastName: string;
   mail: string;
@@ -9,15 +15,17 @@ export interface User {
   orders: Order[];
 }
 
-export interface MenuItem {
+export interface MenuItem extends MongoId {
   name: string;
   category: string;
   price: number;
 }
-export type OrderItem = {
+
+export interface OrderItem {
   item: MenuItem;
   count: number;
 };
+
 export type OrderProgress =
   'Confirmed' |
   'Processing' |
@@ -25,14 +33,13 @@ export type OrderProgress =
   'Delivering' |
   'Delivered';
 
-
-export interface Order {
+export interface Order extends MongoId {
   items: OrderItem[];
   date: Date;
-  progress: OrderProgress;
+  progress?: OrderProgress;
   user: User;
 }
 
-export interface PromotionItem {
+export interface PromotionItem extends MongoId {
   item: MenuItem;
 }

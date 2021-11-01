@@ -2,8 +2,8 @@ import React from 'react';
 import { Badge, Button, ListGroup } from 'react-bootstrap';
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
-import { OrderItem } from './DataContext';
 import Image from 'next/image';
+import { OrderItem } from './DbTypes';
 
 const formatter = new Intl.NumberFormat('bg-BG', { style: 'currency', currency: 'BGN' });
 

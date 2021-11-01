@@ -1,27 +1,41 @@
-import React, { useEffect } from 'react';
+import React, { useState } from 'react';
 import Link from 'next/link';
+import image from 'next/image';
+import { connect } from 'mongoose';
 import { Button, Card, Col, Container, ListGroup, Nav, Row } from 'react-bootstrap';
 
-import Layout from '../../components/Layout';
+import Layout from '../../lib/Layout';
 
-// import data from '../data/data.json';
-// import mufin_carrot from '../data/mufin_carrot.jpg';
-// import mufin_nut from '../data/mufin_nut.jpg';
+import { OrderItemsList } from '../../lib/OrderItemsList';
+import { GetStaticProps } from 'next';
+import { connectionString, MenuItemModel } from '../../lib/Connection';
+import { MenuItem, OrderItem } from '../../lib/DbTypes';
+import { classes, formatter } from '../../lib/Utils';
+import { useOrderContext } from '../../lib/OrderContext';
 
-import { formatter, MenuItem, useDataContext } from '../../components/DataContext';
-import { OrderItemsList } from '../../components/OrderItemsList';
+type OrderProps = {
+  categories: Set<string>;
+  data: MenuItem[];
+}
 
-export default function Order() {
-  const [data, actions] = useDataContext();
-  const categories = data.menuItems.reduce<Set<string>>((result, item) => {
-    result.add(item.category);
-    return result;
-  }, new Set());
+export const getStaticProps: GetStaticProps<OrderProps> = async (_context) => {
+  await connect(connectionString);
+  const items = await MenuItemModel.find();
+  return {
+    props: {
+      categories: items.reduce<Set<string>>((result, item) => {
+        result.add(item.category);
+        return result;
+      }, new Set()),
+      data: items
+    }
+  }
+}
 
-  useEffect(() => {
-    actions.loadMenuItems();
-  });
+export default function Order({ categories, data }: OrderProps) {
+  const order = useOrderContext();
 
+  // const [orderList, setOrderList] = useState<OrderItem[]>([]);
   return (
     <Layout navLinks={
       <Nav>
@@ -35,32 +49,32 @@ export default function Order() {
           </Col>
           <Col>
             <Row>
-              {data.menuItems.map((item, idx) => (
+              {data.map((item, idx) => (
                 <MenuItemsList key={idx}
                   item={item}
-                  imageUrl={actions.createMenuItemImage(item)}
-                  onBuy={() => actions.addMenuItemToOrder(item)} />
+                  imageUrl={`/api/images/${item.name}`}
+                  onBuy={() => order.addItem(item)} />
               ))}
             </Row>
           </Col>
           <Col lg={3}>
             <ListGroup className="position-sticky" style={{ top: "4em" }}>
-              {Array.from(data.order.items).map(([idx, item]) => (
+              {order.items.map((item, idx) => (
                 <OrderItemsList
                   key={idx}
                   item={item}
-                  imageUrl={actions.createMenuItemImage(item.item)}
-                  onRemove={() => actions.delMenuItemFromOrder(item.item)}
+                  imageUrl={`/api/images/${item.item.name}`}
+                  onRemove={() => order.delItem(item)}
                 />
               ))}
               <ListGroup.Item className="d-flex bg-light align-items-center">
                 <div className="flex-fill">
                   <span>
-                    {formatter.format(actions.orderPrice)}
+                    {formatter.format(order.orderPrice)}
                   </span>
                 </div>
                 <div>
-                  <Button className={(data.order.items.size === 0) ? 'disabled' : ''} variant="outline-primary" href="/order/summary" as={Link}>
+                  <Button className={classes({ disabled: !order.hasItems })} variant="outline-primary" href="/order/summary" as={Link}>
                     Order
                   </Button>
                 </div>
@@ -81,9 +95,9 @@ type MenuItemsListProps = {
 
 function MenuItemsList({ item, imageUrl, onBuy }: MenuItemsListProps): JSX.Element {
   return (
-    <Col className="mb-3" lg={4} md={6} key={item._id}>
+    <Col className="mb-3" lg={4} md={6}>
       <Card>
-        <Card.Img variant="top" src={imageUrl} />
+        <Card.Img variant="top" as={image} src={imageUrl} />
         <Card.Body>
           <Card.Title>{item.name}</Card.Title>
           <Card.Text>
