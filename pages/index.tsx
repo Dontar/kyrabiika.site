@@ -1,15 +1,13 @@
 import React from 'react';
-import { Button, Card, Carousel, Col, Container, Nav, Row } from 'react-bootstrap';
+import { Button, Carousel, Col, Container, Nav, Row } from 'react-bootstrap';
 
 import Layout from '../lib/Layout';
 
 import Link from 'next/link';
 import Image from 'next/image';
 import { GetStaticProps } from 'next';
-import { connect } from 'mongoose';
-import { connectionString, MenuItemModel } from '../lib/Connection';
+import { connect, MenuItemModel } from '../lib/Connection';
 import { MenuItem } from '../lib/DbTypes';
-import { initDb } from '../lib/InitDb';
 import { MenuItemCard } from '../lib/MenuItemCard';
 
 type HomeProps = {
@@ -17,8 +15,7 @@ type HomeProps = {
 }
 
 export const getStaticProps: GetStaticProps<HomeProps> = async (_context) => {
-  await connect(connectionString);
-  await initDb();
+  await connect();
 
   const items = await MenuItemModel.find();
   return {

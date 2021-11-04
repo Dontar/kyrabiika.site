@@ -1,13 +1,12 @@
 import React, { useState } from 'react';
 import Link from 'next/link';
-import { connect } from 'mongoose';
 import { Button, Col, Container, ListGroup, Nav, Row } from 'react-bootstrap';
 
 import Layout from '../../lib/Layout';
 
 import { OrderItemRow } from '../../lib/OrderItemRow';
 import { GetStaticProps } from 'next';
-import { connectionString, MenuItemModel } from '../../lib/Connection';
+import { connect, MenuItemModel } from '../../lib/Connection';
 import { MenuItem } from '../../lib/DbTypes';
 import { classes, formatter } from '../../lib/Utils';
 import { OrderState, useOrderContext } from '../../lib/OrderContext';
@@ -19,7 +18,7 @@ type OrderProps = {
 }
 
 export const getStaticProps: GetStaticProps<OrderProps> = async (_context) => {
-  await connect(connectionString);
+  await connect();
   const items = await MenuItemModel.find();
   return {
     props: {

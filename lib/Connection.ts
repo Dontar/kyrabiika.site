@@ -1,5 +1,6 @@
-import { model, Schema, models, Model } from 'mongoose';
+import { model, Schema, models, Model, connect as mnConnect } from 'mongoose';
 import { MenuItem, Order, User, PromotionItem } from './DbTypes';
+import { initDb } from './InitDb';
 
 export const MenuItemModel: Model<MenuItem> = models.MenuItem || model('MenuItem', new Schema({
   name: { type: String, required: true, unique: true },
@@ -42,4 +43,9 @@ export const PromotionItemModel: Model<PromotionItem> = models.PromotionItem || 
   item: { type: Schema.Types.ObjectId, ref: 'MenuItem' }
 }));
 
-export const connectionString = process.env.SERVER_DB ?? 'mongodb://root:example@db:27017/kyrabiika?authSource=admin&readPreference=primary&ssl=false';
+export const connectionString = process.env.DB_SERVER ?? 'mongodb://root:example@db:27017/kyrabiika?authSource=admin&readPreference=primary&ssl=false';
+
+export async function connect() {
+  await mnConnect(connectionString);
+  await initDb();
+}
