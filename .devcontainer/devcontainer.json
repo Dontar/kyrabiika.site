@@ -1,46 +1,49 @@
 // For format details, see https://aka.ms/devcontainer.json. For config options, see the README at:
 // https://github.com/microsoft/vscode-dev-containers/tree/v0.163.1/containers/typescript-node
 {
-	"name": "Kyrabiika.site",
-	"dockerComposeFile": "docker-compose.yml",
-	"service": "app",
-	"workspaceFolder": "/workspaces",
+  "name": "Kyrabiika.site",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "app",
+  "workspaceFolder": "/workspaces",
+  // Set *default* container specific settings.json values on container create.
+  "settings": {
+    "jest.testExplorer": {
+      "enabled": true
+    }
+  },
+  // Add the IDs of extensions you want installed when the container is created.
+  "extensions": [
+	"dbaeumer.vscode-eslint",
+	"mhutchie.git-graph",
+	"editorconfig.editorconfig",
+	"mitchdenny.ecdc",
+	"hediet.vscode-drawio",
+	"davidanson.vscode-markdownlint",
+	"ryu1kn.partial-diff",
+	"quicktype.quicktype",
+	"yzhang.markdown-all-in-one",
+	"kavod-io.vscode-jest-test-adapter",
+	"darkriszty.markdown-table-prettify",
+	"hbenl.vscode-test-explorer",
+	"visualstudioexptteam.vscodeintellicode",
+	"zignd.html-css-class-completion",
+	"mrmlnc.vscode-scss",
+	"sibiraj-s.vscode-scss-formatter",
+	"streetsidesoftware.code-spell-checker",
+	"orta.vscode-jest"
+],
+  // Use 'forwardPorts' to make a list of ports inside the container available locally.
+  "forwardPorts": [
+    27017
+  ],
+  // Use 'postCreateCommand' to run commands after the container is created.
+  "postCreateCommand": "sudo chown -R node:node /workspaces",
 
-	// Set *default* container specific settings.json values on container create.
-	"settings": {},
-
-	// Add the IDs of extensions you want installed when the container is created.
-	"extensions": [
-		"dbaeumer.vscode-eslint",
-		"mhutchie.git-graph",
-		"editorconfig.editorconfig",
-		"mitchdenny.ecdc",
-		"hediet.vscode-drawio",
-		"davidanson.vscode-markdownlint",
-		"ryu1kn.partial-diff",
-		"quicktype.quicktype",
-		"yzhang.markdown-all-in-one",
-		"kavod-io.vscode-jest-test-adapter",
-		"darkriszty.markdown-table-prettify",
-		"hbenl.vscode-test-explorer",
-		"visualstudioexptteam.vscodeintellicode",
-		"zignd.html-css-class-completion",
-		"mrmlnc.vscode-scss",
-		"sibiraj-s.vscode-scss-formatter",
-		"streetsidesoftware.code-spell-checker"
-	],
-
-	// Use 'forwardPorts' to make a list of ports inside the container available locally.
-	"forwardPorts": [27017],
-
-	// Use 'postCreateCommand' to run commands after the container is created.
-	// "postCreateCommand": "yarn install",
-
-	// Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
-	"remoteUser": "node",
-	"portsAttributes": {
-		"27017": {
-			"label": "mongo"
-		}
-	}
+  // Comment out connect as root instead. More info: https://aka.ms/vscode-remote/containers/non-root.
+  "remoteUser": "node",
+  "portsAttributes": {
+    "27017": {
+      "label": "mongo"
+    }
+  }
 }
