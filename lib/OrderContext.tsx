@@ -1,4 +1,4 @@
-import { createContext, ReactNode, useContext, useState } from "react";
+import { createContext, PropsWithChildren, ReactNode, useContext, useState } from "react";
 import { MenuItem, Order, OrderItem, OrderProgress, User } from "./DbTypes";
 
 function useOrderState() {
@@ -23,8 +23,9 @@ function useOrderState() {
         item.count -= 1;
         setItems([...items]);
       } else {
-        const idx = items.findIndex(i => i == item);
-        setItems([...items.splice(idx, 1)]);
+        const idx = items.findIndex(i => i.item.name == item.item.name);
+        items.splice(idx, 1);
+        setItems([...items]);
       }
     },
     get orderPrice(): number {
@@ -44,13 +45,13 @@ function useOrderState() {
 
 export type OrderState = Order & ReturnType<typeof useOrderState>;
 
-const Counter = createContext<OrderState>({} as unknown as OrderState);
+const Order = createContext<OrderState>({} as unknown as OrderState);
 
 export function useOrderContext() {
-  return useContext(Counter);
+  return useContext(Order);
 }
 
-export function OrderContext({ children }: { children: ReactNode }) {
+export function OrderContext({ children }: PropsWithChildren<ReactNode>) {
   const order = useOrderState();
-  return (<Counter.Provider value={order}>{children}</Counter.Provider>);
+  return (<Order.Provider value={order}>{children}</Order.Provider>);
 }

@@ -9,7 +9,8 @@ import { GetStaticProps } from 'next';
 import { connect } from 'mongoose';
 import { connectionString, MenuItemModel } from '../lib/Connection';
 import { MenuItem } from '../lib/DbTypes';
-import { formatter } from '../lib/Utils';
+import { initDb } from '../lib/InitDb';
+import { MenuItemCard } from '../lib/MenuItemCard';
 
 type HomeProps = {
   menuItems: MenuItem[];
@@ -17,10 +18,16 @@ type HomeProps = {
 
 export const getStaticProps: GetStaticProps<HomeProps> = async (_context) => {
   await connect(connectionString);
+  await initDb();
+
   const items = await MenuItemModel.find();
   return {
     props: {
-      menuItems: items
+      menuItems: items.map(i => {
+        const result = i.toObject();
+        result._id = result._id.toString();
+        return result;
+      })
     }
   }
 }
@@ -35,7 +42,12 @@ export default function Home({ menuItems }: HomeProps) {
           <Nav.Link href="#products">Products</Nav.Link>
           <Nav.Link href="#history">History</Nav.Link>
           <Nav.Link href="#contacts">Contacts</Nav.Link>
-          <Nav.Link href="/order" as={Link}>Order</Nav.Link>
+          <Link href="/order" passHref={true}>
+            <Nav.Link>Order</Nav.Link>
+          </Link>
+          <Link href="/admin" passHref={true}>
+            <Nav.Link>Admin</Nav.Link>
+          </Link>
         </Nav>
       }
     >
@@ -44,8 +56,11 @@ export default function Home({ menuItems }: HomeProps) {
           <Image
             // style={{ height: "300px" }}
             className="d-block w-100"
-            src="/api/images/main-top"
+            src="/api/images/main-top/thumb.jpg"
             alt="First slide"
+            layout="responsive"
+            height={600}
+            width={1600}
           />
           <Carousel.Caption>
             <h3>First slide label</h3>
@@ -59,25 +74,14 @@ export default function Home({ menuItems }: HomeProps) {
         <Row>
           {menuItems.slice(0, 6).map((item, idx) => (
             <Col className="mb-3" lg={4} md={6} key={idx}>
-              <Card>
-                <Card.Img as={Image} variant="top" src={`/api/images/${item.name}`} />
-                <Card.Body>
-                  <Card.Title>{item.name}</Card.Title>
-                  <Card.Text>
-                    Some quick example text to build on the card title and make up the bulk of
-                    the card&apos;s content.
-                  </Card.Text>
-                </Card.Body>
-                <Card.Footer className="d-flex align-items-center">
-                  <span className="flex-fill">{formatter.format(item.price)}</span>
-                  <Button variant="outline-primary">Buy</Button>
-                </Card.Footer>
-              </Card>
+              <MenuItemCard item={item} />
             </Col>
           ))}
         </Row>
         <div className="text-center mt-5">
-          <Button variant="success" href="/order" as={Link} style={{ width: '20em' }}>Order</Button>
+          <Link href="/order" passHref>
+            <Button variant="success" style={{ width: '20em' }}>Order</Button>
+          </Link>
         </div>
       </Container>
       <Container id="history" className="mt-5">

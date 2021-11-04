@@ -1,7 +1,9 @@
-import { MenuItemModel } from './Connection';
+import { connect } from 'mongoose';
+import { connectionString, MenuItemModel } from './Connection';
 
 
 export async function initDb(): Promise<void> {
+  await connect(connectionString);
   const count = await MenuItemModel.count();
 
   if (count < 1) {

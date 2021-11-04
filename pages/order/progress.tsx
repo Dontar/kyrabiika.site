@@ -20,7 +20,9 @@ export default function OrderProgress() {
   return (
     <Layout navLinks={
       <Nav>
-        <Nav.Link href="/" as={Link}>Home</Nav.Link>
+        <Link href="/" passHref>
+          <Nav.Link>Home</Nav.Link>
+        </Link>
       </Nav>
     }>
       <Container className="mt-5 p-5">

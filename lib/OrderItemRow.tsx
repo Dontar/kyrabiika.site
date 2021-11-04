@@ -9,15 +9,14 @@ const formatter = new Intl.NumberFormat('bg-BG', { style: 'currency', currency: 
 
 type OrderItemsListProps = {
   item: OrderItem;
-  imageUrl: string;
   onRemove: React.MouseEventHandler<HTMLElement>;
 };
 
-export function OrderItemsList({ item, imageUrl, onRemove}: OrderItemsListProps): JSX.Element {
+export function OrderItemRow({ item, onRemove }: OrderItemsListProps): JSX.Element {
   return (
     <ListGroup.Item className="d-flex">
       <div className="mr-1">
-        <Image src={imageUrl} alt="" className="rounded" />
+        <Image src={`/api/images/${item.item.name}/thumb.jpg`} alt="" className="rounded" width={100} height={80} />
       </div>
       <div className="flex-fill">
         <span>{item.item.name}</span>

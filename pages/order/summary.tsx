@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import Link from 'next/link';
 import { Button, Card, Col, Container, ListGroup, Modal, Nav, OverlayTrigger, Row } from 'react-bootstrap';
 
 import Layout from '../../lib/Layout';
+import Link from 'next/link';
 
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import { faGreaterThan, faCalendar, faClock } from '@fortawesome/free-solid-svg-icons';
-import { OrderItemsList } from '../../lib/OrderItemsList';
+import { OrderItemRow } from '../../lib/OrderItemRow';
 import { useOrderContext } from '../../lib/OrderContext';
 import { formatter } from '../../lib/Utils';
 
@@ -21,7 +21,9 @@ export default function OrderSummary() {
   return (
     <Layout navLinks={
       <Nav>
-        <Nav.Link href="/" as={Link}>Home</Nav.Link>
+        <Link href="/" passHref>
+          <Nav.Link>Home</Nav.Link>
+        </Link>
       </Nav>
     }>
       <Container className="mt-5" onClickCapture={() => setShowMenu(false)}>
@@ -30,19 +32,16 @@ export default function OrderSummary() {
             <h4>Products</h4>
             <hr />
             <ListGroup className="mb-3">
-              {Array.from(order.items).map((item, idx) => (
-                <OrderItemsList
-                  key={idx}
-                  item={item}
-                  imageUrl={`/api/images/${item.item.name}`}
-                  onRemove={() => order.delItem(item)}
-                />
+              {order.items.map((item, idx) => (
+                <OrderItemRow key={idx} item={item} onRemove={() => order.delItem(item)} />
               ))}
             </ListGroup>
             <h4>Details</h4>
             <hr />
             <ListGroup className="mb-3">
-              <ListGroup.Item> <div style={{ height: "300px" }} className="bg-light border">Google Map</div> </ListGroup.Item>
+              <ListGroup.Item>
+                <div style={{ height: "300px" }} className="bg-light border">Google Map</div>
+              </ListGroup.Item>
               <OverlayTrigger
                 show={menuShowed}
                 onToggle={(nextShow) => { setShowMenu(nextShow) }}
@@ -93,13 +92,9 @@ export default function OrderSummary() {
                   </ListGroup>
                 </Card.Body>
                 <Card.Footer className="d-flex justify-content-end">
-                  <Button
-                    variant="success"
-                    href="/order/progress" as={Link}
-                    onClick={() => order.setProgress("Confirmed")}
-                  >
-                    Confirm order
-                  </Button>
+                  <Link href="/order/progress" passHref>
+                    <Button variant="success" onClick={() => order.setProgress("Confirmed")}> Confirm order </Button>
+                  </Link>
                 </Card.Footer>
               </Card>
             </div>

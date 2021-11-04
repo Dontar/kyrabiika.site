@@ -1,13 +1,13 @@
-import { model, Schema, connect } from 'mongoose';
+import { model, Schema, models, Model } from 'mongoose';
 import { MenuItem, Order, User, PromotionItem } from './DbTypes';
 
-export const MenuItemModel = model<MenuItem>('MenuItem', new Schema<MenuItem>({
+export const MenuItemModel: Model<MenuItem> = models.MenuItem || model('MenuItem', new Schema({
   name: { type: String, required: true, unique: true },
   category: { type: String, required: true },
   price: { type: Number, required: true }
 }));
 
-export const OrderModel = model<Order>('Order', new Schema<Order>({
+export const OrderModel: Model<Order> = models.Order || model('Order', new Schema({
   items: [
     {
       item: { type: Schema.Types.ObjectId, ref: 'MenuItem' },
@@ -27,7 +27,7 @@ export const OrderModel = model<Order>('Order', new Schema<Order>({
   user: { type: Schema.Types.ObjectId, ref: 'User' }
 }));
 
-export const UserModel = model<User>('User', new Schema<User>({
+export const UserModel: Model<User> = models.User || model('User', new Schema({
   firstName: String,
   lastName: String,
   mail: { type: String, required: true, unique: true },
@@ -38,8 +38,8 @@ export const UserModel = model<User>('User', new Schema<User>({
   password: { type: String, required: true }
 }));
 
-export const PromotionItemModel = model<PromotionItem>('PromotionItem', new Schema<PromotionItem>({
+export const PromotionItemModel: Model<PromotionItem> = models.PromotionItem || model('PromotionItem', new Schema({
   item: { type: Schema.Types.ObjectId, ref: 'MenuItem' }
 }));
 
-export const connectionString = process.env.SERVER_DB ?? 'mongodb://root:example@db:27017/?authSource=admin&readPreference=primary&ssl=false';
+export const connectionString = process.env.SERVER_DB ?? 'mongodb://root:example@db:27017/kyrabiika?authSource=admin&readPreference=primary&ssl=false';
