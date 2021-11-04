@@ -10,6 +10,6 @@ export default function handler(
 ) {
   const { name } = req.query;
   console.log(name);
-  const stream = send(req, join(...name as string[]), { root: '/workspaces/kyrabiika.site/images' });
+  const stream = send(req, join(...name as string[]), { root: process.env.DB_IMAGES ?? '/workspaces/kyrabiika.site/images' });
   return pipeline(stream as unknown as NodeJS.ReadableStream, res);
 }
