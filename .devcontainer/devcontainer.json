@@ -4,7 +4,7 @@
   "name": "Kyrabiika.site",
   "dockerComposeFile": "docker-compose.yml",
   "service": "app",
-  "workspaceFolder": "/workspaces",
+  // "workspaceFolder": "/workspaces",
   // Set *default* container specific settings.json values on container create.
   "settings": {
     "jest.testExplorer": {
@@ -13,24 +13,27 @@
   },
   // Add the IDs of extensions you want installed when the container is created.
   "extensions": [
-	"dbaeumer.vscode-eslint",
-	"mhutchie.git-graph",
-	"editorconfig.editorconfig",
-	"mitchdenny.ecdc",
-	"davidanson.vscode-markdownlint",
-	"ryu1kn.partial-diff",
-	"quicktype.quicktype",
-	"yzhang.markdown-all-in-one",
-	"darkriszty.markdown-table-prettify",
-	"visualstudioexptteam.vscodeintellicode",
-	"zignd.html-css-class-completion",
-	"mrmlnc.vscode-scss",
-	"sibiraj-s.vscode-scss-formatter",
-	"streetsidesoftware.code-spell-checker",
-	"orta.vscode-jest",
-	"mongodb.mongodb-vscode",
-  "mutantdino.resourcemonitor"
-],
+    "dbaeumer.vscode-eslint",
+    "mhutchie.git-graph",
+    "editorconfig.editorconfig",
+    "mitchdenny.ecdc",
+    "davidanson.vscode-markdownlint",
+    "ryu1kn.partial-diff",
+    "quicktype.quicktype",
+    "yzhang.markdown-all-in-one",
+    "darkriszty.markdown-table-prettify",
+    "visualstudioexptteam.vscodeintellicode",
+    "zignd.html-css-class-completion",
+    "mrmlnc.vscode-scss",
+    "sibiraj-s.vscode-scss-formatter",
+    "streetsidesoftware.code-spell-checker",
+    "orta.vscode-jest",
+    "mongodb.mongodb-vscode",
+    "mutantdino.resourcemonitor"
+  ],
+  "features": {
+    "docker-from-docker": "latest"
+  },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [
     27017
