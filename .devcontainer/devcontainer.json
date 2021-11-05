@@ -17,20 +17,18 @@
 	"mhutchie.git-graph",
 	"editorconfig.editorconfig",
 	"mitchdenny.ecdc",
-	"hediet.vscode-drawio",
 	"davidanson.vscode-markdownlint",
 	"ryu1kn.partial-diff",
 	"quicktype.quicktype",
 	"yzhang.markdown-all-in-one",
-	"kavod-io.vscode-jest-test-adapter",
 	"darkriszty.markdown-table-prettify",
-	"hbenl.vscode-test-explorer",
 	"visualstudioexptteam.vscodeintellicode",
 	"zignd.html-css-class-completion",
 	"mrmlnc.vscode-scss",
 	"sibiraj-s.vscode-scss-formatter",
 	"streetsidesoftware.code-spell-checker",
-	"orta.vscode-jest"
+	"orta.vscode-jest",
+	"mongodb.mongodb-vscode"
 ],
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [
