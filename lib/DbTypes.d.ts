@@ -24,7 +24,7 @@ export interface MenuItem extends MongoId {
 export interface OrderItem {
   item: MenuItem;
   count: number;
-};
+}
 
 export type OrderProgress =
   'Confirmed' |

@@ -56,7 +56,7 @@ export default function Home({ menuItems }: HomeProps) {
             src="/api/images/main-top/thumb.jpg"
             alt="First slide"
             layout="responsive"
-            height={600}
+            height={450}
             width={1600}
           />
           <Carousel.Caption>
@@ -85,8 +85,8 @@ export default function Home({ menuItems }: HomeProps) {
         <h1 className="text-center">Born by acident.</h1>
         <hr />
         <h5 className="text-center">Who are we?</h5>
-        <Row>
-          <Col sm>
+        <Row xs={1} md={2}>
+          <Col >
             <p>
               Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
               blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
@@ -94,7 +94,7 @@ export default function Home({ menuItems }: HomeProps) {
               blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
             </p>
           </Col>
-          <Col sm>
+          <Col >
             <p>
               Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
               blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah

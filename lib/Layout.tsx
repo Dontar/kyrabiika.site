@@ -8,7 +8,7 @@ export interface LayoutProps {
 export default function Layout(props: React.PropsWithChildren<LayoutProps>) {
   return (
     <Fragment>
-      <Navbar bg="light" expand="lg" sticky="top">
+      <Navbar bg="light" expand="md" sticky="top">
         <Navbar.Brand href="/">
           <span>Kyrabiika</span>
         </Navbar.Brand>
