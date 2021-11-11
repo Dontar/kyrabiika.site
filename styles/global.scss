@@ -5,6 +5,17 @@
 
 @import url('https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@700&display=swap');
 
+.custom-class {
+  display: none;
+}
+@include media-breakpoint-up(lg) {
+  .custom-class {
+    display: block;
+  }
+}
+
+
+
 .navbar-brand {
     font-family: "Cabin Sketch", cursive;
     font-weight: 400;

@@ -3,6 +3,7 @@ import { MenuItem, Order, OrderItem, OrderProgress, User } from "./DbTypes";
 
 function useOrderState() {
   const [items, setItems] = useState<OrderItem[]>([]);
+  const [countItems, setCountItems] = useState(0);
   const [date, setDate] = useState<Date>(new Date());
   const [progress, setProgress] = useState<OrderProgress>();
   const [user, setUser] = useState<User>({} as User);
@@ -10,13 +11,14 @@ function useOrderState() {
     items, date, progress, user,
     setItems, setDate, setProgress, setUser,
     addItem(item: MenuItem) {
-      const orderItem = items.find(i => i.item == item);
+      const orderItem = items.find(i => i.item.name === item.name);
       if (orderItem) {
         orderItem.count += 1;
         setItems([...items]);
       } else {
         setItems([...items, { item, count: 1 }]);
       }
+      setCountItems(value => value += 1)
     },
     delItem(item: OrderItem) {
       if (item.count > 1) {
@@ -27,6 +29,7 @@ function useOrderState() {
         items.splice(idx, 1);
         setItems([...items]);
       }
+      setCountItems((value) => value -= 1)
     },
     get orderPrice(): number {
       return this.items.reduce((a, i) => (a += i.count, a), 0);
@@ -39,7 +42,10 @@ function useOrderState() {
     },
     get finalOrderPrice(): number {
       return this.orderPrice + this.deliveryTax;
-    }
+    },
+    get counted(): number {
+      return countItems
+    },
   };
 }
 

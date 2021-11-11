@@ -1,5 +1,6 @@
-import React from 'react';
-import { Button, Carousel, Col, Container, Nav, Row } from 'react-bootstrap';
+import React, { useState } from 'react';
+import { Button, Carousel, Col, Container, Nav, Row, ListGroup } from 'react-bootstrap';
+
 
 import Layout from '../lib/Layout';
 
@@ -9,27 +10,54 @@ import { GetStaticProps } from 'next';
 import { connect, MenuItemModel } from '../lib/Connection';
 import { MenuItem } from '../lib/DbTypes';
 import { MenuItemCard } from '../lib/MenuItemCard';
+import { CatListSort, CategoriesList } from '../lib/CategoriesList';
+import Trolley from '../lib/Trolley'
+import { OrderState, useOrderContext } from '../lib/OrderContext';
 
 type HomeProps = {
-  menuItems: MenuItem[];
+  menuItems: MenuItem[],
+  categories: [string, number][];
 }
 
 export const getStaticProps: GetStaticProps<HomeProps> = async (_context) => {
   await connect();
 
   const items = await MenuItemModel.find();
+  let cat: any = { 'Всички': 0 };
+  items.forEach(item => {
+    cat['Всички']++
+    (!cat.hasOwnProperty(item.category))
+      ? cat[`${item.category}`] = 1
+      : cat[`${item.category}`]++
+  });
+  console.log(cat)
   return {
     props: {
-      menuItems: items.map(i => {
+      menuItems: items/*.slice(0, 5)*/.map(i => {
         const result = i.toObject();
         result._id = result._id.toString();
         return result;
-      })
+      }),
+      categories: Object.entries(cat),
+      // categories: Array.from(items.reduce((result, item) => {
+      //   result.add(item.category);
+      //   return result;
+      // }, new Set())),
     }
   }
 }
 
-export default function Home({ menuItems }: HomeProps) {
+export default function Home({ menuItems, categories }: HomeProps) {
+  const [filtered, setFiltered] = useState(menuItems)
+  const order = useOrderContext();
+
+  const filterCategories = (select: String): void => {
+    if (select == "Всички") setFiltered(menuItems)
+    else {
+      const result = menuItems.filter(x => x.category == select)
+      setFiltered(result)
+    }
+  }
 
   return (
     <Layout
@@ -65,15 +93,29 @@ export default function Home({ menuItems }: HomeProps) {
           </Carousel.Caption>
         </Carousel.Item>
       </Carousel>
-      <Container id="products" className="mt-5">
-        <h1>Products</h1>
-        <hr />
+      <Container fluid id="products" className="mt-3">
+        {/* <Row className="d-flex justify-content-end mr-0 mb-2">
+          <Trolley/>
+        </Row> */}
         <Row>
-          {menuItems.slice(0, 6).map((item, idx) => (
-            <Col className="mb-3" lg={4} md={6} key={idx}>
-              <MenuItemCard item={item} />
-            </Col>
-          ))}
+          <Col lg={2} className="d-none d-lg-block position-sticky">
+            <CategoriesList categories={categories} onSelected={filterCategories} />
+          </Col>
+          <Col>
+            <Row className="d-flex justify-content-between align-items-center" >
+              <Col className="d-lg-none ml-3">
+                <CatListSort  categories={categories} onSelected={filterCategories} />
+              </Col>
+              <Trolley count={order.counted}/>
+            </Row>
+            <Row>
+              {filtered.map((item, idx) => (
+                <Col className="mb-3" lg={4} md={6} key={idx}>
+                  <MenuItemCard item={item} onBuy={() => order.addItem(item)}/>
+                </Col>
+              ))}
+            </Row>
+          </Col>
         </Row>
         <div className="text-center mt-5">
           <Link href="/order" passHref>
@@ -107,3 +149,5 @@ export default function Home({ menuItems }: HomeProps) {
     </Layout>
   );
 }
+
+
