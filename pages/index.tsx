@@ -103,7 +103,7 @@ export default function Home({ menuItems, categories }: HomeProps) {
           </Col>
           <Col>
             <Row className="d-flex justify-content-between align-items-center" >
-              <Col className="d-lg-none ml-3">
+              <Col xs={4} className="d-lg-none ml-3 p-0">
                 <CatListSort  categories={categories} onSelected={filterCategories} />
               </Col>
               <Trolley count={order.counted}/>

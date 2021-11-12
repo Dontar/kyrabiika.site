@@ -8,7 +8,8 @@ export default function Trolley({ count }: any) {
   const [orderIsShown, setOrderIsShown] = useState(false)
 
   return (
-    <Col className="mb-2 d-flex justify-content-end position-relative">
+    <Col className="mb-2 d-flex justify-content-end position-relative"
+    >
       <span
         onMouseEnter={() => setOrderIsShown(true)}
         onMouseLeave={() => setOrderIsShown(false)}
@@ -18,8 +19,8 @@ export default function Trolley({ count }: any) {
         <Badge className="d-sm-inline-flex align-items-center" variant="warning" style={{ fontSize: ".8em" }} pill>
           {count}
         </Badge>
+        {orderIsShown && <OrderBox />}
       </span>
-      {orderIsShown && <OrderBox />}
     </Col>
   )
 }

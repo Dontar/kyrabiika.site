@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Row, Dropdown, DropdownButton, ListGroup, Badge } from 'react-bootstrap';
+import { Row, Dropdown, DropdownButton, ListGroup, Badge, Col } from 'react-bootstrap';
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import { faClipboardList } from '@fortawesome/free-solid-svg-icons';
 
@@ -8,9 +8,9 @@ export function CatListSort({ categories, onSelected }: any): JSX.Element {
   const [selected, setSelected] = useState('Всички');
   console.log(categories)
   return (
-    <Row>
+    <Col>
       {/* <Icon icon={faClipboardList} size="lg" /> */}
-      <DropdownButton variant="outline-secondary" size="lg" title="Избери категория" style={{ marginBottom: "1em" }}>
+      <DropdownButton variant="outline-secondary" size="sm" title="Избери категория" style={{ marginBottom: "1em" }}>
         {categories.map((c: [string, number], i: number) => (
           <Dropdown.Item
             key={i}
@@ -23,7 +23,7 @@ export function CatListSort({ categories, onSelected }: any): JSX.Element {
           </Dropdown.Item>
         ))}
       </DropdownButton>
-    </Row>
+    </Col>
   );
 }
 

@@ -10,7 +10,7 @@ export default function OrderBox() {
   const order = useOrderContext();
 
   return (
-    <Col md="auto" className="position-absolute mr-3" style={{top: "100%", right: "0", zIndex: 100}}>
+    <Col xs="auto" className="position-absolute mr-3" style={{top: "100%", right: "0", zIndex: 100}}>
       <ListGroup className="position-sticky" style={{ top: "4em" }}>
         <OrderRow order={order} />
         {order.items.map((item, idx) => (
