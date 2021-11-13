@@ -6,11 +6,11 @@ import { classes, formatter } from './Utils';
 import { OrderItemRow } from './OrderItemRow';
 
 
-export default function OrderBox() {
+export default function OrderBox(): JSX.Element {
   const order = useOrderContext();
 
   return (
-    <Col xs="auto" className="position-absolute mr-3" style={{top: "100%", right: "0", zIndex: 100}}>
+    <Col xs="auto" className="position-absolute" style={{top: "100%", right: "0", zIndex: 100}}>
       <ListGroup className="position-sticky" style={{ top: "4em" }}>
         <OrderRow order={order} />
         {order.items.map((item, idx) => (
@@ -22,7 +22,7 @@ export default function OrderBox() {
   )
 }
 
-function OrderRow({ order }: { order: OrderState }) {
+function OrderRow({ order }: { order: OrderState }): JSX.Element {
   return (
     <ListGroup.Item className="d-flex bg-light align-items-center">
       <div className="flex-fill">

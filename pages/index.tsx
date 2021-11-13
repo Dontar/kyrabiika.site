@@ -13,6 +13,7 @@ import { MenuItemCard } from '../lib/MenuItemCard';
 import { CatListSort, CategoriesList } from '../lib/CategoriesList';
 import Trolley from '../lib/Trolley'
 import { OrderState, useOrderContext } from '../lib/OrderContext';
+import { AnyRecord } from 'dns';
 
 type HomeProps = {
   menuItems: MenuItem[],
@@ -22,27 +23,21 @@ type HomeProps = {
 export const getStaticProps: GetStaticProps<HomeProps> = async (_context) => {
   await connect();
 
-  const items = await MenuItemModel.find();
-  let cat: any = { 'Всички': 0 };
-  items.forEach(item => {
-    cat['Всички']++
-    (!cat.hasOwnProperty(item.category))
-      ? cat[`${item.category}`] = 1
-      : cat[`${item.category}`]++
-  });
-  console.log(cat)
+  const items: MenuItem[] = await MenuItemModel.find().lean();
+  let cat: object = items.reduce((acc: any, item) => {
+    acc['Всички']++
+    (!acc[item.category])
+      ? acc[item.category] = 1
+      : acc[item.category] += 1
+    return acc
+  }, { 'Всички': 0 } )
+
   return {
     props: {
-      menuItems: items/*.slice(0, 5)*/.map(i => {
-        const result = i.toObject();
-        result._id = result._id.toString();
-        return result;
+      menuItems: items/*.slice(0, 5)*/.map(item => {
+        return {...item, _id: item._id.toString()}
       }),
       categories: Object.entries(cat),
-      // categories: Array.from(items.reduce((result, item) => {
-      //   result.add(item.category);
-      //   return result;
-      // }, new Set())),
     }
   }
 }

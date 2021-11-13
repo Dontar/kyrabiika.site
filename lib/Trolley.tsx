@@ -1,10 +1,10 @@
 import React, { useState } from 'react';
-import { Row, Col, Badge } from 'react-bootstrap';
+import { Col, Badge } from 'react-bootstrap';
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import { faShoppingCart } from '@fortawesome/free-solid-svg-icons';
 import OrderBox from './OrderBox'
 
-export default function Trolley({ count }: any) {
+export default function Trolley({ count }: { count: number }): JSX.Element {
   const [orderIsShown, setOrderIsShown] = useState(false)
 
   return (
