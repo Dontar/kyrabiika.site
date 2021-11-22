@@ -68,6 +68,9 @@ export default function Home({ menuItems, categories }: HomeProps) {
           <Link href="/admin" passHref={true}>
             <Nav.Link>Admin</Nav.Link>
           </Link>
+          <Link href="/login" passHref={true}>
+            <Nav.Link>Login</Nav.Link>
+          </Link>
         </Nav>
       }
     >
@@ -105,8 +108,8 @@ export default function Home({ menuItems, categories }: HomeProps) {
             </Row>
             <Row>
               {filtered.map((item, idx) => (
-                <Col className="mb-3" lg={4} md={6} key={idx}>
-                  <MenuItemCard item={item} onBuy={() => order.addItem(item)}/>
+                <Col className="mb-3 pr-0" lg={4} sm={6} key={idx}>
+                  <MenuItemCard  item={item} onBuy={() => order.addItem(item)}/>
                 </Col>
               ))}
             </Row>

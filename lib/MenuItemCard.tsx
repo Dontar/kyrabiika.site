@@ -1,6 +1,6 @@
 import React from 'react';
 import image from 'next/image';
-import { Button, Card, Col } from 'react-bootstrap';
+import { Button, Card } from 'react-bootstrap';
 import { MenuItem } from './DbTypes';
 import { formatter } from './Utils';
 
@@ -11,7 +11,9 @@ type MenuItemCardProps = {
 export function MenuItemCard({ item, onBuy }: MenuItemCardProps) {
   return (
     <Card>
-      <Card.Img variant="top" as={image} src={`/api/images/${item.name}/thumb.jpg`} width={500} height={350} />
+      <div style={{ height: '14em', position: 'relative' }}>
+        <Card.Img variant="top" as={image} src={`/api/images/${item.name}/thumb.jpg`} layout='fill' objectFit="contain" />
+      </div>
       <Card.Body>
         <Card.Title className="text-nowrap">{item.name}</Card.Title>
         <Card.Text>
