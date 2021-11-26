@@ -1,0 +1,110 @@
+kind: pipeline
+type: kubernetes
+name: ci
+
+trigger:
+  event:
+    - push
+  branch:
+    - master
+    - develop
+    - feature/*
+    - release/*
+    - bugfix/*
+    - hotfix/*
+
+services:
+  - name: db
+    image: mongo:4
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: database
+
+steps:
+  # Build source
+  - name: install_packages_build
+    image: node:alpine
+    environment:
+      NODE_OPTIONS: --openssl-legacy-provider
+      DB_SERVER: mongodb://root:example@127.0.0.1:27017/kyrabiika?authSource=admin&readPreference=primary&ssl=false
+    commands:
+      - apk add --no-cache git libc6-compat
+      - npm install
+      - npm run build
+      - chmod +x version.sh && ./version.sh
+
+  - name: push commit
+    image: appleboy/drone-git-push
+    settings:
+      ssh_key:
+        from_secret: system_key
+      remote: ${DRONE_GIT_SSH_URL}
+      # remote_name: origin
+      branch: ${DRONE_COMMIT_REF}
+      local_branch: ${DRONE_BRANCH}
+      followtags: true
+
+---
+kind: pipeline
+type: kubernetes
+name: cd
+
+trigger:
+  event:
+    - tag
+  branch:
+    - master
+
+services:
+  - name: db
+    image: mongo:4
+    environment:
+      MONGO_INITDB_ROOT_USERNAME: root
+      MONGO_INITDB_ROOT_PASSWORD: example
+      MONGO_INITDB_DATABASE: database
+
+steps:
+  # Build source
+  - name: install_packages_build
+    image: node:alpine
+    environment:
+      NODE_OPTIONS: --openssl-legacy-provider
+      DB_SERVER: mongodb://root:example@127.0.0.1:27017/kyrabiika?authSource=admin&readPreference=primary&ssl=false
+    commands:
+      - apk add --no-cache libc6-compat
+      - npm install
+      - npm run build
+
+  # Build docker image
+  - name: build_docker_image
+    image: plugins/docker
+    settings:
+      username:
+        from_secret: registry_user
+      password:
+        from_secret: registry_pass
+      repo: registry.local/kyrabiika-site
+      insecure: true
+      registry: registry.local
+      auto_tag: true
+
+  - name: helm deploy
+    image: bitsbeats/drone-helm3
+    # image: alpine/helm
+    # commands:
+    #   - export PLUGIN_RELEASE=cookie-$(cat .tags)
+    #   - /usr/local/bin/drone-helm3
+    settings:
+      kube_api_server: https://k3s.local:6443
+      kube_token:
+        from_secret: kube_token
+      chart: ./chart
+      update_dependencies: true
+      namespace: cookie
+      release: cookie
+      wait: true
+      force: true
+      values:
+        - image.tag=&{DRONE_TAG/v/}
+        - service.nodePort=30999
