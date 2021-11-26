@@ -10,8 +10,7 @@ image:
   # Overrides the image tag whose default is the chart appVersion.
   tag: ""
 
-imagePullSecrets:
-  - name: registry-auth
+imagePullSecrets: []
 
 nameOverride: ""
 fullnameOverride: ""
@@ -40,7 +39,8 @@ securityContext: {}
   # runAsUser: 1000
 
 service:
-  type: ClusterIP
+  type: NodePort
+  nodePort: 30888
   port: 80
 
 ingress:
