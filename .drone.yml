@@ -32,18 +32,18 @@ steps:
       - apk add --no-cache git libc6-compat
       - npm install
       - npm run build
-      - chmod +x version.sh && ./version.sh
+      # - chmod +x version.sh && ./version.sh
 
-  - name: push commit
-    image: appleboy/drone-git-push
-    settings:
-      ssh_key:
-        from_secret: system_key
-      remote: ${DRONE_GIT_SSH_URL}
-      # remote_name: origin
-      branch: ${DRONE_COMMIT_REF}
-      local_branch: ${DRONE_BRANCH}
-      followtags: true
+  # - name: push commit
+  #   image: appleboy/drone-git-push
+  #   settings:
+  #     ssh_key:
+  #       from_secret: system_key
+  #     remote: ${DRONE_GIT_SSH_URL}
+  #     # remote_name: origin
+  #     branch: ${DRONE_COMMIT_REF}
+  #     local_branch: ${DRONE_BRANCH}
+  #     followtags: true
 
 ---
 kind: pipeline
