@@ -1,9 +1,9 @@
-import React from 'react';
-import image from 'next/image';
+import React from "react";
+import image from "next/image";
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
-import { MenuItem } from '../db/DbTypes';
-import { formatter } from '../utils/Utils';
+import { MenuItem } from "../db/DbTypes";
+import { formatter } from "../utils/Utils";
 
 type MenuItemCardProps = {
   item: MenuItem;
@@ -16,13 +16,12 @@ export function MenuItemCard({ item, onBuy }: MenuItemCardProps) {
       <Card.Body>
         <Card.Title className="text-nowrap text-truncate">{item.name}</Card.Title>
         <Card.Text>
-          Some quick example text to build on the card title and make up the bulk of
-          the card&apos;s content.
+          {item.description}
         </Card.Text>
       </Card.Body>
       <Card.Footer className="d-flex align-items-center">
         <span className="flex-fill">{formatter.format(item.price)}</span>
-        <Button variant="outline-primary" onClick={onBuy}>Buy</Button>
+        {onBuy ? (<Button variant="outline-primary" onClick={onBuy}>Buy</Button>) : null}
       </Card.Footer>
     </Card>
   );

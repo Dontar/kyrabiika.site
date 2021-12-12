@@ -1,14 +1,14 @@
-import React from 'react';
-import Link from 'next/link';
-import { Col, Container, Nav, ProgressBar, Row } from 'react-bootstrap';
+import React from "react";
+import Link from "next/link";
+import { Col, Container, Nav, ProgressBar, Row } from "react-bootstrap";
 
-import Layout from '../../lib/comps/Layout';
+import Layout from "../../lib/comps/Layout";
 
-import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
-import { faListAlt } from '@fortawesome/free-regular-svg-icons';
-import { faCheese, faTruck } from '@fortawesome/free-solid-svg-icons';
-import { classes } from '../../lib/utils/Utils';
-import { useOrderContext } from '../../lib/comps/OrderContext';
+import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
+import { faListAlt } from "@fortawesome/free-regular-svg-icons";
+import { faCheese, faTruck } from "@fortawesome/free-solid-svg-icons";
+import { classes } from "../../lib/utils/Utils";
+import { useOrderContext } from "../../lib/comps/OrderContext";
 
 // const formatter = new Intl.NumberFormat('bg-BG', { style: 'currency', currency: 'BGN' });
 
@@ -29,19 +29,19 @@ export default function OrderProgress() {
         <h2 className="text-center">Delivery</h2>
         <div style={{ height: "8em" }} />
         <Row className="mb-2">
-          <Col className={classes({ 'text-center': true, 'text-muted': order.progress !== 'Processing' })}>
+          <Col className={classes({ "text-center": true, "text-muted": order.progress !== "Processing" })}>
             <div>
               <Icon size="5x" icon={faListAlt} />
             </div>
             Processing
           </Col>
-          <Col className={classes({ 'text-center': true, 'text-muted': order.progress !== 'Preparing' })}>
+          <Col className={classes({ "text-center": true, "text-muted": order.progress !== "Preparing" })}>
             <div>
               <Icon size="5x" icon={faCheese} />
             </div>
             Preparing
           </Col>
-          <Col className={classes({ 'text-center': true, 'text-muted': order.progress !== 'Delivering' })}>
+          <Col className={classes({ "text-center": true, "text-muted": order.progress !== "Delivering" })}>
             <div>
               <Icon size="5x" icon={faTruck} />
             </div>

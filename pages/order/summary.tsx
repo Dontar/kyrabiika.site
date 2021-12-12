@@ -1,14 +1,14 @@
-import React, { useState } from 'react';
-import { Button, Card, Col, Container, ListGroup, Modal, Nav, OverlayTrigger, Row } from 'react-bootstrap';
+import React, { useState } from "react";
+import { Button, Card, Col, Container, ListGroup, Modal, Nav, OverlayTrigger, Row } from "react-bootstrap";
 
-import Layout from '../../lib/comps/Layout';
-import Link from 'next/link';
+import Layout from "../../lib/comps/Layout";
+import Link from "next/link";
 
-import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
-import { faGreaterThan, faCalendar, faClock } from '@fortawesome/free-solid-svg-icons';
-import { OrderItemRow } from '../../lib/comps/OrderItemRow';
-import { useOrderContext } from '../../lib/comps/OrderContext';
-import { formatter } from '../../lib/utils/Utils';
+import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
+import { faGreaterThan, faCalendar, faClock } from "@fortawesome/free-solid-svg-icons";
+import { OrderItemRow } from "../../lib/comps/OrderItemRow";
+import { useOrderContext } from "../../lib/comps/OrderContext";
+import { formatter } from "../../lib/utils/Utils";
 
 export default function OrderSummary() {
   const [menuShowed, setShowMenu] = useState(false);

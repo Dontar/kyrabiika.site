@@ -1,44 +1,49 @@
-import React, { Fragment } from 'react';
+import React, { Fragment } from "react";
 
-import Col from 'react-bootstrap/Col';
-import Container from 'react-bootstrap/Container';
-import Navbar from 'react-bootstrap/Navbar';
-import Row from 'react-bootstrap/Row';
-import Nav from 'react-bootstrap/Nav';
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import Navbar from "react-bootstrap/Navbar";
+import Row from "react-bootstrap/Row";
+import Nav from "react-bootstrap/Nav";
 
-import Link from 'next/link';
-import { useRouter } from 'next/router'
-import fetchJson from '../fetchJson'
-import useUser from '../useUser'
+import Link from "next/link";
+import { useRouter } from "next/router"
+import fetchJson from "../fetchJson"
+import useUser from "../useUser"
+
+import useSWR from "swr";
+import { SiteConfig } from "../db/DbTypes";
 
 export interface LayoutProps {
   navLinks: React.ReactNode;
 }
 
-export default function Layout(props: React.PropsWithChildren<LayoutProps>) {
+export default function Layout({ navLinks, children }: React.PropsWithChildren<LayoutProps>) {
+  const { data, error } = useSWR<SiteConfig>("/api/config", url => fetch(url).then(r => r.json()));
+
   const { user, mutateUser } = useUser()
   const router = useRouter()
 
   const logOut = async (e: any) => {
     e.preventDefault()
     mutateUser(
-      await fetchJson('/api/logout'),
+      await fetchJson("/api/logout"),
       false
     )
-    router.push('/login')
+    router.push("/login")
   }
 
   return (
     <Fragment>
-      <Navbar bg="light" expand="md" sticky="top" className="border-bottom">
-        <Navbar.Brand href="/">
-          <span>Kyrabiika</span>
-        </Navbar.Brand>
-        <Navbar.Toggle aria-controls="basic-navbar-nav" />
-        <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
-          {props.navLinks}
-
-          <Nav>
+      <Navbar bg="light" expand="md" sticky="top">
+        <Container fluid>
+          <Navbar.Brand href="/">
+            <span>Kyrabiika</span>
+          </Navbar.Brand>
+          <Navbar.Toggle aria-controls="basic-navbar-nav" />
+          <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
+            {navLinks}
+            <Nav>
             {user?.isLoggedIn === false && (
               <Link href="/login" passHref={true}>
                 <Nav.Link>Login / Register</Nav.Link>
@@ -55,39 +60,27 @@ export default function Layout(props: React.PropsWithChildren<LayoutProps>) {
               </>
             )}
           </Nav>
-        </Navbar.Collapse>
+
+          </Navbar.Collapse>
+        </Container>
       </Navbar>
-      {props.children}
+      {children}
       <Container id="contacts" fluid className="bg-secondary bg-gradient mt-5 text-light">
         <Container className="py-5">
           <Row>
             <Col sm>
               <p>
-                Печем,<br />
-                нещо ново за теб!<br />
-                Регистрирайте се за нашия бюлетин, за да получавате най-новите известия,продукти и промоции!<br />
-                Въведете вашия мейл<br />
-                * Не се безпокойте, никога няма да изпратим СПАМ<br />
+                {data?.small_promo.split("\n").join("<br />")}
               </p>
             </Col>
             <Col sm>
               <p>
-                Logo<br />
-                Христо Белчев 1, 1000, София, България<br />
-                Телефон: +359 884 782 976<br />
-                Ангел Кънчев 37, 1000, София, България<br />
-                Телефон: +359 885 886 190<br />
-                Мейл: feedback@jovan.bg<br />
+                {data?.address.split("\n").join("<br />")}
               </p>
             </Col>
             <Col sm>
               <p>
-                Работно време<br />
-                Понеделник: - Събота: 08:00 - 20:00<br />
-                Неделя: Затворено<br />
-                Полезно<br />
-                Общи Условия<br />
-                Политика за Поверителност
+                {data?.addr_worktime.split("\n").join("<br />")}
               </p>
             </Col>
           </Row>

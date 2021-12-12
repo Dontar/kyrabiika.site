@@ -19,6 +19,7 @@ export interface MenuItem extends MongoId {
   name: string;
   category: string;
   price: number;
+  description: string;
 }
 
 export interface OrderItem {
@@ -27,11 +28,11 @@ export interface OrderItem {
 }
 
 export type OrderProgress =
-  'Confirmed' |
-  'Processing' |
-  'Preparing' |
-  'Delivering' |
-  'Delivered';
+  "Confirmed" |
+  "Processing" |
+  "Preparing" |
+  "Delivering" |
+  "Delivered";
 
 export interface Order extends MongoId {
   items: OrderItem[];
@@ -40,6 +41,10 @@ export interface Order extends MongoId {
   user: User;
 }
 
-export interface PromotionItem extends MongoId {
-  item: MenuItem;
+export interface SiteConfig extends MongoId {
+  mission_statement: string;
+  address: string;
+  small_promo: string;
+  addr_worktime: string;
+  promo_items: MenuItem[];
 }

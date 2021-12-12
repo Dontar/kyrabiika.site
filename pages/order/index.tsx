@@ -1,16 +1,16 @@
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { Button, Col, Container, ListGroup, Nav, Row } from 'react-bootstrap';
+import React, { useState } from "react";
+import Link from "next/link";
+import { Button, Col, Container, ListGroup, Nav, Row } from "react-bootstrap";
 
-import Layout from '../../lib/comps/Layout';
+import Layout from "../../lib/comps/Layout";
 
-import { OrderItemRow } from '../../lib/comps/OrderItemRow';
-import { GetStaticProps } from 'next';
-import { connect, MenuItemModel } from '../../lib/db/Connection';
-import { MenuItem } from '../../lib/db/DbTypes';
-import { classes, formatter } from '../../lib/utils/Utils';
-import { OrderState, useOrderContext } from '../../lib/comps/OrderContext';
-import { MenuItemCard } from '../../lib/comps/MenuItemCard';
+import { OrderItemRow } from "../../lib/comps/OrderItemRow";
+import { GetStaticProps } from "next";
+import { connect, MenuItemModel } from "../../lib/db/Connection";
+import { MenuItem } from "../../lib/db/DbTypes";
+import { classes, convert, formatter } from "../../lib/utils/Utils";
+import { OrderState, useOrderContext } from "../../lib/comps/OrderContext";
+import { MenuItemCard } from "../../lib/comps/MenuItemCard";
 
 type OrderProps = {
   categories: string[];
@@ -19,25 +19,21 @@ type OrderProps = {
 
 export const getStaticProps: GetStaticProps<OrderProps> = async (_context) => {
   await connect();
-  const items = await MenuItemModel.find();
+  const data: MenuItem[] = (await MenuItemModel.find().lean({ autopopulate: true })).map(convert);
   return {
     props: {
-      categories: Array.from(items.reduce<Set<string>>((result, item) => {
+      categories: Array.from(data.reduce((result, item) => {
         result.add(item.category);
         return result;
-      }, new Set())),
-      data: items.map(i => {
-        const result = i.toObject();
-        result._id = result._id.toString();
-        return result;
-      })
+      }, new Set<string>())),
+      data
     },
     revalidate: 30
   }
 }
 
 export default function Order({ categories, data }: OrderProps) {
-  const [selectedCat, setSelected] = useState('Всички');
+  const [selectedCat, setSelected] = useState("Всички");
   const order = useOrderContext();
 
   // const [orderList, setOrderList] = useState<OrderItem[]>([]);
@@ -56,7 +52,7 @@ export default function Order({ categories, data }: OrderProps) {
           </Col>
           <Col>
             <Row>
-              {data.filter(i => i.category == selectedCat || selectedCat == 'Всички').map((item, idx) => (
+              {data.filter(i => i.category == selectedCat || selectedCat == "Всички").map((item, idx) => (
                 <Col className="mb-3" lg={4} md={6} key={idx}>
                   <MenuItemCard item={item} onBuy={() => order.addItem(item)} />
                 </Col>
@@ -103,7 +99,7 @@ type CategoriesListProps = {
 }
 
 function CategoriesList({ categories, onSelected }: CategoriesListProps): JSX.Element {
-  const [selected, setSelected] = useState('Всички');
+  const [selected, setSelected] = useState("Всички");
   return (
     <ListGroup className="position-sticky" style={{ top: "4em" }} variant="flush">
       {["Всички", ...categories].map(((cat, idx) => (

@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect, useRef } from "react";
 
 import Button from "react-bootstrap/Button";
 import Carousel from "react-bootstrap/Carousel";
@@ -7,37 +7,36 @@ import Container from "react-bootstrap/Container";
 import Nav from "react-bootstrap/Nav";
 import Row from "react-bootstrap/Row";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import type { GetStaticProps } from 'next';
+import Link from "next/link";
+import Image from "next/image";
+import type { GetStaticProps } from "next";
 
-import Layout from '../lib/comps/Layout';
-import { connect, MenuItemModel } from '../lib/db/Connection';
-import { MenuItem } from '../lib/db/DbTypes';
-import { MenuItemCard } from '../lib/comps/MenuItemCard';
+import Layout from "../lib/comps/Layout";
+import { connect, SiteConfigModel } from "../lib/db/Connection";
+import { MenuItem, SiteConfig } from "../lib/db/DbTypes";
+import { MenuItemCard } from "../lib/comps/MenuItemCard";
+import { convert } from "../lib/utils/Utils";
 
 type HomeProps = {
   menuItems: MenuItem[];
+  config: SiteConfig | null;
 }
 
 export const getStaticProps: GetStaticProps<HomeProps> = async (_context) => {
   await connect();
 
-  const items = await MenuItemModel.find();
+  const config: SiteConfig = convert(await SiteConfigModel.findOne().lean({ autopopulate: true }));
+
   return {
     props: {
-      menuItems: items.map(i => {
-        const result = i.toObject();
-        result._id = result._id.toString();
-        return result;
-      })
+      menuItems: config.promo_items,
+      config
     },
     revalidate: 30
   }
 }
 
-export default function Home({ menuItems }: HomeProps) {
-
+export default function Home({ menuItems, config }: HomeProps) {
   return (
     <Layout
       navLinks={
@@ -81,7 +80,7 @@ export default function Home({ menuItems }: HomeProps) {
         </Row>
         <div className="text-center mt-5">
           <Link href="/order" passHref>
-            <Button variant="success" style={{ width: '20em' }}>Order</Button>
+            <Button variant="success" style={{ width: "20em" }}>Order</Button>
           </Link>
         </div>
       </Container>
@@ -89,24 +88,9 @@ export default function Home({ menuItems }: HomeProps) {
         <h1 className="text-center">Born by acident.</h1>
         <hr />
         <h5 className="text-center">Who are we?</h5>
-        <Row xs={1} md={2}>
-          <Col >
-            <p>
-              Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-              blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-              blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-              blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-            </p>
-          </Col>
-          <Col >
-            <p>
-              Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-              blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-              blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-              blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-            </p>
-          </Col>
-        </Row>
+        <p className="mission-statement">
+          {config?.mission_statement}
+        </p>
       </Container>
     </Layout>
   );

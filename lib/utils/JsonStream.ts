@@ -1,15 +1,15 @@
-import { Transform, TransformCallback } from 'stream';
+import { Transform, TransformCallback } from "stream";
 
 export function createJsonStream(params?: { prefix: string; postfix: string; }): NodeJS.ReadWriteStream {
     let prefixSent = false;
     const opts = {
-        prefix: '[',
-        postfix: ']',
+        prefix: "[",
+        postfix: "]",
         ...(params ?? {}),
     };
     return new Transform({
         writableObjectMode: true,
-        encoding: 'utf8',
+        encoding: "utf8",
         transform(chunk: unknown, _encoding: BufferEncoding, callback: TransformCallback) {
             try {
                 const data = JSON.stringify(chunk);
@@ -17,21 +17,21 @@ export function createJsonStream(params?: { prefix: string; postfix: string; }):
                     callback(undefined, opts.prefix + data);
                     prefixSent = true;
                 } else {
-                    callback(undefined, ', ' + data);
+                    callback(undefined, ", " + data);
                 }
             } catch (e: any) {
                 callback(e);
             }
         },
         flush(callback: TransformCallback) {
-            let result = '';
+            let result = "";
             // If we have empty source stream i.e we did not sent anything
             if (!prefixSent) {
                 try {
                     JSON.parse(opts.prefix + opts.postfix);
                     result += opts.prefix + opts.postfix;
                 } catch (e) {
-                    result += opts.prefix + 'null' + opts.postfix;
+                    result += opts.prefix + "null" + opts.postfix;
                 }
             } else {
                 result = opts.postfix;

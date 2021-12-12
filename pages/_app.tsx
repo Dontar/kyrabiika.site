@@ -1,14 +1,19 @@
-import '../styles/global.scss'
-import type { AppProps } from 'next/app'
-import reportWebVitals from '../lib/utils/ReportWebVitals';
-import { OrderContext } from '../lib/comps/OrderContext';
+import "../styles/global.scss"
+import "react-image-crop/dist/ReactCrop.css";
+
+import type { AppProps } from "next/app"
+import {SSRProvider} from "@react-aria/ssr";
+import reportWebVitals from "../lib/utils/ReportWebVitals";
+import { OrderContext } from "../lib/comps/OrderContext";
 
 
 function MyApp({ Component, pageProps }: AppProps) {
   return (
-    <OrderContext>
-      <Component {...pageProps} />
-    </OrderContext>
+    <SSRProvider>
+      <OrderContext>
+        <Component {...pageProps} />
+      </OrderContext>
+    </SSRProvider>
   );
 }
 

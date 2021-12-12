@@ -1,10 +1,10 @@
 // Next.js API route support: https://nextjs.org/docs/api-routes/introduction
-import { connect } from 'mongoose';
-import type { NextApiRequest, NextApiResponse } from 'next'
-import { pipeline } from 'stream/promises';
-import { connectionString, MenuItemModel } from '../../lib/db/Connection';
+import { connect } from "mongoose";
+import type { NextApiRequest, NextApiResponse } from "next"
+import { pipeline } from "stream/promises";
+import { connectionString, MenuItemModel } from "../../lib/db/Connection";
 import { MenuItem } from "../../lib/db/DbTypes";
-import { createJsonStream } from '../../lib/utils/JsonStream';
+import { createJsonStream } from "../../lib/utils/JsonStream";
 
 export default async function handler(_req: NextApiRequest, res: NextApiResponse<MenuItem[]>) {
   await connect(connectionString);

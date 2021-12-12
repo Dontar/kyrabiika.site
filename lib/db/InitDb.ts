@@ -1,24 +1,25 @@
-import { connect } from 'mongoose';
-import { connectionString, MenuItemModel } from './Connection';
-
+import { connect } from "mongoose";
+import { connectionString, MenuItemModel, SiteConfigModel } from "./Connection";
+import { MenuItem } from "./DbTypes";
+import initialData from "./initial-data.json";
 
 export async function initDb(): Promise<void> {
   await connect(connectionString);
-  const count = await MenuItemModel.count();
+  let count = await MenuItemModel.countDocuments();
+  let items: MenuItem[];
 
   if (count < 1) {
-    await MenuItemModel.insertMany([
-      { category: 'банички и соленки', name: 'баничка с козе сирене и спанак', price: 1 },
-      { category: 'банички и соленки', name: 'баничка със сирене и подправки', price: 1 },
-      { category: 'курабийки и бисквити', name: 'курабийки', price: 1 },
-      { category: 'мини тарталети и кишове', name: 'тарталети с кленов сироп и орех', price: 1 },
-      { category: 'мини тарталети и кишове', name: 'тарталети с крем маскарпоне', price: 1 },
-      { category: 'мини тарталети и кишове', name: 'тарталети с ментов крем', price: 1 },
-      { category: 'мини тарталети и кишове', name: 'чийзкейк в гнездо с горски плодове', price: 1 },
-      { category: 'мъфини и къпкейкове', name: 'банофи пай', price: 1 },
-      { category: 'мъфини и къпкейкове', name: 'къпкейк с шамфъстък', price: 1 },
-      { category: 'мъфини и къпкейкове', name: 'мъфин с морков', price: 1 },
-      { category: 'торти', name: 'тарт с плодове', price: 1 }
-    ]);
+    items = (await MenuItemModel.insertMany(initialData.items)).slice(0, 6);
+  } else {
+    items = await MenuItemModel.find().limit(6);
+  }
+
+  count = await SiteConfigModel.countDocuments();
+  if (count < 1) {
+    const config = await SiteConfigModel.create({
+      ...initialData.system_config,
+      promo_items: items
+    });
+    await config.save();
   }
 }
