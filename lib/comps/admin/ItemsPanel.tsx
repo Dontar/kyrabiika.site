@@ -138,8 +138,8 @@ function ItemEditModal({ handleClose, item, cats }: ItemEditModalProp) {
 
     // As a blob
     canvas.toBlob((file) => {
-      setCroppedImg(URL.createObjectURL(file));
-    }, "image/png");
+      setCroppedImg(URL.createObjectURL(file as Blob));
+    }, "image/jpg");
   }
 
   return (

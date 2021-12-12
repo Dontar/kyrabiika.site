@@ -37,7 +37,9 @@ export default function rest<T>() {
       use(handler: Handler<any>) {
         middleware.add((req, res) => {
           return new Promise((resolve, reject) => {
+            const autoResolve = setTimeout(() => resolve(undefined), 30000);
             handler(req, res, result => {
+              clearTimeout(autoResolve);
               if (result instanceof Error) {
                 return reject(result)
               }
