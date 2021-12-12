@@ -42,9 +42,6 @@ export default function Home({ menuItems }: HomeProps) {
           <Link href="/order" passHref={true}>
             <Nav.Link>Order</Nav.Link>
           </Link>
-          <Link href="/admin" passHref={true}>
-            <Nav.Link>Admin</Nav.Link>
-          </Link>
         </Nav>
       }
     >
