@@ -1,13 +1,15 @@
 import React from "react";
+
 import Badge from "react-bootstrap/Badge";
 import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
+import Stack from "react-bootstrap/Stack";
+
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
-import { faCircleXmark } from "@fortawesome/free-regular-svg-icons";
+import { faCircleXmark } from "@fortawesome/free-regular-svg-icons/faCircleXmark";
 import Image from "next/image";
 
 import { OrderItem } from "../db/DbTypes";
-import { Stack } from "react-bootstrap";
 
 const formatter = new Intl.NumberFormat("bg-BG", { style: "currency", currency: "BGN" });
 

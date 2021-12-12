@@ -35,11 +35,11 @@ export function ItemsPanel() {
     if (res.ok) {
       mutate();
     }
-  }
+  };
 
   const showModal = (item?: Partial<MenuItem>) => () => {
     setItem(item);
-  }
+  };
 
   useEffect(() => {
     const c = items?.reduce((a, i) => (a.add(i.category), a), new Set<string>());
@@ -112,7 +112,7 @@ function ItemEditModal({ handleClose, item, cats }: ItemEditModalProp) {
     return new Promise<HTMLImageElement>((resolve) => {
       const img = document.createElement("img");
       img.src = imgBlob;
-      img.onload = () => resolve(img)
+      img.onload = () => resolve(img);
     });
   }
 
@@ -140,7 +140,7 @@ function ItemEditModal({ handleClose, item, cats }: ItemEditModalProp) {
     canvas.toBlob((file) => {
       setCroppedImg(URL.createObjectURL(file as Blob));
     }, "image/jpg");
-  }
+  };
 
   return (
     <Modal show={!!item} onHide={handleClose} fullscreen="md-down" scrollable={true} size="xl">

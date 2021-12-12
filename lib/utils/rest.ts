@@ -41,7 +41,7 @@ export default function rest<T>() {
             handler(req, res, result => {
               clearTimeout(autoResolve);
               if (result instanceof Error) {
-                return reject(result)
+                return reject(result);
               }
               return resolve(result);
             });

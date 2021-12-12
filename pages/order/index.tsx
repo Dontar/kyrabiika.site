@@ -1,11 +1,18 @@
 import React, { useState } from "react";
+
 import Link from "next/link";
-import { Button, Col, Container, ListGroup, Nav, Row } from "react-bootstrap";
+import { GetStaticProps } from "next";
+
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import ListGroup from "react-bootstrap/ListGroup";
+import Nav from "react-bootstrap/Nav";
+import Row from "react-bootstrap/Row";
+
 
 import Layout from "../../lib/comps/Layout";
-
 import { OrderItemRow } from "../../lib/comps/OrderItemRow";
-import { GetStaticProps } from "next";
 import { connect, MenuItemModel } from "../../lib/db/Connection";
 import { MenuItem } from "../../lib/db/DbTypes";
 import { classes, convert, formatter } from "../../lib/utils/Utils";
@@ -29,8 +36,8 @@ export const getStaticProps: GetStaticProps<OrderProps> = async (_context) => {
       data
     },
     revalidate: 30
-  }
-}
+  };
+};
 
 export default function Order({ categories, data }: OrderProps) {
   const [selectedCat, setSelected] = useState("Всички");

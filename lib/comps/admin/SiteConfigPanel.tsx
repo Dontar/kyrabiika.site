@@ -54,7 +54,7 @@ export function SiteConfigPanel() {
         throw new Error(`Error: ${res.status} - ${res.statusText}`);
       }
     } catch (e) {
-      console.error(e)
+      console.error(e);
     }
     setSaving(false);
     setDirty(false);
@@ -64,7 +64,7 @@ export function SiteConfigPanel() {
     config!.promo_items.splice(idx, 1);
     mutate({ ...config! });
     setDirty(true);
-  }
+  };
 
   return (
     <Container>
@@ -122,7 +122,7 @@ function SelectPromoItemsModal() {
     mutateConfig({ ...config!, promo_items: getSelectedItems() });
     setDirty(true);
     toggleModal();
-  }
+  };
 
   return (
     <Modal show={show} onHide={toggleModal} fullscreen="sm-down" scrollable={true}>

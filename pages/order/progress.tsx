@@ -1,12 +1,18 @@
-import React from "react";
+// import React from "react";
 import Link from "next/link";
-import { Col, Container, Nav, ProgressBar, Row } from "react-bootstrap";
+
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import Nav from "react-bootstrap/Nav";
+import ProgressBar from "react-bootstrap/ProgressBar";
+import Row from "react-bootstrap/Row";
 
 import Layout from "../../lib/comps/Layout";
 
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
-import { faListAlt } from "@fortawesome/free-regular-svg-icons";
-import { faCheese, faTruck } from "@fortawesome/free-solid-svg-icons";
+import { faListAlt } from "@fortawesome/free-regular-svg-icons/faListAlt";
+import { faTruck } from "@fortawesome/free-solid-svg-icons/faTruck";
+import { faCheese } from "@fortawesome/free-solid-svg-icons/faCheese";
 import { classes } from "../../lib/utils/Utils";
 import { useOrderContext } from "../../lib/comps/OrderContext";
 

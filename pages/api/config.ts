@@ -1,4 +1,4 @@
-import { SiteConfigModel } from "../../lib/db/Connection"
+import { SiteConfigModel } from "../../lib/db/Connection";
 import { SiteConfig } from "../../lib/db/DbTypes";
 import rest from "../../lib/utils/rest";
 

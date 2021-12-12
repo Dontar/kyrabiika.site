@@ -7,9 +7,9 @@ import Row from "react-bootstrap/Row";
 import Nav from "react-bootstrap/Nav";
 
 import Link from "next/link";
-import { useRouter } from "next/router"
-import fetchJson from "../fetchJson"
-import useUser from "../useUser"
+import { useRouter } from "next/router";
+import fetchJson from "../fetchJson";
+import useUser from "../useUser";
 
 import useSWR from "swr";
 import { SiteConfig } from "../db/DbTypes";
@@ -21,17 +21,17 @@ export interface LayoutProps {
 export default function Layout({ navLinks, children }: React.PropsWithChildren<LayoutProps>) {
   const { data, error } = useSWR<SiteConfig>("/api/config", url => fetch(url).then(r => r.json()));
 
-  const { user, mutateUser } = useUser()
-  const router = useRouter()
+  const { user, mutateUser } = useUser();
+  const router = useRouter();
 
   const logOut = async (e: any) => {
-    e.preventDefault()
+    e.preventDefault();
     mutateUser(
       await fetchJson("/api/logout"),
       false
-    )
-    router.push("/login")
-  }
+    );
+    router.push("/login");
+  };
 
   return (
     <Fragment>

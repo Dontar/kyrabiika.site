@@ -12,13 +12,13 @@ import { SiteConfigPanel } from "../lib/comps/admin/SiteConfigPanel";
 import { ItemsPanel } from "../lib/comps/admin/ItemsPanel";
 import { UsersPanel } from "../lib/comps/admin/UsersPanel";
 import { SiteConfigContext } from "../lib/comps/admin/SiteConfigContext";
-import useUser from '../lib/useUser'
+import useUser from "../lib/useUser";
 
 export default function Admin() {
 
   const { user } = useUser({
-    redirectTo: '/login',
-  })
+    redirectTo: "/login",
+  });
 
   return (
     <Layout navLinks={

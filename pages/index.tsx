@@ -33,8 +33,8 @@ export const getStaticProps: GetStaticProps<HomeProps> = async (_context) => {
       config
     },
     revalidate: 30
-  }
-}
+  };
+};
 
 export default function Home({ menuItems, config }: HomeProps) {
   return (

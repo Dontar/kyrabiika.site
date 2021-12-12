@@ -1,7 +1,7 @@
 import { model, Schema, models, Model, connect as mnConnect, plugin } from "mongoose";
 import { MenuItem, Order, User, SiteConfig } from "./DbTypes";
 import { initDb } from "./InitDb";
-import autopopulate from "mongoose-autopopulate"
+import autopopulate from "mongoose-autopopulate";
 
 plugin(autopopulate);
 
@@ -63,7 +63,7 @@ export const connectionString = process.env.DB_SERVER ?? "mongodb://root:example
 let cached = (global as any).mongoose;
 
 if (!cached) {
-  cached = (global as any).mongoose = { conn: null, promise: null }
+  cached = (global as any).mongoose = { conn: null, promise: null };
 }
 
 export async function connect() {
@@ -74,14 +74,14 @@ export async function connect() {
   if (!cached.promise) {
     const opts = {
       bufferCommands: false,
-    }
+    };
 
     cached.promise = mnConnect(connectionString).then((mongoose) => {
-      return mongoose
-    })
+      return mongoose;
+    });
   }
-  cached.conn = await cached.promise
+  cached.conn = await cached.promise;
   await initDb();
 
-  return cached.conn
+  return cached.conn;
 }
