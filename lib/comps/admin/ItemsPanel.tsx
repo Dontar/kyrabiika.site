@@ -1,34 +1,97 @@
+import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
 import useSWR from "swr";
 
 import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import ListGroup from "react-bootstrap/ListGroup";
+import Stack from "react-bootstrap/Stack";
+import Modal from "react-bootstrap/Modal";
+import Form from "react-bootstrap/Form";
+import Col from "react-bootstrap/Col";
+import Row from "react-bootstrap/Row";
 
-import { OrderItemRow } from "../OrderItemRow";
+import Image from "next/image";
+import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
+import { faCircleXmark } from "@fortawesome/free-regular-svg-icons/faCircleXmark";
+import { faEdit } from "@fortawesome/free-regular-svg-icons/faEdit";
+import { faPlusSquare } from "@fortawesome/free-regular-svg-icons/faPlusSquare";
+
+import Cropper from "react-easy-crop";
+
 import { MenuItem } from "../../db/DbTypes";
 import { TabHeader } from "./TabHeader";
+import { Area, Point } from "react-easy-crop/types";
 
 export function ItemsPanel() {
-  const { data: items, error: itemsError } = useSWR<MenuItem[]>("/api/menu", url => fetch(url).then(r => r.json()));
+  const [item, setItem] = useState<Partial<MenuItem>>();
+  const [categories, setCats] = useState<string[]>([]);
+  const {
+    data: items, error: itemsError, mutate
+  } = useSWR<MenuItem[]>("/api/menu", url => fetch(url).then(r => r.json()));
+
+  const onRemove = (idx: number) => async () => {
+    const item = items![idx];
+    const res = await fetch(`/api/menu/${item._id}`, { method: "DELETE" });
+    if (res.ok) {
+      mutate();
+    }
+  }
+
+  const showModal = (item?: Partial<MenuItem>) => () => {
+    setItem(item);
+  }
+
+  useEffect(() => {
+    const c = items?.reduce((a, i) => (a.add(i.category), a), new Set<string>());
+    c && setCats(Array.from(c!.values()));
+  }, [items]);
+
+
   return (
     <Container>
-      <TabHeader title="Items" button={<Button>Add</Button>} />
+      <TabHeader title="Items" button={
+        <Button onClick={showModal({})}>
+          <Icon icon={faPlusSquare} />
+          <span className="ms-1">Add</span>
+        </Button>
+      } />
       <ListGroup>
         {items?.map((item, idx) => (
-          <OrderItemRow key={idx} item={{ item, count: 1 }} />
+          <ListGroup.Item as={Stack} direction="horizontal" gap={3} key={idx}>
+            <Image src={`/api/images/${item.name}/thumb.jpg`} alt="" className="rounded align-self-center" width={100} height={80} />
+            <Stack className="flex-fill">
+              <strong>{item.name}</strong>
+              <small className="text-muted">{item.description}</small>
+            </Stack>
+
+            <Button variant="outline-success" size="sm" className="text-nowrap" onClick={showModal(item)}>
+              <Icon icon={faEdit} />
+              <span className="ms-1">Edit</span>
+            </Button>
+            <Button variant="outline-danger" size="sm" onClick={onRemove(idx)}>
+              <Icon icon={faCircleXmark} />
+            </Button>
+
+          </ListGroup.Item>
         ))}
       </ListGroup>
+      <ItemEditModal handleClose={showModal()} item={item as MenuItem} cats={categories} />
     </Container>
   );
 }
 
-/*
-function ItemEditModal() {
-  const imgRef = useRef<HTMLImageElement>();
-  const previewCanvasRef = useRef<HTMLCanvasElement>();
+interface ItemEditModalProp {
+  handleClose: () => void;
+  item?: MenuItem;
+  cats: string[];
+}
+
+function ItemEditModal({ handleClose, item, cats }: ItemEditModalProp) {
+  const [zoom, setZoom] = useState<number>(1);
+  const [menuItem, setItem] = useState<MenuItem>();
   const [upImg, setUpImg] = useState<string>();
-  const [crop, setCrop] = useState<Crop>({ unit: '%', width: 30, aspect: 16 / 9 } as Crop);
-  const [completedCrop, setCompletedCrop] = useState<Crop>();
+  const [croppedImg, setCroppedImg] = useState<string>();
+  const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
 
   function onSelectFile(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files.length > 0) {
@@ -38,64 +101,113 @@ function ItemEditModal() {
     }
   };
 
-  const onLoad = useCallback((img: HTMLImageElement) => {
-    imgRef.current = img;
-  }, []);
+  const onControlChange = (prop: keyof MenuItem) => (e: ChangeEvent<HTMLInputElement>) => setItem({ ...menuItem!, [prop]: e.target.value });
 
   useEffect(() => {
-    if (!completedCrop || !previewCanvasRef.current || !imgRef.current) {
-      return;
-    }
+    setItem(item);
+    item && setUpImg(`/api/images/${item!.name}/thumb.jpg`);
+  }, [item]);
 
-    const image = imgRef.current;
-    const canvas = previewCanvasRef.current;
-    const crop = completedCrop;
+  async function createImage(imgBlob: string) {
+    return new Promise<HTMLImageElement>((resolve) => {
+      const img = document.createElement("img");
+      img.src = imgBlob;
+      img.onload = () => resolve(img)
+    });
+  }
 
-    const scaleX = image.naturalWidth / image.width;
-    const scaleY = image.naturalHeight / image.height;
-    const ctx = canvas.getContext('2d');
-    const pixelRatio = window.devicePixelRatio;
+  const getCroppedImg = async (_croppedArea: Area, croppedAreaPixels: Area) => {
+    const image = await createImage(upImg!);
+    const canvas = document.createElement("canvas");
+    const ctx = canvas.getContext("2d");
 
-    canvas.width = crop.width * pixelRatio * scaleX;
-    canvas.height = crop.height * pixelRatio * scaleY;
-
-    ctx!.setTransform(pixelRatio, 0, 0, pixelRatio, 0, 0);
-    ctx!.imageSmoothingQuality = 'high';
+    canvas.width = 500;
+    canvas.height = 400;
 
     ctx!.drawImage(
       image,
-      crop.x * scaleX,
-      crop.y * scaleY,
-      crop.width * scaleX,
-      crop.height * scaleY,
+      croppedAreaPixels.x,
+      croppedAreaPixels.y,
+      croppedAreaPixels.width,
+      croppedAreaPixels.height,
       0,
       0,
-      crop.width * scaleX,
-      crop.height * scaleY
+      500,
+      400
     );
-  }, [completedCrop]);
+
+    // As a blob
+    canvas.toBlob((file) => {
+      setCroppedImg(URL.createObjectURL(file));
+    }, "image/png");
+  }
 
   return (
-    <Modal show={show} onHide={handleClose}>
+    <Modal show={!!item} onHide={handleClose} fullscreen="md-down" scrollable={true} size="xl">
       <Modal.Header closeButton>
         <Modal.Title>Modal heading</Modal.Title>
       </Modal.Header>
-      <Modal.Body>
-        <input type="file" accept="image/*" onChange={onSelectFile} />
-        <ReactCrop
-          src={upImg!}
-          onImageLoaded={onLoad}
-          crop={crop}
-          onChange={c => setCrop(c)}
-          onComplete={c => setCompletedCrop(c)}
-          locked={true}
-        />
+      <Modal.Body as={Row} xs={1} lg={2} xl={3}>
+
+        <Col xl={8} as={Stack}>
+          <div className="position-relative flex-fill" style={{ minHeight: "20rem" }}>
+            <Cropper
+              image={upImg!}
+              crop={crop}
+              zoom={zoom}
+              aspect={4 / 3}
+              onCropChange={setCrop}
+              onCropComplete={getCroppedImg}
+              onZoomChange={setZoom}
+              maxZoom={3}
+              zoomSpeed={3 / 12}
+              showGrid={false}
+            />
+          </div>
+          <Form.Range value={zoom} onChange={e => setZoom(Number(e.target.value))} min="1" max="3" step={3 / 12} />
+        </Col>
+
+        <Col>
+          <Form.Group controlId="formFile" className="mb-3">
+            <Form.Label>Select product image</Form.Label>
+            <Form.Control type="file" accept="image/*" onChange={onSelectFile} />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Name</Form.Label>
+            <Form.Control type="text" placeholder="Enter name..." value={menuItem?.name} onChange={onControlChange("name")} />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Description</Form.Label>
+            <Form.Control as="textarea" style={{ minHeight: "10rem" }} placeholder="Enter description..."
+              value={menuItem?.description} onChange={onControlChange("description")}
+            />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Price</Form.Label>
+            <Form.Control type="number" placeholder="Enter price..." value={menuItem?.price} onChange={onControlChange("price")} />
+          </Form.Group>
+
+          <Form.Group className="mb-3">
+            <Form.Label>Category</Form.Label>
+            <datalist id="item-edit-modal-categories">
+              {cats.map((value, key) => (<option value={value} key={key} />))}
+            </datalist>
+            <Form.Control type="search" placeholder="Enter category..."
+              list="item-edit-modal-categories" value={menuItem?.category}
+              onChange={onControlChange("category")}
+            />
+          </Form.Group>
+
+        </Col>
+
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>Close</Button>
-        <Button variant="primary" onClick={handleClose}>Save Changes</Button>
+        <Button variant="primary" onClick={handleClose}>Save</Button>
       </Modal.Footer>
     </Modal>
   );
 }
-*/

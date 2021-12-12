@@ -9,7 +9,7 @@ export interface User extends MongoId {
   lastName: string;
   mail: string;
   password: string;
-  admin?: boolean;
+  roles?: string[];
   phone?: string;
   address?: string;
   orders: Order[];

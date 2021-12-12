@@ -39,9 +39,9 @@ export const UserModel: Model<User> = models.User || model("User", new Schema({
   lastName: String,
   mail: { type: String, required: true, unique: true },
   phone: String,
-  address: String,
+  address: [{ type: String }],
   orders: [{ type: Schema.Types.ObjectId, ref: "Order", autopopulate: true }],
-  admin: Boolean,
+  roles: [{ type: String, required: true, default: ["User"] }],
   password: { type: String, required: true }
 }));
 

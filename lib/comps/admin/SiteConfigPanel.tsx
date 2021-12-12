@@ -53,7 +53,7 @@ export function SiteConfigPanel() {
       if (!res.ok) {
         throw new Error(`Error: ${res.status} - ${res.statusText}`);
       }
-    } catch(e) {
+    } catch (e) {
       console.error(e)
     }
     setSaving(false);
@@ -125,26 +125,28 @@ function SelectPromoItemsModal() {
   }
 
   return (
-    <Modal show={show} onHide={toggleModal} fullscreen="sm-down">
+    <Modal show={show} onHide={toggleModal} fullscreen="sm-down" scrollable={true}>
 
       <Modal.Header closeButton>
         <Modal.Title>Select items...</Modal.Title>
       </Modal.Header>
 
-      <ListGroup variant="flush" className="overflow-auto mh-vh-75">
-        {items?.map((item, idx) => (
-          <Form.Group className="hstack gap-3" controlId={`check-${idx}`} as={ListGroup.Item} key={idx}>
-            <Stack as={Form.Label} direction="horizontal" gap={3}>
-              <Image src={`/api/images/${item.name}/thumb.jpg`} alt="" className="rounded align-self-center" width={100} height={80} />
-              <Stack>
-                <strong>{item.name}</strong>
-                <small className="text-muted">{item.description}</small>
+      <Modal.Body className="p-0">
+        <ListGroup variant="flush"/*  className="overflow-auto mh-vh-75" */>
+          {items?.map((item, idx) => (
+            <Form.Group className="hstack gap-3" controlId={`check-${idx}`} as={ListGroup.Item} key={idx}>
+              <Stack as={Form.Label} direction="horizontal" gap={3}>
+                <Image src={`/api/images/${item.name}/thumb.jpg`} alt="" className="rounded align-self-center" width={100} height={80} />
+                <Stack>
+                  <strong>{item.name}</strong>
+                  <small className="text-muted">{item.description}</small>
+                </Stack>
               </Stack>
-            </Stack>
-            <Form.Check type="checkbox" checked={item.selected} onChange={e => (item.selected = !item.selected, mutate([...items]))} />
-          </Form.Group>
-        ))}
-      </ListGroup>
+              <Form.Check type="checkbox" checked={item.selected} onChange={e => (item.selected = !item.selected, mutate([...items]))} />
+            </Form.Group>
+          ))}
+        </ListGroup>
+      </Modal.Body>
 
       <Modal.Footer>
         <Button variant="secondary" onClick={toggleModal}>

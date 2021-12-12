@@ -1,25 +1,20 @@
-import { connect } from "mongoose";
-import { connectionString, MenuItemModel, SiteConfigModel } from "./Connection";
-import { MenuItem } from "./DbTypes";
+import { models } from "mongoose";
+import { MenuItemModel, SiteConfigModel } from "./Connection";
 import initialData from "./initial-data.json";
 
 export async function initDb(): Promise<void> {
-  await connect(connectionString);
-  let count = await MenuItemModel.countDocuments();
-  let items: MenuItem[];
 
-  if (count < 1) {
-    items = (await MenuItemModel.insertMany(initialData.items)).slice(0, 6);
-  } else {
-    items = await MenuItemModel.find().limit(6);
-  }
+  Object.entries(initialData).forEach(async ([collection, data]) => {
+    const model = models[collection];
+    const count = await model.countDocuments();
+    if (count === 0) {
+      await model.insertMany(data);
+    }
+  });
 
-  count = await SiteConfigModel.countDocuments();
-  if (count < 1) {
-    const config = await SiteConfigModel.create({
-      ...initialData.system_config,
-      promo_items: items
-    });
+  const config = await SiteConfigModel.findOne();
+  if (config?.promo_items.length === 0) {
+    config.promo_items = await MenuItemModel.find().limit(6);
     await config.save();
   }
 }
