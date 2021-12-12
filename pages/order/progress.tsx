@@ -2,13 +2,13 @@ import React from 'react';
 import Link from 'next/link';
 import { Col, Container, Nav, ProgressBar, Row } from 'react-bootstrap';
 
-import Layout from '../../lib/Layout';
+import Layout from '../../lib/comps/Layout';
 
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import { faListAlt } from '@fortawesome/free-regular-svg-icons';
 import { faCheese, faTruck } from '@fortawesome/free-solid-svg-icons';
-import { classes } from '../../lib/Utils';
-import { useOrderContext } from '../../lib/OrderContext';
+import { classes } from '../../lib/utils/Utils';
+import { useOrderContext } from '../../lib/comps/OrderContext';
 
 // const formatter = new Intl.NumberFormat('bg-BG', { style: 'currency', currency: 'BGN' });
 

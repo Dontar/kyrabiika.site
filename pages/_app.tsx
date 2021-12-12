@@ -1,7 +1,7 @@
 import '../styles/global.scss'
 import type { AppProps } from 'next/app'
-import reportWebVitals from '../lib/ReportWebVitals';
-import { OrderContext } from '../lib/OrderContext';
+import reportWebVitals from '../lib/utils/ReportWebVitals';
+import { OrderContext } from '../lib/comps/OrderContext';
 
 
 function MyApp({ Component, pageProps }: AppProps) {

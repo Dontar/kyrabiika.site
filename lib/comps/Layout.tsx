@@ -1,10 +1,15 @@
 import React, { Fragment } from 'react';
-import { Col, Container, Navbar, Row, Nav } from 'react-bootstrap';
+
+import Col from 'react-bootstrap/Col';
+import Container from 'react-bootstrap/Container';
+import Navbar from 'react-bootstrap/Navbar';
+import Row from 'react-bootstrap/Row';
+import Nav from 'react-bootstrap/Nav';
 
 import Link from 'next/link';
 import { useRouter } from 'next/router'
-import fetchJson from '../lib/fetchJson'
-import useUser from '../lib/useUser'
+import fetchJson from '../fetchJson'
+import useUser from '../useUser'
 
 export interface LayoutProps {
   navLinks: React.ReactNode;

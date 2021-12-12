@@ -1,14 +1,20 @@
 import React from 'react';
-import { Button, Carousel, Col, Container, Nav, Row } from 'react-bootstrap';
 
-import Layout from '../lib/Layout';
+import Button from "react-bootstrap/Button";
+import Carousel from "react-bootstrap/Carousel";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import Nav from "react-bootstrap/Nav";
+import Row from "react-bootstrap/Row";
 
 import Link from 'next/link';
 import Image from 'next/image';
-import { GetStaticProps } from 'next';
-import { connect, MenuItemModel } from '../lib/Connection';
-import { MenuItem } from '../lib/DbTypes';
-import { MenuItemCard } from '../lib/MenuItemCard';
+import type { GetStaticProps } from 'next';
+
+import Layout from '../lib/comps/Layout';
+import { connect, MenuItemModel } from '../lib/db/Connection';
+import { MenuItem } from '../lib/db/DbTypes';
+import { MenuItemCard } from '../lib/comps/MenuItemCard';
 
 type HomeProps = {
   menuItems: MenuItem[];
@@ -25,7 +31,8 @@ export const getStaticProps: GetStaticProps<HomeProps> = async (_context) => {
         result._id = result._id.toString();
         return result;
       })
-    }
+    },
+    revalidate: 30
   }
 }
 

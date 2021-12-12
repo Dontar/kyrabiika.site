@@ -2,15 +2,15 @@ import React, { useState } from 'react';
 import Link from 'next/link';
 import { Button, Col, Container, ListGroup, Nav, Row } from 'react-bootstrap';
 
-import Layout from '../../lib/Layout';
+import Layout from '../../lib/comps/Layout';
 
-import { OrderItemRow } from '../../lib/OrderItemRow';
+import { OrderItemRow } from '../../lib/comps/OrderItemRow';
 import { GetStaticProps } from 'next';
-import { connect, MenuItemModel } from '../../lib/Connection';
-import { MenuItem } from '../../lib/DbTypes';
-import { classes, formatter } from '../../lib/Utils';
-import { OrderState, useOrderContext } from '../../lib/OrderContext';
-import { MenuItemCard } from '../../lib/MenuItemCard';
+import { connect, MenuItemModel } from '../../lib/db/Connection';
+import { MenuItem } from '../../lib/db/DbTypes';
+import { classes, formatter } from '../../lib/utils/Utils';
+import { OrderState, useOrderContext } from '../../lib/comps/OrderContext';
+import { MenuItemCard } from '../../lib/comps/MenuItemCard';
 
 type OrderProps = {
   categories: string[];
@@ -31,7 +31,8 @@ export const getStaticProps: GetStaticProps<OrderProps> = async (_context) => {
         result._id = result._id.toString();
         return result;
       })
-    }
+    },
+    revalidate: 30
   }
 }
 
@@ -56,7 +57,7 @@ export default function Order({ categories, data }: OrderProps) {
           <Col>
             <Row>
               {data.filter(i => i.category == selectedCat || selectedCat == 'Всички').map((item, idx) => (
-                <Col className="mb-3" lg={4} md={6} key={idx} >
+                <Col className="mb-3" lg={4} md={6} key={idx}>
                   <MenuItemCard item={item} onBuy={() => order.addItem(item)} />
                 </Col>
               ))}
@@ -77,11 +78,6 @@ export default function Order({ categories, data }: OrderProps) {
   );
 }
 
-type CategoriesListProps = {
-  categories: string[];
-  onSelected?: (category: string) => void;
-}
-
 function OrderRow({ order }: { order: OrderState }) {
   return (
     <ListGroup.Item className="d-flex bg-light align-items-center">
@@ -99,6 +95,11 @@ function OrderRow({ order }: { order: OrderState }) {
       </div>
     </ListGroup.Item>
   );
+}
+
+type CategoriesListProps = {
+  categories: string[];
+  onSelected?: (category: string) => void;
 }
 
 function CategoriesList({ categories, onSelected }: CategoriesListProps): JSX.Element {

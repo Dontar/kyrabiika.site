@@ -30,7 +30,8 @@ steps:
       DB_SERVER: mongodb://root:example@127.0.0.1:27017/kyrabiika?authSource=admin&readPreference=primary&ssl=false
     commands:
       - apk add --no-cache git libc6-compat
-      - npm install
+      - npm ci
+      - npm run lint
       - npm run build
       # - chmod +x version.sh && ./version.sh
 
@@ -73,7 +74,7 @@ steps:
       DB_SERVER: mongodb://root:example@127.0.0.1:27017/kyrabiika?authSource=admin&readPreference=primary&ssl=false
     commands:
       - apk add --no-cache libc6-compat
-      - npm install
+      - npm ci
       - npm run build
 
   # Build docker image

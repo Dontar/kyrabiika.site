@@ -1,5 +1,5 @@
 import { createContext, PropsWithChildren, ReactNode, useContext, useState } from "react";
-import { MenuItem, Order, OrderItem, OrderProgress, User } from "./DbTypes";
+import { MenuItem, Order, OrderItem, OrderProgress, User } from "../db/DbTypes";
 
 function useOrderState() {
   const [items, setItems] = useState<OrderItem[]>([]);

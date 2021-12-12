@@ -45,7 +45,33 @@ export const PromotionItemModel: Model<PromotionItem> = models.PromotionItem || 
 
 export const connectionString = process.env.DB_SERVER ?? 'mongodb://root:example@db:27017/kyrabiika?authSource=admin&readPreference=primary&ssl=false';
 
+/**
+ * Global is used here to maintain a cached connection across hot reloads
+ * in development. This prevents connections growing exponentially
+ * during API Route usage.
+ */
+let cached = (global as any).mongoose;
+
+if (!cached) {
+  cached = (global as any).mongoose = { conn: null, promise: null }
+}
+
 export async function connect() {
-  await mnConnect(connectionString);
+  if (cached.conn) {
+    return cached.conn;
+  }
+
+  if (!cached.promise) {
+    const opts = {
+      bufferCommands: false,
+    }
+
+    cached.promise = mnConnect(connectionString).then((mongoose) => {
+      return mongoose
+    })
+  }
+  cached.conn = await cached.promise
   await initDb();
+
+  return cached.conn
 }

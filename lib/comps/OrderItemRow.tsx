@@ -1,15 +1,18 @@
 import React from 'react';
-import { Badge, Button, ListGroup } from 'react-bootstrap';
+import Badge from 'react-bootstrap/Badge';
+import Button from 'react-bootstrap/Button';
+import ListGroup from 'react-bootstrap/ListGroup';
 import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
 import { faCircleXmark } from '@fortawesome/free-regular-svg-icons';
 import Image from 'next/image';
-import { OrderItem } from './DbTypes';
+
+import { OrderItem } from '../db/DbTypes';
 
 const formatter = new Intl.NumberFormat('bg-BG', { style: 'currency', currency: 'BGN' });
 
 type OrderItemsListProps = {
   item: OrderItem;
-  onRemove: React.MouseEventHandler<HTMLElement>;
+  onRemove?: React.MouseEventHandler<HTMLElement>;
 };
 
 export function OrderItemRow({ item, onRemove }: OrderItemsListProps): JSX.Element {
@@ -22,7 +25,7 @@ export function OrderItemRow({ item, onRemove }: OrderItemsListProps): JSX.Eleme
         <span>{item.item.name}</span>
       </div>
       <div className="mr-1">
-        <Badge variant="secondary">{`${item.count}x`}</Badge>
+        <Badge bg="secondary">{`${item.count}x`}</Badge>
       </div>
       <span className="mr-2">{formatter.format(item.item.price * item.count)}</span>
       <div>
