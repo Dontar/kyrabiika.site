@@ -23,8 +23,9 @@ import { TabHeader } from "./TabHeader";
 import { Area, Point } from "react-easy-crop/types";
 
 export function ItemsPanel() {
-  const [item, setItem] = useState<Partial<MenuItem>>();
+  const [item, setMenuItem] = useState<Partial<MenuItem>>();
   const [categories, setCats] = useState<string[]>([]);
+  const [modal, setModal] = useState<boolean>(false);
   const {
     data: items, error: itemsError, mutate
   } = useSWR<MenuItem[]>("/api/menu", url => fetch(url).then(r => r.json()));
@@ -38,7 +39,8 @@ export function ItemsPanel() {
   };
 
   const showModal = (item?: Partial<MenuItem>) => () => {
-    setItem(item);
+    setMenuItem(item);
+    setModal((state) => !state);
   };
 
   useEffect(() => {
@@ -50,7 +52,7 @@ export function ItemsPanel() {
   return (
     <Container>
       <TabHeader title="Items" button={
-        <Button onClick={showModal({})}>
+        <Button onClick={showModal()}>
           <Icon icon={faPlusSquare} />
           <span className="ms-1">Add</span>
         </Button>
@@ -75,7 +77,7 @@ export function ItemsPanel() {
           </ListGroup.Item>
         ))}
       </ListGroup>
-      <ItemEditModal handleClose={showModal()} item={item as MenuItem} cats={categories} />
+      <ItemEditModal handleClose={showModal()} item={item as MenuItem} cats={categories} modal={modal} />
     </Container>
   );
 }
@@ -84,28 +86,32 @@ interface ItemEditModalProp {
   handleClose: () => void;
   item?: MenuItem;
   cats: string[];
-}
+  modal?: boolean;
+};
 
-function ItemEditModal({ handleClose, item, cats }: ItemEditModalProp) {
+function ItemEditModal({ handleClose, item, cats, modal }: ItemEditModalProp) {
   const [zoom, setZoom] = useState<number>(1);
-  const [menuItem, setItem] = useState<MenuItem>();
+  const [menuItem, setMenuItem] = useState<MenuItem>();
   const [upImg, setUpImg] = useState<string>();
   const [croppedImg, setCroppedImg] = useState<string>();
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
+  const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area>();
+  const [croppedImage, setCroppedImage] = useState<Blob>();
 
   function onSelectFile(e: ChangeEvent<HTMLInputElement>) {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader();
       reader.onload = () => setUpImg(reader.result as string);
+      console.log(e.target.files[0].name);
       reader.readAsDataURL(e.target.files[0]);
     }
   };
 
-  const onControlChange = (prop: keyof MenuItem) => (e: ChangeEvent<HTMLInputElement>) => setItem({ ...menuItem!, [prop]: e.target.value });
+  const onControlChange = (prop: keyof MenuItem) => (e: ChangeEvent<HTMLInputElement>) => setMenuItem({ ...menuItem!, [prop]: e.target.value });
 
   useEffect(() => {
-    setItem(item);
-    item && setUpImg(`/api/images/${item!.name}/thumb.jpg`);
+    setMenuItem(item);
+    item ? setUpImg(`/api/images/${item!.name}/thumb.jpg`) : setUpImg("");
   }, [item]);
 
   async function createImage(imgBlob: string) {
@@ -143,7 +149,7 @@ function ItemEditModal({ handleClose, item, cats }: ItemEditModalProp) {
   };
 
   return (
-    <Modal show={!!item} onHide={handleClose} fullscreen="md-down" scrollable={true} size="xl">
+    <Modal show={modal} onHide={handleClose} fullscreen="md-down" scrollable={true} size="xl">
       <Modal.Header closeButton>
         <Modal.Title>Modal heading</Modal.Title>
       </Modal.Header>
