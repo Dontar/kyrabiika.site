@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import useSWR from "swr";
 
 import Button from "react-bootstrap/Button";
@@ -90,10 +90,10 @@ function ItemEditModal({ handleClose, item, cats }: ItemEditModalProp) {
   const [zoom, setZoom] = useState<number>(1);
   const [menuItem, setItem] = useState<MenuItem>();
   const [upImg, setUpImg] = useState<string>();
-  const [croppedImg, setCroppedImg] = useState<string>();
+  const [croppedImg, setCroppedImg] = useState<Blob | null>(null);
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
 
-  function onSelectFile(e: ChangeEvent<HTMLInputElement>) {
+  const onSelectFile: ChangeEventHandler<HTMLInputElement> = e => {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader();
       reader.onload = () => setUpImg(reader.result as string);
@@ -105,7 +105,11 @@ function ItemEditModal({ handleClose, item, cats }: ItemEditModalProp) {
 
   useEffect(() => {
     setItem(item);
-    item && setUpImg(`/api/images/${item!.name}/thumb.jpg`);
+    if (item && item.name) {
+      setUpImg(`/api/images/${item.name}/thumb.jpg`);
+    } else {
+      setUpImg(undefined);
+    }
   }, [item]);
 
   async function createImage(imgBlob: string) {
@@ -137,9 +141,34 @@ function ItemEditModal({ handleClose, item, cats }: ItemEditModalProp) {
     );
 
     // As a blob
-    canvas.toBlob((file) => {
-      setCroppedImg(URL.createObjectURL(file as Blob));
-    }, "image/jpg");
+    canvas.toBlob(setCroppedImg, "image/jpeg");
+  };
+
+  const onSaveClick = async () => {
+    if (menuItem !== undefined) {
+      const body = new FormData();
+
+      Object.entries(menuItem).forEach(([prop, value]) => {
+        body.append(prop, value);
+      });
+
+      if (croppedImg instanceof Blob) {
+        body.append("image", croppedImg, "thumb.jpg");
+      }
+
+      const url = `/api/menu${menuItem._id !== undefined ? `/${menuItem._id}` : ""}`;
+      const method = menuItem._id !== undefined ? "PATCH" : "PUT";
+      await fetch(url, {
+        method,
+        body,
+        // headers: {
+        //   "Content-Type": "multipart/form-data"
+        // }
+      });
+    }
+
+    handleClose();
+
   };
 
   return (
@@ -206,7 +235,7 @@ function ItemEditModal({ handleClose, item, cats }: ItemEditModalProp) {
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>Close</Button>
-        <Button variant="primary" onClick={handleClose}>Save</Button>
+        <Button variant="primary" onClick={onSaveClick}>Save</Button>
       </Modal.Footer>
     </Modal>
   );

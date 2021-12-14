@@ -1,13 +1,13 @@
 import { NextApiRequest, NextApiResponse } from "next";
 
-type Handler<T> = (req: NextApiRequest, res: NextApiResponse<T>, next?: (result: unknown | Error) => unknown) => unknown | PromiseLike<T>;
+export type Handler<T> = (req: NextApiRequest, res: NextApiResponse<T>, next?: (result?: unknown | Error) => unknown) => unknown | PromiseLike<T>;
 
-export default function rest<T>() {
+export default function rest() {
   const handlers = new Map<string, Handler<any>>();
   const middleware = new Set<Handler<any>>();
 
   return Object.assign(
-    async (req: NextApiRequest, res: NextApiResponse<T>) => {
+    async (req: NextApiRequest, res: NextApiResponse<any>) => {
       try {
 
         for (const handler of middleware) {
@@ -27,9 +27,7 @@ export default function rest<T>() {
       } catch (e) {
         console.error(e);
         if (!res.writableEnded) {
-          res.statusCode = 500;
-          res.statusMessage = e instanceof Error ? e.message : e as string;
-          res.end();
+          res.status(500).end(e instanceof Error ? e.message : e as string);
         }
       }
     },

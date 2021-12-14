@@ -85,3 +85,7 @@ export async function connect() {
 
   return cached.conn;
 }
+
+export function db(_req: any, _res: any, next?: (result: unknown) => unknown) {
+  connect().then(db => next!(db)).catch(err => next!(err));
+}

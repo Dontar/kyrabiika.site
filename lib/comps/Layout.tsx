@@ -8,8 +8,8 @@ import Nav from "react-bootstrap/Nav";
 
 import Link from "next/link";
 import { useRouter } from "next/router";
-import fetchJson from "../fetchJson";
-import useUser from "../useUser";
+import { fetchJson } from "../utils/Utils";
+import useUser from "../utils/useUser";
 
 import useSWR from "swr";
 import { SiteConfig } from "../db/DbTypes";
@@ -44,22 +44,20 @@ export default function Layout({ navLinks, children }: React.PropsWithChildren<L
           <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
             {navLinks}
             <Nav>
-            {user?.isLoggedIn === false && (
-              <Link href="/login" passHref={true}>
-                <Nav.Link>Login / Register</Nav.Link>
-              </Link>
-            )}
-            {user?.isLoggedIn === true && (
-              <>
-                <Link href="/admin" passHref={true}>
-                  <Nav.Link>Admin</Nav.Link>
+              {user?.isLoggedIn === false && (
+                <Link href="/login" passHref={true}>
+                  <Nav.Link>Login / Register</Nav.Link>
                 </Link>
+              )}
+              <Link href="/admin" passHref={true}>
+                <Nav.Link>Admin</Nav.Link>
+              </Link>
+              {user?.isLoggedIn === true && (
                 <Link href="/api/logout" passHref={true}>
                   <Nav.Link onClick={(e: any) => logOut(e)} >Logout</Nav.Link>
                 </Link>
-              </>
-            )}
-          </Nav>
+              )}
+            </Nav>
 
           </Navbar.Collapse>
         </Container>
