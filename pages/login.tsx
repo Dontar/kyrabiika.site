@@ -11,8 +11,8 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import CloseButton from "react-bootstrap/CloseButton";
 
 import Layout from "../lib/comps/Layout";
-import fetchJson, { FetchError } from "../lib/fetchJson";
-import useUser from "../lib/useUser";
+import { fetchJson, FetchError } from "../lib/utils/Utils";
+import useUser from "../lib/utils/useUser";
 
 const initialState = {
   mail: "",

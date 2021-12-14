@@ -1,4 +1,4 @@
-import { ChangeEvent, useCallback, useEffect, useRef, useState } from "react";
+import { ChangeEvent, ChangeEventHandler, useEffect, useState } from "react";
 import useSWR from "swr";
 
 import Button from "react-bootstrap/Button";
@@ -93,12 +93,12 @@ function ItemEditModal({ handleClose, item, cats, modal }: ItemEditModalProp) {
   const [zoom, setZoom] = useState<number>(1);
   const [menuItem, setMenuItem] = useState<MenuItem>();
   const [upImg, setUpImg] = useState<string>();
-  const [croppedImg, setCroppedImg] = useState<string>();
+  const [croppedImg, setCroppedImg] = useState<Blob | null>(null);
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area>();
   const [croppedImage, setCroppedImage] = useState<Blob>();
 
-  function onSelectFile(e: ChangeEvent<HTMLInputElement>) {
+  const onSelectFile: ChangeEventHandler<HTMLInputElement> = e => {
     if (e.target.files && e.target.files.length > 0) {
       const reader = new FileReader();
       reader.onload = () => setUpImg(reader.result as string);
@@ -110,8 +110,17 @@ function ItemEditModal({ handleClose, item, cats, modal }: ItemEditModalProp) {
   const onControlChange = (prop: keyof MenuItem) => (e: ChangeEvent<HTMLInputElement>) => setMenuItem({ ...menuItem!, [prop]: e.target.value });
 
   useEffect(() => {
+<<<<<<< HEAD
     setMenuItem(item);
     item ? setUpImg(`/api/images/${item!.name}/thumb.jpg`) : setUpImg("");
+=======
+    setItem(item);
+    if (item && item.name) {
+      setUpImg(`/api/images/${item.name}/thumb.jpg`);
+    } else {
+      setUpImg(undefined);
+    }
+>>>>>>> e8513af9d7cefb47f2f9f94c59a46ecb1202e292
   }, [item]);
 
   async function createImage(imgBlob: string) {
@@ -143,9 +152,34 @@ function ItemEditModal({ handleClose, item, cats, modal }: ItemEditModalProp) {
     );
 
     // As a blob
-    canvas.toBlob((file) => {
-      setCroppedImg(URL.createObjectURL(file as Blob));
-    }, "image/jpg");
+    canvas.toBlob(setCroppedImg, "image/jpeg");
+  };
+
+  const onSaveClick = async () => {
+    if (menuItem !== undefined) {
+      const body = new FormData();
+
+      Object.entries(menuItem).forEach(([prop, value]) => {
+        body.append(prop, value);
+      });
+
+      if (croppedImg instanceof Blob) {
+        body.append("image", croppedImg, "thumb.jpg");
+      }
+
+      const url = `/api/menu${menuItem._id !== undefined ? `/${menuItem._id}` : ""}`;
+      const method = menuItem._id !== undefined ? "PATCH" : "PUT";
+      await fetch(url, {
+        method,
+        body,
+        // headers: {
+        //   "Content-Type": "multipart/form-data"
+        // }
+      });
+    }
+
+    handleClose();
+
   };
 
   return (
@@ -212,7 +246,7 @@ function ItemEditModal({ handleClose, item, cats, modal }: ItemEditModalProp) {
       </Modal.Body>
       <Modal.Footer>
         <Button variant="secondary" onClick={handleClose}>Close</Button>
-        <Button variant="primary" onClick={handleClose}>Save</Button>
+        <Button variant="primary" onClick={onSaveClick}>Save</Button>
       </Modal.Footer>
     </Modal>
   );

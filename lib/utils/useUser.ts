@@ -1,8 +1,8 @@
 import { useEffect } from "react";
 import Router from "next/router";
 import useSWR from "swr";
-import { LogInUser } from "../pages/api/user";
-import fetchJson from "./fetchJson";
+import { LogInUser } from "./session";
+import { fetchJson } from "./Utils";
 
 export default function useUser({
   redirectTo = "",
