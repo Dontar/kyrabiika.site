@@ -41,10 +41,6 @@ export default function Home({ menuItems, config }: HomeProps) {
     <Layout
       navLinks={
         <Nav>
-          <Nav.Link href="#home">Home</Nav.Link>
-          <Nav.Link href="#products">Products</Nav.Link>
-          <Nav.Link href="#history">History</Nav.Link>
-          <Nav.Link href="#contacts">Contacts</Nav.Link>
           <Link href="/order" passHref={true}>
             <Nav.Link>Order</Nav.Link>
           </Link>
