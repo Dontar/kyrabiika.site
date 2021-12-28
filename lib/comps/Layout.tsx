@@ -49,6 +49,9 @@ export default function Layout({ navLinks, children }: React.PropsWithChildren<L
                   <Nav.Link>Login / Register</Nav.Link>
                 </Link>
               )}
+              <Link href="/map" passHref={true}>
+                <Nav.Link>Map</Nav.Link>
+              </Link>
               <Link href="/admin" passHref={true}>
                 <Nav.Link>Admin</Nav.Link>
               </Link>
