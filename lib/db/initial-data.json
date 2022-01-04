@@ -91,7 +91,7 @@
         "Admin",
         "User"
       ],
-      "password": "admin"
+      "password": "$2b$09$CkoM3sNdPvbIoQC3NHxJMOdIr8oHsTTpkXzgFeTwvoFYj217mOScS"
     },
     {
       "firstName": "Local",
@@ -106,7 +106,7 @@
       "roles": [
         "User"
       ],
-      "password": "user"
+      "password": "$2b$09$HjtvJezW1Nq/7U1ot7kaveBFrUzcgpG7KDYNm7zVii5P5VvkDcy2S"
     }
   ]
 }

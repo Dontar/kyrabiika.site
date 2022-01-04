@@ -49,13 +49,15 @@ export default function Layout({ navLinks, children }: React.PropsWithChildren<L
                   <Nav.Link>Login / Register</Nav.Link>
                 </Link>
               )}
-              <Link href="/admin" passHref={true}>
-                <Nav.Link>Admin</Nav.Link>
-              </Link>
               {user?.isLoggedIn === true && (
-                <Link href="/api/logout" passHref={true}>
-                  <Nav.Link onClick={(e: any) => logOut(e)} >Logout</Nav.Link>
-                </Link>
+                <>
+                  <Link href="/admin" passHref={true}>
+                    <Nav.Link>Admin</Nav.Link>
+                  </Link>
+                  <Link href="/api/logout" passHref={true}>
+                    <Nav.Link onClick={(e: any) => logOut(e)} >Logout</Nav.Link>
+                  </Link>
+                </>
               )}
             </Nav>
 
@@ -68,17 +70,17 @@ export default function Layout({ navLinks, children }: React.PropsWithChildren<L
           <Row>
             <Col sm>
               <p>
-                {data?.small_promo.split("\n").map(line => (<>{line}<br/></>))}
+                {data?.small_promo.split("\n").map(line => (<>{line}<br /></>))}
               </p>
             </Col>
             <Col sm>
               <p>
-                {data?.address.split("\n").map(line => (<>{line}<br/></>))}
+                {data?.address.split("\n").map(line => (<>{line}<br /></>))}
               </p>
             </Col>
             <Col sm>
               <p>
-                {data?.addr_worktime.split("\n").map(line => (<>{line}<br/></>))}
+                {data?.addr_worktime.split("\n").map(line => (<>{line}<br /></>))}
               </p>
             </Col>
           </Row>

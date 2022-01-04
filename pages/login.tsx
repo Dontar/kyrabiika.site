@@ -105,6 +105,11 @@ export default function Login() {
           <Col xs={4} className="border-right">
             <h3>Login</h3>
             <Form noValidate validated={validated} onSubmit={handleSubmitLogin}>
+              <Form.Group>
+                <Form.Label>Name</Form.Label>
+                <Form.Control required placeholder="Enter name" />
+
+              </Form.Group>
               <Form.Group controlId="loginEmail">
                 <Form.Label>Email address</Form.Label>
                 <Form.Control required name='mail' type="email" placeholder="Enter email" onChange={handleInputChange} />
