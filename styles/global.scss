@@ -1,9 +1,20 @@
 @use "../node_modules/bootstrap/scss/bootstrap" as * with($enable-shadows: true);
 @import url("https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@700&display=swap");
+@import url("/webfonts/BrittanySignature.css");
+
+.navbar {
+  background-color: rgb(234, 219, 206) !important;
+}
 
 .navbar-brand {
   font-family: "Cabin Sketch", cursive;
   font-weight: 400;
+  text-decoration: none;
+}
+.navbar-brand-office {
+  font-family: 'BrittanySignature';
+  font-size: 26pt;
+  // font-weight: 600;
   text-decoration: none;
 }
 // .bg-mainnav {

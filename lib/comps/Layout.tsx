@@ -38,7 +38,8 @@ export default function Layout({ navLinks, children }: React.PropsWithChildren<L
       <Navbar bg="light" expand="md" sticky="top">
         <Container fluid>
           <Navbar.Brand href="/">
-            <span>Kyrabiika</span>
+            <span>КуРабиЙкА</span>
+            <span className="ms-2 navbar-brand-office">office</span>
           </Navbar.Brand>
           <Navbar.Toggle aria-controls="basic-navbar-nav" />
           <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
