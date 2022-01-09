@@ -8,7 +8,7 @@ const handler = rest();
 
 handler.use(db);
 
-handler.get(async (req, res) => {
+handler.post(async (req, res) => {
   const registerInfo = req.body;
   const user = await UserModel.findOne({ mail: registerInfo?.mail });
 
