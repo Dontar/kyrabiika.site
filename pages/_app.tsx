@@ -15,15 +15,15 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   NProgress.configure({ showSpinner: false });
 
-  router.events?.on('routeChangeStart', () => {
+  router.events?.on("routeChangeStart", () => {
     NProgress.start();;
   });
 
-  router.events?.on('routeChangeComplete', () => {
+  router.events?.on("routeChangeComplete", () => {
     NProgress.done();
   });
 
-  router.events?.on('routeChangeError', () => {
+  router.events?.on("routeChangeError", () => {
     NProgress.done();
   });
 
