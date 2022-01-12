@@ -91,7 +91,7 @@
         "Admin",
         "User"
       ],
-      "password": "$2b$09$CkoM3sNdPvbIoQC3NHxJMOdIr8oHsTTpkXzgFeTwvoFYj217mOScS"
+      "password": "$2b$09$VOb8ZODSwgzJrXdkYMAZZet/v400GvxQMpmCsKrxBH3GI6ydYgypa"
     },
     {
       "firstName": "Local",
@@ -106,7 +106,7 @@
       "roles": [
         "User"
       ],
-      "password": "$2b$09$HjtvJezW1Nq/7U1ot7kaveBFrUzcgpG7KDYNm7zVii5P5VvkDcy2S"
+      "password": "$2b$09$sHjf70PsXYHhOh4ptcHVkeKGh0Mj2tfeU22fuGcGSFCrC67O8ZhFm"
     }
   ]
 }
