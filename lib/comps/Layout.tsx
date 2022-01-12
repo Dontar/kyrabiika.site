@@ -35,7 +35,7 @@ export default function Layout({ navLinks, children }: React.PropsWithChildren<L
 
   return (
     <Fragment>
-      <Navbar bg="light" expand="md" sticky="top">
+      <Navbar bg="light" expand="md" sticky="top" className="shadow-sm">
         <Container fluid>
           <Navbar.Brand href="/">
             <span>КуРабиЙкА</span>
