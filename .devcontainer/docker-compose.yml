@@ -30,7 +30,7 @@ services:
     # (Adding the "ports" property to this file will not forward from a Codespace.)
 
   db:
-    image: mongo:4
+    image: mongo:4-focal
     restart: unless-stopped
     volumes:
       - mongodb-data:/data/db
