@@ -1,14 +1,25 @@
-import React, { useState } from 'react';
-import { Button, Card, Col, Container, ListGroup, Modal, Nav, OverlayTrigger, Row } from 'react-bootstrap';
+import React, { useState } from "react";
 
-import Layout from '../../lib/Layout';
-import Link from 'next/link';
+import Button from "react-bootstrap/Button";
+import Card from "react-bootstrap/Card";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import ListGroup from "react-bootstrap/ListGroup";
+import Modal from "react-bootstrap/Modal";
+import Nav from "react-bootstrap/Nav";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Row from "react-bootstrap/Row";
 
-import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
-import { faGreaterThan, faCalendar, faClock } from '@fortawesome/free-solid-svg-icons';
-import { OrderItemRow } from '../../lib/OrderItemRow';
-import { useOrderContext } from '../../lib/OrderContext';
-import { formatter } from '../../lib/Utils';
+import Layout from "../../lib/comps/Layout";
+import Link from "next/link";
+
+import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
+import { faGreaterThan } from "@fortawesome/free-solid-svg-icons/faGreaterThan";
+import { faCalendar } from "@fortawesome/free-solid-svg-icons/faCalendar";
+import { faClock } from "@fortawesome/free-solid-svg-icons/faClock";
+import { OrderItemRow } from "../../lib/comps/OrderItemRow";
+import { useOrderContext } from "../../lib/comps/OrderContext";
+import { formatter } from "../../lib/utils/Utils";
 
 export default function OrderSummary() {
   const [menuShowed, setShowMenu] = useState(false);
@@ -44,7 +55,7 @@ export default function OrderSummary() {
               </ListGroup.Item>
               <OverlayTrigger
                 show={menuShowed}
-                onToggle={(nextShow) => { setShowMenu(nextShow) }}
+                onToggle={(nextShow) => { setShowMenu(nextShow); }}
                 placement="bottom-start"
                 trigger="click"
                 overlay={

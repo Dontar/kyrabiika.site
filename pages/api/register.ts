@@ -1,37 +1,38 @@
-
-import { NextApiRequest, NextApiResponse } from 'next'
 import { withIronSessionApiRoute } from "iron-session/next";
-import bcrypt from 'bcrypt'
-import { sessionOptions } from '../../lib/session'
-import { connect, UserModel } from '../../lib/Connection';
-import { User } from '../../lib/DbTypes';
-import type { LogInUser } from './user'
+import bcrypt from "bcrypt";
+import { LogInUser, sessionOptions } from "../../lib/utils/session";
+import { db, UserModel } from "../../lib/db/Connection";
+import rest from "../../lib/utils/rest";
 
-export default withIronSessionApiRoute(register, sessionOptions)
+const handler = rest();
 
-async function register(req: NextApiRequest, res: NextApiResponse) {
-  const registerInfo = await req.body
+handler.use(db);
+
+handler.post(async (req, res) => {
+  const registerInfo = req.body;
+  const user = await UserModel.findOne({ mail: registerInfo?.mail });
+
+  if (user === null) {
+    const { mail, password } = registerInfo;
+    const salt = process.env.DB_SALT_ROUNDS || 9;
+    const hashed = await bcrypt.hash(password, salt);
+    const newUser = await UserModel.insertMany([{ mail, password: hashed }]);
+    const { mail: m, orders, } = newUser[0];
+    const user: LogInUser = { isLoggedIn: true, user: m, orders };
+    req.session.user = user;
+    await req.session.save();
+    res.json(user);
+  } else {
+    throw "The user has already existed";
+  }
 
   try {
-    await connect();
-    const result = await UserModel.findOne({ mail: registerInfo?.mail }) as User
 
-    if (result === null) {
-      const { mail, password } = registerInfo
-      const salt = process.env.db_saltRounds || 9
-      const hashed = await bcrypt.hash(password, salt)
-      const newUser = await UserModel.insertMany([{ mail, password: hashed }])
-      const {mail: m, orders, } = newUser[0]
-      const user: LogInUser = { isLoggedIn: true, user: m, orders }
-      req.session.user = user
-      await req.session.save()
-      res.json(user)
-    } else {
-      throw 'The user has already existed'
-    }
 
   } catch (error) {
-    console.log(error)
-    res.status(404).json({ message: error })
+    console.log(error);
+    res.status(404).json({ message: error });
   }
-}
+});
+
+export default withIronSessionApiRoute(handler, sessionOptions);

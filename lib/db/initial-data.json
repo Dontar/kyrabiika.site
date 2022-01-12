@@ -1,0 +1,112 @@
+{
+  "MenuItem": [
+    {
+      "description": "Some quick example text to build on the card title and make up the bulk of the card`s content.",
+      "category": "банички и соленки",
+      "name": "баничка с козе сирене и спанак",
+      "price": 1
+    },
+    {
+      "description": "Some quick example text to build on the card title and make up the bulk of the card`s content.",
+      "category": "банички и соленки",
+      "name": "баничка със сирене и подправки",
+      "price": 1
+    },
+    {
+      "description": "Some quick example text to build on the card title and make up the bulk of the card`s content.",
+      "category": "курабийки и бисквити",
+      "name": "курабийки",
+      "price": 1
+    },
+    {
+      "description": "Some quick example text to build on the card title and make up the bulk of the card`s content.",
+      "category": "мини тарталети и кишове",
+      "name": "тарталети с кленов сироп и орех",
+      "price": 1
+    },
+    {
+      "description": "Some quick example text to build on the card title and make up the bulk of the card`s content.",
+      "category": "мини тарталети и кишове",
+      "name": "тарталети с крем маскарпоне",
+      "price": 1
+    },
+    {
+      "description": "Some quick example text to build on the card title and make up the bulk of the card`s content.",
+      "category": "мини тарталети и кишове",
+      "name": "тарталети с ментов крем",
+      "price": 1
+    },
+    {
+      "description": "Some quick example text to build on the card title and make up the bulk of the card`s content.",
+      "category": "мини тарталети и кишове",
+      "name": "чийзкейк в гнездо с горски плодове",
+      "price": 1
+    },
+    {
+      "description": "Some quick example text to build on the card title and make up the bulk of the card`s content.",
+      "category": "мъфини и къпкейкове",
+      "name": "банофи пай",
+      "price": 1
+    },
+    {
+      "description": "Some quick example text to build on the card title and make up the bulk of the card`s content.",
+      "category": "мъфини и къпкейкове",
+      "name": "къпкейк с шамфъстък",
+      "price": 1
+    },
+    {
+      "description": "Some quick example text to build on the card title and make up the bulk of the card`s content.",
+      "category": "мъфини и къпкейкове",
+      "name": "мъфин с морков",
+      "price": 1
+    },
+    {
+      "description": "Some quick example text to build on the card title and make up the bulk of the card`s content.",
+      "category": "торти",
+      "name": "тарт с плодове",
+      "price": 1
+    }
+  ],
+  "SiteConfig": [
+    {
+      "mission_statement": "Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah\nblah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah\nblah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah\nblah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah\nBlah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah\nblah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah\nblah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah\nblah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah",
+      "addr_worktime": "Работно време\nПонеделник: - Събота: 08: 00 - 20: 00\nНеделя: Затворено\nПолезно\nОбщи Условия\nПолитика за Поверителност",
+      "address": "Logo\nХристо Белчев 1,\n1000, София, България\nТелефон: +359 884 782 976\nАнгел Кънчев 37,\n1000, София, България\nТелефон: +359 885 886 190\nМейл: feedback@jovan.bg",
+      "small_promo": "Печем,\nнещо ново за теб!\nРегистрирайте се за нашия бюлетин, за да получавате най-новите известия,продукти и промоции!\nВъведете вашия мейл\n* Не се безпокойте, никога няма да изпратим СПАМ",
+      "promo_items": []
+    }
+  ],
+  "User": [
+    {
+      "firstName": "Local",
+      "lastName": "Admin",
+      "mail": "local.admin@office.com",
+      "phone": "0123456789",
+      "address": [
+        "Address 1",
+        "Address 2"
+      ],
+      "orders": [],
+      "roles": [
+        "Admin",
+        "User"
+      ],
+      "password": "$2b$09$VOb8ZODSwgzJrXdkYMAZZet/v400GvxQMpmCsKrxBH3GI6ydYgypa"
+    },
+    {
+      "firstName": "Local",
+      "lastName": "User",
+      "mail": "local.user@office.com",
+      "phone": "0123456789",
+      "address": [
+        "Address 1",
+        "Address 2"
+      ],
+      "orders": [],
+      "roles": [
+        "User"
+      ],
+      "password": "$2b$09$sHjf70PsXYHhOh4ptcHVkeKGh0Mj2tfeU22fuGcGSFCrC67O8ZhFm"
+    }
+  ]
+}
