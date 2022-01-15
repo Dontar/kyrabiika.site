@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "dev": "next dev",
-    "build": "next build",
+    "initdb": "ts-node -O '{\"module\": \"CommonJS\"}' lib/db/InitDb.ts",
+    "dev": "npm run initdb && next dev",
+    "build": "npm run initdb && next build",
     "start": "next start",
     "lint": "next lint"
   },
@@ -44,6 +45,7 @@
     "eslint": "7.32.0",
     "eslint-config-next": "12.0.1",
     "sass": "^1.43.4",
+    "ts-node": "^10.4.0",
     "typescript": "4.4.4"
   }
 }
