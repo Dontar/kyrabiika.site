@@ -32,7 +32,6 @@ steps:
       - apk add --no-cache git libc6-compat
       - npm ci
       - npm run lint
-      - npm run initdb
       - npm run build
 
 ---
@@ -64,7 +63,6 @@ steps:
     commands:
       - apk add --no-cache libc6-compat
       - npm ci
-      - npm run initdb
       - npm run build
 
   # Build docker image
