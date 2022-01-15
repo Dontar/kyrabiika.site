@@ -32,19 +32,8 @@ steps:
       - apk add --no-cache git libc6-compat
       - npm ci
       - npm run lint
+      - npm run initdb
       - npm run build
-      # - chmod +x version.sh && ./version.sh
-
-  # - name: push commit
-  #   image: appleboy/drone-git-push
-  #   settings:
-  #     ssh_key:
-  #       from_secret: system_key
-  #     remote: ${DRONE_GIT_SSH_URL}
-  #     # remote_name: origin
-  #     branch: ${DRONE_COMMIT_REF}
-  #     local_branch: ${DRONE_BRANCH}
-  #     followtags: true
 
 ---
 kind: pipeline
@@ -75,6 +64,7 @@ steps:
     commands:
       - apk add --no-cache libc6-compat
       - npm ci
+      - npm run initdb
       - npm run build
 
   # Build docker image
@@ -92,10 +82,6 @@ steps:
 
   - name: helm deploy
     image: bitsbeats/drone-helm3
-    # image: alpine/helm
-    # commands:
-    #   - export PLUGIN_RELEASE=cookie-$(cat .tags)
-    #   - /usr/local/bin/drone-helm3
     settings:
       kube_api_server: https://k3s.local:6443
       kube_token:

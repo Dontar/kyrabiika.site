@@ -1,6 +1,5 @@
 import { model, Schema, models, Model, connect as mnConnect, plugin } from "mongoose";
 import { MenuItem, Order, User, SiteConfig } from "./DbTypes";
-import { initDb } from "./InitDb";
 import autopopulate from "mongoose-autopopulate";
 
 plugin(autopopulate);
@@ -76,12 +75,9 @@ export async function connect() {
       bufferCommands: false,
     };
 
-    cached.promise = mnConnect(connectionString).then((mongoose) => {
-      return mongoose;
-    });
+    cached.promise = mnConnect(connectionString, opts);
   }
   cached.conn = await cached.promise;
-  await initDb();
 
   return cached.conn;
 }
