@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { ReactElement, useState, useEffect } from "react";
 
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -7,27 +7,52 @@ import Container from "react-bootstrap/Container";
 import ListGroup from "react-bootstrap/ListGroup";
 import Modal from "react-bootstrap/Modal";
 import Nav from "react-bootstrap/Nav";
-import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import Row from "react-bootstrap/Row";
+import Form from "react-bootstrap/Form";
+import InputGroup from "react-bootstrap/InputGroup";
 
 import Layout from "../../lib/comps/Layout";
 import Link from "next/link";
 
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
-import { faGreaterThan } from "@fortawesome/free-solid-svg-icons/faGreaterThan";
 import { faCalendar } from "@fortawesome/free-solid-svg-icons/faCalendar";
 import { faClock } from "@fortawesome/free-solid-svg-icons/faClock";
+import { faCrosshairs } from "@fortawesome/free-solid-svg-icons/faCrosshairs";
 import { OrderItemRow } from "../../lib/comps/OrderItemRow";
 import { useOrderContext } from "../../lib/comps/OrderContext";
 import { formatter } from "../../lib/utils/Utils";
 
+import streetDb from "../../lib/db/street-db.json";
+import GoogleMap from "../../lib/comps/GoogleMap";
+import { Status, Wrapper } from "@googlemaps/react-wrapper";
+
 export default function OrderSummary() {
-  const [menuShowed, setShowMenu] = useState(false);
   const [modalShow, setModalShow] = useState(false);
+  const [address, setAddress] = useState<string>();
 
   const handleClose = () => setModalShow(false);
 
   const order = useOrderContext();
+
+  useEffect(() => {
+    setAddress(order.user.address);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
+
+  const onNewPosition = (pos: google.maps.LatLngLiteral, address: string) => {
+    order.setUserAddress(address);
+    order.setUserAddressPos(pos);
+  };
+
+  const onChangeAddress: React.ChangeEventHandler<HTMLInputElement> = e => {
+    setAddress(e.target.value);
+  };
+
+  const render = (status: Status): ReactElement => {
+    if (status === Status.LOADING) return <h3>{status} ..</h3>;
+    if (status === Status.FAILURE) return <h3>{status} ...</h3>;
+    return <></>;
+  };
 
   return (
     <Layout navLinks={
@@ -37,7 +62,7 @@ export default function OrderSummary() {
         </Link>
       </Nav>
     }>
-      <Container className="mt-5" onClickCapture={() => setShowMenu(false)}>
+      <Container className="mt-5">
         <Row>
           <Col md={8}>
             <h4>Products</h4>
@@ -47,34 +72,40 @@ export default function OrderSummary() {
                 <OrderItemRow key={idx} item={item} onRemove={() => order.delItem(item)} />
               ))}
             </ListGroup>
-            <h4>Details</h4>
+            <h4>Address &amp; Delivery</h4>
             <hr />
-            <ListGroup className="mb-3">
-              <ListGroup.Item>
-                <div style={{ height: "300px" }} className="bg-light border">Google Map</div>
-              </ListGroup.Item>
-              <OverlayTrigger
-                show={menuShowed}
-                onToggle={(nextShow) => { setShowMenu(nextShow); }}
-                placement="bottom-start"
-                trigger="click"
-                overlay={
-                  <ListGroup className="shadow">
-                    <ListGroup.Item action>София, жк Лагера, ул. Хайдушка поляна , бл. 96</ListGroup.Item>
-                    <ListGroup.Item action>София, жк Лагера, ул. Хайдушка поляна , бл. 96</ListGroup.Item>
-                    <ListGroup.Item action>Add address...</ListGroup.Item>
-                  </ListGroup>
-                }
-              >
+            <Wrapper apiKey="AIzaSyDCTQ1_GSpfRU2tyKg78QLkN8BeaGQr4Ho" render={render}>
+              <ListGroup className="mb-3">
                 <ListGroup.Item>
-                  <span>София, жк Лагера, ул. Хайдушка поляна , бл. 96</span>
-                  <Icon className="float-right" icon={faGreaterThan}></Icon>
+                  <Row>
+                    <Col>
+                      {/* <InputGroup>
+                        <Form.Control type="text" placeholder="Enter address..." list="street-db" value={address} onChange={onChangeAddress} />
+                        <datalist id="street-db">
+                          {streetDb.map((street, idx) => (<option key={idx} value={street.name}>{`${street.name}, ${street.type}`}</option>))}
+                        </datalist>
+                        <Button variant="outline-secondary">
+                          <Icon icon={faCrosshairs} />
+                        </Button>
+                      </InputGroup> */}
+                      <Form.Text>{order.user.firstName + " " + order.user.lastName}</Form.Text>
+                    </Col>
+                    <Col>
+                      <Form.Control type="text" placeholder="Enter phone..." value={order.user.phone} onChange={(e) => order.setUserPhone(e.target.value)} />
+                    </Col>
+                  </Row>
                 </ListGroup.Item>
-              </OverlayTrigger>
-              <ListGroup.Item action onClick={() => setModalShow(true)}>
-                Tue 28 Sep (12:00 - 12:30)
-              </ListGroup.Item>
-            </ListGroup>
+                <ListGroup.Item>
+                  <GoogleMap pin={order.user.address_pos} address={address} onNewPosition={onNewPosition} />
+                  <Form.Control as="textarea" value={order.user.address} className="mt-1"/>
+                </ListGroup.Item>
+
+                <ListGroup.Item action onClick={() => setModalShow(true)}>
+                  Tue 28 Sep (12:00 - 12:30)
+                </ListGroup.Item>
+              </ListGroup>
+
+            </Wrapper>
             <h4>Payment</h4>
             <hr />
             <ListGroup>
@@ -112,75 +143,81 @@ export default function OrderSummary() {
           </Col>
         </Row>
       </Container>
-      <Modal show={modalShow} onHide={handleClose}>
-        <Modal.Header closeButton>
-          <Modal.Title>Schedule order</Modal.Title>
-        </Modal.Header>
-        <Modal.Body>
-          <Row>
-            <Col style={{ maxHeight: "20em" }} className="overflow-auto">
-              <Icon className="text-muted" icon={faCalendar} />
-              <span>Start date</span>
-              <ListGroup variant="flush">
-                <ListGroup.Item action>Today</ListGroup.Item>
-                <ListGroup.Item action>Tomorrow</ListGroup.Item>
-                <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
-                <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
-                <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
-                <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
-                <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
-                <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
-                <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
-                <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
-                <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
-                <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
-                <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
-                <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
-                <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
-                <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
-              </ListGroup>
-            </Col>
-            <Col style={{ maxHeight: "20em" }} className="overflow-auto">
-              <Icon className="text-muted" icon={faClock} />
-              <span>Start time</span>
-              <ListGroup variant="flush">
-                <ListGroup.Item action>ASAP</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-                <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
-              </ListGroup>
-            </Col>
-          </Row>
-        </Modal.Body>
-        <Modal.Footer>
-          <Button variant="secondary" onClick={handleClose}>
-            Close
-          </Button>
-          <Button variant="primary" onClick={handleClose}>
-            Save Changes
-          </Button>
-        </Modal.Footer>
-      </Modal>
+      <ScheduleOrder modalShow={modalShow} handleClose={handleClose} />
 
     </Layout>
   );
 }
+function ScheduleOrder({ modalShow, handleClose }: { modalShow: boolean, handleClose: () => void }) {
+  return (
+    <Modal show={modalShow} onHide={handleClose}>
+      <Modal.Header closeButton>
+        <Modal.Title>Schedule order</Modal.Title>
+      </Modal.Header>
+      <Modal.Body>
+        <Row>
+          <Col style={{ maxHeight: "20em" }} className="overflow-auto">
+            <Icon className="text-muted" icon={faCalendar} />
+            <span>Start date</span>
+            <ListGroup variant="flush">
+              <ListGroup.Item action>Today</ListGroup.Item>
+              <ListGroup.Item action>Tomorrow</ListGroup.Item>
+              <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
+              <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
+              <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
+              <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
+              <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
+              <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
+              <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
+              <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
+              <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
+              <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
+              <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
+              <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
+              <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
+              <ListGroup.Item action>Tue 28 Sep</ListGroup.Item>
+            </ListGroup>
+          </Col>
+          <Col style={{ maxHeight: "20em" }} className="overflow-auto">
+            <Icon className="text-muted" icon={faClock} />
+            <span>Start time</span>
+            <ListGroup variant="flush">
+              <ListGroup.Item action>ASAP</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+              <ListGroup.Item action>12:00 - 12:30</ListGroup.Item>
+            </ListGroup>
+          </Col>
+        </Row>
+      </Modal.Body>
+      <Modal.Footer>
+        <Button variant="secondary" onClick={handleClose}>
+          Close
+        </Button>
+        <Button variant="primary" onClick={handleClose}>
+          Save Changes
+        </Button>
+      </Modal.Footer>
+    </Modal>
+  );
+}
+
