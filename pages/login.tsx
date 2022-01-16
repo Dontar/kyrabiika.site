@@ -9,6 +9,7 @@ import Alert from "react-bootstrap/Alert";
 import Popover from "react-bootstrap/Popover";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import CloseButton from "react-bootstrap/CloseButton";
+import Stack from "react-bootstrap/Stack";
 
 import Layout from "../lib/comps/Layout";
 import { fetchJson, FetchError } from "../lib/utils/Utils";
@@ -101,10 +102,11 @@ export default function Login() {
   return (
     <Layout navLinks={<></>}>
       <Container>
-        <Row className="mt-3 justify-content-center">
-          <Col xs={4} className="border-right">
+        <Row className="mt-3 justify-content-center" xs={1} md={3}>
+          <Col className="border-end">
             <h3>Login</h3>
-            <Form noValidate validated={validated} onSubmit={handleSubmitLogin}>
+            <hr />
+            <Stack as={Form} noValidate validated={validated} onSubmit={handleSubmitLogin} gap={2}>
               <Form.Group controlId="loginEmail">
                 <Form.Label>Email address</Form.Label>
                 <Form.Control required name='mail' type="email" placeholder="Enter email" onChange={handleInputChange} />
@@ -119,25 +121,27 @@ export default function Login() {
                   Please use at least eight symbols
                 </Form.Text>
               </Form.Group>
-              <Button variant="info" type="submit">
-                Submit
-              </Button>
               {errorLogMsg &&
-                <Alert variant="warning" onClose={() => setErrorLogMsg("")} dismissible>
+                <Alert variant="danger" onClose={() => setErrorLogMsg("")} dismissible>
                   {errorLogMsg}
                 </Alert>
               }
-            </Form>
+              <hr />
+              <div>
+                <Button variant="outline-success" type="submit" className="float-end">
+                  Login
+                </Button>
+              </div>
+            </Stack>
           </Col>
-          <Col xs={4}>
+          <Col>
             <h3>Register</h3>
-            <Form noValidate validated={validated} onSubmit={handleSubmitRegister}>
+            <hr />
+            <Stack as={Form} noValidate validated={validated} onSubmit={handleSubmitRegister} gap={2}>
               <Form.Group>
                 <Form.Label>Name</Form.Label>
                 <Form.Control required placeholder="Enter name" />
-
               </Form.Group>
-
               <OverlayTrigger show={show} onEntered={() => setTimeout(() => { setShow(false); }, 3000)} placement="right" overlay={setPopover("Please use a valid email")}>
                 <Form.Group controlId="registerEmail">
                   <Form.Label>Email address</Form.Label>
@@ -160,15 +164,18 @@ export default function Login() {
                   <Form.Control required name='rePassword' type="password" placeholder="Repeat Password" onChange={handleInputChange} />
                 </Form.Group>
               </OverlayTrigger>
-              <Button variant="info" type="submit">
-                Register
-              </Button>
               {errorRegMsg &&
-                <Alert variant="warning" onClose={() => setErrorRegMsg("")} dismissible>
+                <Alert variant="outline-danger" onClose={() => setErrorRegMsg("")} dismissible>
                   {errorRegMsg}
                 </Alert>
               }
-            </Form>
+              <hr />
+              <div>
+                <Button variant="outline-success" type="submit" className="float-end">
+                  Register
+                </Button>
+              </div>
+            </Stack>
           </Col>
         </Row>
       </Container>
