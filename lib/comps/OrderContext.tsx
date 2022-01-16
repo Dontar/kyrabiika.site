@@ -28,6 +28,15 @@ function useOrderState() {
         setItems([...items]);
       // }
     },
+    setUserAddress(address: string) {
+      setUser({...user, address});
+    },
+    setUserAddressPos(address_pos: google.maps.LatLngLiteral) {
+      setUser({...user, address_pos});
+    },
+    setUserPhone(phone: string) {
+      setUser({...user, phone});
+    },
     get orderPrice(): number {
       return this.items.reduce((a, i) => (a += i.count, a), 0);
     },
