@@ -12,6 +12,7 @@ export interface User extends MongoId {
   roles?: string[];
   phone?: string;
   address?: string;
+  address_pos: google.maps.LatLngLiteral;
   orders: Order[];
 }
 
