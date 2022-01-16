@@ -61,7 +61,7 @@ export default function Order({ categories, data }: OrderProps) {
             <Row>
               {data.filter(i => i.category == selectedCat || selectedCat == "Всички").map((item, idx) => (
                 <Col className="mb-3" lg={4} md={6} key={idx}>
-                  <MenuItemCard item={item} onBuy={() => order.addItem(item)} />
+                  <MenuItemCard item={item} onBuy={count => order.addItem(item, count)} />
                 </Col>
               ))}
             </Row>
