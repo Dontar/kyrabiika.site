@@ -74,17 +74,17 @@ export default function Layout({ navLinks, children }: React.PropsWithChildren<L
           <Row>
             <Col sm>
               <p>
-                {data?.small_promo.split("\n").map(line => (<>{line}<br /></>))}
+                {data?.small_promo.split("\n").map((line, idx) => (<Fragment key={idx}>{line}<br /></Fragment>))}
               </p>
             </Col>
             <Col sm>
               <p>
-                {data?.address.split("\n").map(line => (<>{line}<br /></>))}
+                {data?.address.split("\n").map((line, idx) => (<Fragment key={idx}>{line}<br /></Fragment>))}
               </p>
             </Col>
             <Col sm>
               <p>
-                {data?.addr_worktime.split("\n").map(line => (<>{line}<br /></>))}
+                {data?.addr_worktime.split("\n").map((line, idx) => (<Fragment key={idx}>{line}<br /></Fragment>))}
               </p>
             </Col>
           </Row>
