@@ -9,24 +9,24 @@ function useOrderState() {
   return {
     items, date, progress, user,
     setItems, setDate, setProgress, setUser,
-    addItem(item: MenuItem) {
+    addItem(item: MenuItem, count: number) {
       const orderItem = items.find(i => i.item == item);
       if (orderItem) {
-        orderItem.count += 1;
+        orderItem.count += count;
         setItems([...items]);
       } else {
-        setItems([...items, { item, count: 1 }]);
+        setItems([...items, { item, count }]);
       }
     },
     delItem(item: OrderItem) {
-      if (item.count > 1) {
-        item.count -= 1;
-        setItems([...items]);
-      } else {
+      // if (item.count > 1) {
+      //   item.count -= 1;
+      //   setItems([...items]);
+      // } else {
         const idx = items.findIndex(i => i.item.name == item.item.name);
         items.splice(idx, 1);
         setItems([...items]);
-      }
+      // }
     },
     get orderPrice(): number {
       return this.items.reduce((a, i) => (a += i.count, a), 0);
