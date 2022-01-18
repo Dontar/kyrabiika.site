@@ -12,9 +12,10 @@ export function classes(obj: Record<string, boolean>): string {
 
 export const formatter = new Intl.NumberFormat("bg-BG", { style: "currency", currency: "BGN" });
 
-export function convert(i: any) {
+export function convert<T>(doc: T): T extends Types.ObjectId ? string : T {
+  const i: any = doc;
   if (i instanceof Types.ObjectId) {
-    return i.toString();
+    return i.toString() as any;
   }
   Object.keys(i).forEach(prop => {
     const val = i[prop];
@@ -45,10 +46,7 @@ export function useToggle(): [boolean, () => void] {
   return [flag, () => setFlag(!flag)];
 }
 
-export async function fetchJson<JSON = unknown>(
-  input: RequestInfo,
-  init?: RequestInit
-): Promise<JSON> {
+export async function fetchJson<JSON = unknown>(input: RequestInfo, init?: RequestInit): Promise<JSON> {
   const response = await fetch(input, init);
   const data = await response.json();
 
@@ -56,28 +54,16 @@ export async function fetchJson<JSON = unknown>(
     return data;
   }
 
-  throw new FetchError({
-    message: response.statusText,
+  throw new FetchError(
+    response.statusText,
     response,
-    data,
-  });
+    data ?? { message: response.statusText }
+  );
 }
 
 export class FetchError extends Error {
-  response: Response
-  data: { message: string }
-
-  constructor({ message, response, data,}: {
-    message: string
-    response: Response
-    data: {
-      message: string
-    }
-  }) {
+  constructor(message: string, public response: Response, public data?: { message: string }) {
     super(message);
-
     this.name = "FetchError";
-    this.response = response;
-    this.data = data ?? { message: message };
   }
 }

@@ -25,11 +25,11 @@ type HomeProps = {
 export const getStaticProps: GetStaticProps<HomeProps> = async (_context) => {
   await connect();
 
-  const config: SiteConfig = convert(await SiteConfigModel.findOne().lean({ autopopulate: true }));
+  const config = convert(await SiteConfigModel.findOne().lean({ autopopulate: true }));
 
   return {
     props: {
-      menuItems: config.promo_items,
+      menuItems: config?.promo_items!,
       config
     },
     revalidate: 30
