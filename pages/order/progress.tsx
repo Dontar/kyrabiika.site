@@ -1,4 +1,3 @@
-// import React from "react";
 import Link from "next/link";
 
 import Col from "react-bootstrap/Col";
@@ -16,21 +15,13 @@ import { faCheese } from "@fortawesome/free-solid-svg-icons/faCheese";
 import { classes } from "../../lib/utils/Utils";
 import { useOrderContext } from "../../lib/comps/OrderContext";
 
-// const formatter = new Intl.NumberFormat('bg-BG', { style: 'currency', currency: 'BGN' });
-
-
 export default function OrderProgress() {
-  const order = useOrderContext();
-  // const [now, setNow] = useState(0);
+  const order = useOrderContext({
+    redirectTo: "/login"
+  });
 
   return (
-    <Layout navLinks={
-      <Nav>
-        <Link href="/" passHref>
-          <Nav.Link>Home</Nav.Link>
-        </Link>
-      </Nav>
-    }>
+    <Layout>
       <Container className="mt-5 p-5">
         <h2 className="text-center">Delivery</h2>
         <div style={{ height: "8em" }} />

@@ -49,3 +49,7 @@ export interface SiteConfig extends MongoId {
   addr_worktime: string;
   promo_items: MenuItem[];
 }
+
+export interface LoggedInUser extends User {
+  isLoggedIn?: boolean;
+}

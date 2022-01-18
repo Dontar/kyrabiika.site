@@ -1,14 +1,17 @@
-import { createContext, PropsWithChildren, ReactNode, useContext, useState } from "react";
-import { MenuItem, Order, OrderItem, OrderProgress, User } from "../db/DbTypes";
+import { createContext, PropsWithChildren, ReactNode, useContext, useEffect, useState } from "react";
+import Router from "next/router";
+import useSWR from "swr";
+
+import { LoggedInUser, MenuItem, Order, OrderItem, OrderProgress } from "../db/DbTypes";
+import { fetchJson } from "../utils/Utils";
 
 function useOrderState() {
   const [items, setItems] = useState<OrderItem[]>([]);
-  const [date, setDate] = useState<Date>(new Date());
   const [progress, setProgress] = useState<OrderProgress>();
-  const [user, setUser] = useState<User>({} as User);
+  const { data: user, mutate: setUser } = useSWR<LoggedInUser>("/api/user", fetchJson);
   return {
-    items, date, progress, user,
-    setItems, setDate, setProgress, setUser,
+    items, progress, user,
+    setItems, setProgress, setUser,
     addItem(item: MenuItem, count: number) {
       const orderItem = items.find(i => i.item == item);
       if (orderItem) {
@@ -19,23 +22,29 @@ function useOrderState() {
       }
     },
     delItem(item: OrderItem) {
-      // if (item.count > 1) {
-      //   item.count -= 1;
-      //   setItems([...items]);
-      // } else {
-        const idx = items.findIndex(i => i.item.name == item.item.name);
-        items.splice(idx, 1);
-        setItems([...items]);
-      // }
+      const idx = items.findIndex(i => i.item.name == item.item.name);
+      items.splice(idx, 1);
+      setItems([...items]);
     },
     setUserAddress(address: string) {
-      setUser({...user, address});
+      setUser({ ...user!, address });
     },
     setUserAddressPos(address_pos: google.maps.LatLngLiteral) {
-      setUser({...user, address_pos});
+      setUser({ ...user!, address_pos });
     },
     setUserPhone(phone: string) {
-      setUser({...user, phone});
+      setUser({ ...user!, phone });
+    },
+    clear() {
+      setItems([]);
+      setProgress(undefined);
+      setUser({} as LoggedInUser);
+    },
+    get userName() {
+      if (user && user?.firstName && user?.lastName) {
+        return user.firstName + " " + user.lastName;
+      }
+      return "Guest";
     },
     get orderPrice(): number {
       return this.items.reduce((a, i) => (a += i.count, a), 0);
@@ -52,12 +61,36 @@ function useOrderState() {
   };
 }
 
-export type OrderState = Order & ReturnType<typeof useOrderState>;
+export type OrderState = Partial<Order> & ReturnType<typeof useOrderState>;
 
 const Order = createContext<OrderState>({} as unknown as OrderState);
 
-export function useOrderContext() {
-  return useContext(Order);
+export function useOrderContext({
+  redirectTo = "",
+  redirectIfFound = false,
+} = {}) {
+  const context = useContext(Order);
+  useEffect(() => {
+    const user = context.user;
+    // if no redirect needed, just return (example: already on /dashboard)
+    // if user data not yet there (fetch in progress, logged in or not) then don't do anything yet
+    if (!redirectTo || !user) return;
+
+    if (
+      // If redirectTo is set, redirect if the user was not found.
+      (redirectTo && !redirectIfFound && !user?.isLoggedIn) ||
+      // If redirectIfFound is also set, redirect if the user was found
+      (redirectIfFound && user?.isLoggedIn)
+    ) {
+      if (redirectTo === "back") {
+        Router.back();
+      } else {
+        Router.push(redirectTo);
+      }
+    }
+  }, [context.user, redirectIfFound, redirectTo]);
+
+  return context;
 }
 
 export function OrderContext({ children }: PropsWithChildren<ReactNode>) {

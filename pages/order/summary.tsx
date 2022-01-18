@@ -9,7 +9,6 @@ import Modal from "react-bootstrap/Modal";
 import Nav from "react-bootstrap/Nav";
 import Row from "react-bootstrap/Row";
 import Form from "react-bootstrap/Form";
-import InputGroup from "react-bootstrap/InputGroup";
 
 import Layout from "../../lib/comps/Layout";
 import Link from "next/link";
@@ -17,12 +16,10 @@ import Link from "next/link";
 import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
 import { faCalendar } from "@fortawesome/free-solid-svg-icons/faCalendar";
 import { faClock } from "@fortawesome/free-solid-svg-icons/faClock";
-import { faCrosshairs } from "@fortawesome/free-solid-svg-icons/faCrosshairs";
 import { OrderItemRow } from "../../lib/comps/OrderItemRow";
 import { useOrderContext } from "../../lib/comps/OrderContext";
 import { formatter } from "../../lib/utils/Utils";
 
-import streetDb from "../../lib/db/street-db.json";
 import GoogleMap from "../../lib/comps/GoogleMap";
 import { Status, Wrapper } from "@googlemaps/react-wrapper";
 
@@ -32,10 +29,12 @@ export default function OrderSummary() {
 
   const handleClose = () => setModalShow(false);
 
-  const order = useOrderContext();
+  const order = useOrderContext({
+    redirectTo: "/login"
+  });
 
   useEffect(() => {
-    setAddress(order.user.address);
+    setAddress(order.user?.address);
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -88,16 +87,16 @@ export default function OrderSummary() {
                           <Icon icon={faCrosshairs} />
                         </Button>
                       </InputGroup> */}
-                      <Form.Text>{order.user.firstName + " " + order.user.lastName}</Form.Text>
+                      <Form.Text>{order.userName}</Form.Text>
                     </Col>
                     <Col>
-                      <Form.Control type="text" placeholder="Enter phone..." value={order.user.phone} onChange={(e) => order.setUserPhone(e.target.value)} />
+                      <Form.Control type="text" placeholder="Enter phone..." value={order.user?.phone} onChange={(e) => order.setUserPhone(e.target.value)} />
                     </Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <GoogleMap pin={order.user.address_pos} address={address} onNewPosition={onNewPosition} />
-                  <Form.Control as="textarea" value={order.user.address} className="mt-1"/>
+                  <GoogleMap pin={order.user?.address_pos} address={address} onNewPosition={onNewPosition} />
+                  <Form.Control as="textarea" value={order.user?.address} className="mt-1"/>
                 </ListGroup.Item>
 
                 <ListGroup.Item action onClick={() => setModalShow(true)}>

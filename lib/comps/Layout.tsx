@@ -9,28 +9,26 @@ import Nav from "react-bootstrap/Nav";
 import Link from "next/link";
 import { useRouter } from "next/router";
 import { fetchJson } from "../utils/Utils";
-import useUser from "../utils/useUser";
 
 import useSWR from "swr";
-import { SiteConfig } from "../db/DbTypes";
+import { LoggedInUser, SiteConfig } from "../db/DbTypes";
+import { useOrderContext } from "./OrderContext";
 
 export interface LayoutProps {
-  navLinks: React.ReactNode;
+  navLinks?: React.ReactNode;
 }
 
 export default function Layout({ navLinks, children }: React.PropsWithChildren<LayoutProps>) {
-  const { data, error } = useSWR<SiteConfig>("/api/config", url => fetch(url).then(r => r.json()));
+  const { data } = useSWR<SiteConfig>("/api/config", url => fetch(url).then(r => r.json()));
 
-  const { user, mutateUser } = useUser();
   const router = useRouter();
+  const order = useOrderContext();
 
   const logOut = async (e: any) => {
     e.preventDefault();
-    mutateUser(
-      await fetchJson("/api/logout"),
-      false
-    );
-    router.push("/login");
+    order.clear();
+    await order.setUser(fetchJson<LoggedInUser>("/api/logout"), false);
+    router.push("/");
   };
 
   return (
@@ -45,21 +43,22 @@ export default function Layout({ navLinks, children }: React.PropsWithChildren<L
           <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
             {navLinks}
             <Nav>
-              {user?.isLoggedIn === false && (
+              {order.user?.isLoggedIn === false ? (
                 <Link href="/login" passHref={true}>
                   <Nav.Link>Login / Register</Nav.Link>
                 </Link>
+              ) : (
+                <Link href="/profile" passHref={true}>
+                  <Nav.Link>{order.userName}</Nav.Link>
+                </Link>
               )}
-              <Link href="/map" passHref={true}>
-                <Nav.Link>Map</Nav.Link>
-              </Link>
-              {user?.isLoggedIn === true && (
+              {order.user?.isLoggedIn === true && (
                 <>
                   <Link href="/admin" passHref={true}>
                     <Nav.Link>Admin</Nav.Link>
                   </Link>
                   <Link href="/api/logout" passHref={true}>
-                    <Nav.Link onClick={(e: any) => logOut(e)} >Logout</Nav.Link>
+                    <Nav.Link onClick={(e: any) => logOut(e)}>Logout</Nav.Link>
                   </Link>
                 </>
               )}

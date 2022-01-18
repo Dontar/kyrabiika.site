@@ -10,7 +10,6 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Nav from "react-bootstrap/Nav";
 import Row from "react-bootstrap/Row";
 
-
 import Layout from "../../lib/comps/Layout";
 import { OrderItemRow } from "../../lib/comps/OrderItemRow";
 import { connect, MenuItemModel } from "../../lib/db/Connection";
@@ -41,7 +40,9 @@ export const getStaticProps: GetStaticProps<OrderProps> = async (_context) => {
 
 export default function Order({ categories, data }: OrderProps) {
   const [selectedCat, setSelected] = useState("Всички");
-  const order = useOrderContext();
+  const order = useOrderContext({
+    redirectTo: "/login"
+  });
 
   // const [orderList, setOrderList] = useState<OrderItem[]>([]);
   return (

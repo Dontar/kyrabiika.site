@@ -13,24 +13,21 @@ import Stack from "react-bootstrap/Stack";
 
 import Layout from "../lib/comps/Layout";
 import { fetchJson, FetchError } from "../lib/utils/Utils";
-import useUser from "../lib/utils/useUser";
-
-const initialState = {
-  mail: "",
-  password: "",
-  rePassword: "",
-};
+import { useOrderContext } from "../lib/comps/OrderContext";
 
 export default function Login() {
-  const [input, setInput] = useState(initialState);
+  const [input, setInput] = useState({
+    mail: "",
+    password: "",
+    rePassword: "",
+  });
   const [validated, setValidated] = useState(false);
   const [errorLogMsg, setErrorLogMsg] = useState("");
   const [errorRegMsg, setErrorRegMsg] = useState("");
-
   const [show, setShow] = useState(false);
 
-  const { mutateUser } = useUser({
-    redirectTo: "/",
+  const order = useOrderContext({
+    redirectTo: "back",
     redirectIfFound: true,
   });
 
@@ -41,28 +38,27 @@ export default function Login() {
 
   const sendRequest = async (path: string, setMsg: any) => {
     try {
-      mutateUser(
+      order.setUser(
         await fetchJson(path, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify(input),
-        }),
+        })
       );
     } catch (error) {
       if (error instanceof FetchError) {
-        setMsg(error.data.message);
-      } else {
-        console.error("An unexpected error happened:", error);
+        setMsg(error.data?.message);
       }
+      console.error("An unexpected error:", error);
     }
   };
 
-  const handleSubmitLogin = async (event: any) => {
+  const handleSubmitLogin = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     sendRequest("/api/login", setErrorLogMsg);
   };
 
-  const handleSubmitRegister = (event: any) => {
+  const handleSubmitRegister = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
@@ -100,7 +96,7 @@ export default function Login() {
   };
 
   return (
-    <Layout navLinks={<></>}>
+    <Layout>
       <Container>
         <Row className="mt-3 justify-content-center" xs={1} md={3}>
           <Col className="border-end">
@@ -140,7 +136,7 @@ export default function Login() {
             <Stack as={Form} noValidate validated={validated} onSubmit={handleSubmitRegister} gap={2}>
               <Form.Group>
                 <Form.Label>Name</Form.Label>
-                <Form.Control required placeholder="Enter name" />
+                <Form.Control required name="name" placeholder="Enter name" onChange={handleInputChange} />
               </Form.Group>
               <OverlayTrigger show={show} onEntered={() => setTimeout(() => { setShow(false); }, 3000)} placement="right" overlay={setPopover("Please use a valid email")}>
                 <Form.Group controlId="registerEmail">
