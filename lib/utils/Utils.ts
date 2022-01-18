@@ -40,7 +40,7 @@ export function useFetch<T, E = any>(fetcher: () => Promise<T | E>) {
   return { data, error, mutate: setData };
 }
 
-export function useBoolean(): [boolean, () => void] {
+export function useToggle(): [boolean, () => void] {
   const [flag, setFlag] = useState(false);
   return [flag, () => setFlag(!flag)];
 }
