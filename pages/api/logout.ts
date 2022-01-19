@@ -1,13 +1,11 @@
-import { withIronSessionApiRoute } from "iron-session/next";
-import { LogInUser, sessionOptions } from "../../lib/utils/session";
 import rest from "../../lib/utils/rest";
 
 const handler = rest();
 
-handler.get(async (req, res) => {
+handler.withSession.get(async (req, res) => {
   req.session.destroy();
-  res.json({ isLoggedIn: false, user: "", orders: [], });
+  res.json({ isLoggedIn: false });
 });
 
-export default withIronSessionApiRoute(handler, sessionOptions);
+export default handler;
 

@@ -1,24 +1,33 @@
-import { withIronSessionApiRoute } from "iron-session/next";
-import { sessionOptions } from "../../lib/utils/session";
 import rest from "../../lib/utils/rest";
+import { UserModel } from "../../lib/db/Connection";
+import { LoggedInUser } from "../../lib/db/DbTypes";
 
 const handler = rest();
 
-handler.get((req, res) => {
+handler.withSession.get<Partial<LoggedInUser>>(async (req, res) => {
   if (req.session.user) {
-    // in a real world application you might read the user id from the session and then do a database request
-    // to get more information on the user if needed
-    res.json({
-      ...req.session.user,
-      isLoggedIn: true,
-    });
+    const user = await UserModel
+      .findById(req.session.user)
+      .select("-password -roles")
+      .lean();
+
+    if (user) {
+      res.json({ ...user, isLoggedIn: true });
+      return;
+    }
+  }
+  res.json({ isLoggedIn: false });
+});
+
+handler.withAuth.post<LoggedInUser>(async (req, res) => {
+  const id = req.session.user;
+  const userData = req.body;
+  const user = await UserModel.findByIdAndUpdate(id, userData).lean();
+  if (user) {
+    res.json({ ...user, isLoggedIn: true });
   } else {
-    res.json({
-      isLoggedIn: false,
-      user: "",
-      orders: [],
-    });
+    res.status(401).json({ isLoggedIn: false } as LoggedInUser);
   }
 });
 
-export default withIronSessionApiRoute(handler, sessionOptions);
+export default handler;

@@ -1,6 +1,4 @@
-import { withIronSessionApiRoute } from "iron-session/next";
 import bcrypt from "bcrypt";
-import { LogInUser, sessionOptions } from "../../lib/utils/session";
 import { db, UserModel } from "../../lib/db/Connection";
 import rest from "../../lib/utils/rest";
 
@@ -8,31 +6,21 @@ const handler = rest();
 
 handler.use(db);
 
-handler.post(async (req, res) => {
-  const registerInfo = req.body;
+handler.withSession.post<any>(async (req, res) => {
+  const registerInfo = req.body ?? {};
   const user = await UserModel.findOne({ mail: registerInfo?.mail });
 
   if (user === null) {
-    const { mail, password } = registerInfo;
-    const salt = process.env.DB_SALT_ROUNDS || 9;
-    const hashed = await bcrypt.hash(password, salt);
-    const newUser = await UserModel.insertMany([{ mail, password: hashed }]);
-    const { mail: m, orders, } = newUser[0];
-    const user: LogInUser = { isLoggedIn: true, user: m, orders };
-    req.session.user = user;
+    registerInfo.password = await bcrypt.hash(registerInfo.password, process.env.DB_SALT_ROUNDS || 9);
+
+    const user = await (new UserModel(registerInfo)).save();
+
+    req.session.user = user._id.toString();
     await req.session.save();
-    res.json(user);
+    res.json({ ...user.toObject(), isLoggedIn: true, password: undefined });
   } else {
-    throw "The user has already existed";
-  }
-
-  try {
-
-
-  } catch (error) {
-    console.log(error);
-    res.status(404).json({ message: error });
+    res.status(403).json({ message: "User already exists." });
   }
 });
 
-export default withIronSessionApiRoute(handler, sessionOptions);
+export default handler;

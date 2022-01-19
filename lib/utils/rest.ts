@@ -1,12 +1,23 @@
+import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
+import { sessionOptions } from "./session";
 
-export type Handler<T> = (req: NextApiRequest, res: NextApiResponse<T>, next?: (result?: unknown | Error) => unknown) => unknown | PromiseLike<T>;
+export type Handler<T = any> = (req: Omit<NextApiRequest, "body"> & { body: T }, res: NextApiResponse<T>, next?: (result?: unknown | Error) => unknown) => void | Promise<void>;
+
+type HTTPMethod = "get" | "post" | "put" | "patch" | "del";
+const HTTPMethods: HTTPMethod[] = ["get", "post", "put", "patch", "del"];
+
+interface RestAPIBase extends Record<HTTPMethod, <T>(handler: Handler<T>) => RestAPIBase> { }
+
+interface RestAPI extends RestAPIBase {
+  use(handler: Handler): RestAPI;
+}
 
 export default function rest() {
-  const handlers = new Map<string, Handler<any>>();
-  const middleware = new Set<Handler<any>>();
+  const handlers = new Map<string, Handler>();
+  const middleware = new Set<Handler>();
 
-  return Object.assign(
+  const mainHandler =
     async (req: NextApiRequest, res: NextApiResponse<any>) => {
       try {
 
@@ -30,43 +41,58 @@ export default function rest() {
           res.status(500).end(e instanceof Error ? e.message : e as string);
         }
       }
-    },
-    {
-      use(handler: Handler<any>) {
-        middleware.add((req, res) => {
-          return new Promise((resolve, reject) => {
-            const autoResolve = setTimeout(() => resolve(undefined), 30000);
-            handler(req, res, result => {
-              clearTimeout(autoResolve);
-              if (result instanceof Error) {
-                return reject(result);
-              }
-              return resolve(result);
-            });
+    };
+
+  const api = {
+    use(handler: Handler) {
+      middleware.add((req, res) => {
+        return new Promise((resolve, reject) => {
+          const autoResolve = setTimeout(() => resolve(), 30000);
+          handler(req, res, result => {
+            clearTimeout(autoResolve);
+            if (result instanceof Error) {
+              return reject(result);
+            }
+            return resolve();
           });
         });
-        return this;
-      },
-      get<T>(handler: Handler<T>) {
-        handlers.set("GET", handler);
-        return this;
-      },
-      post<T>(handler: Handler<T>) {
-        handlers.set("POST", handler);
-        return this;
-      },
-      put<T>(handler: Handler<T>) {
-        handlers.set("PUT", handler);
-        return this;
-      },
-      patch<T>(handler: Handler<T>) {
-        handlers.set("PATCH", handler);
-        return this;
-      },
-      del<T>(handler: Handler<T>) {
-        handlers.set("DELETE", handler);
-        return this;
-      }
+      });
+      return this;
     }
+  } as RestAPI;
+  HTTPMethods.forEach(method => {
+    api[method] = (handler: Handler) => {
+      handlers.set(method.toUpperCase(), handler);
+      return api;
+    };
+  });
+
+  const withSession = {} as RestAPIBase;
+  HTTPMethods.forEach(method => {
+    withSession[method] = (handler: Handler) => {
+      handlers.set(method.toUpperCase(), withIronSessionApiRoute(handler, sessionOptions));
+      return withSession;
+    };
+  });
+
+  const withAuth = {} as RestAPIBase;
+  HTTPMethods.forEach(method => {
+    withAuth[method] = (handler: Handler) => {
+      handlers.set(method.toUpperCase(), withIronSessionApiRoute((req, res) => {
+        if (req.session.user) {
+          return handler(req, res);
+        } else {
+          res.status(401).end();
+        }
+      }, sessionOptions));
+      return withAuth;
+    };
+  });
+
+  return Object.assign(
+    mainHandler,
+    api,
+    { withSession },
+    { withAuth }
   );
 }

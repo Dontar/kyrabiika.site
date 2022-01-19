@@ -1,9 +1,9 @@
 import { createContext, PropsWithChildren, ReactNode, useContext, useEffect, useState } from "react";
 import { MenuItem, SiteConfig } from "../../db/DbTypes";
-import { useBoolean, useFetch } from "../../utils/Utils";
+import { useToggle, useFetch } from "../../utils/Utils";
 
 function useSiteConfigState() {
-  const [isModalOpen, toggleModal] = useBoolean();
+  const [isModalOpen, toggleModal] = useToggle();
   const [isSaving, setSaving] = useState(false);
   const [isDirty, setDirty] = useState(false);
   const {

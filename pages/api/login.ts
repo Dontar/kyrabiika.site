@@ -1,32 +1,29 @@
-import { withIronSessionApiRoute } from "iron-session/next";
 import bcrypt from "bcrypt";
 
-import { LogInUser, sessionOptions } from "../../lib/utils/session";
 import { db, UserModel } from "../../lib/db/Connection";
+import { LoggedInUser } from "../../lib/db/DbTypes";
 import rest from "../../lib/utils/rest";
 
 const handler = rest();
 
 handler.use(db);
 
-handler.post(async (req, res) => {
+handler.withSession.post<LoggedInUser>(async (req, res) => {
   const loginInfo = req.body;
 
-  const user = await UserModel.findOne({ mail: loginInfo?.mail });
+  const user = await UserModel.findOne({ mail: loginInfo.mail }).lean();
 
   if (user !== null) {
-    const { orders, mail, password } = user;
-    const isMatched = await bcrypt.compare(loginInfo?.password, password);
+    const isMatched = await bcrypt.compare(loginInfo.password!, user.password);
 
     if (isMatched) {
-      const user: LogInUser = { isLoggedIn: true, user: mail, orders };
-      req.session.user = user;
+      req.session.user = user._id;
       await req.session.save();
-      res.json(user);
+      res.json({...user, password: undefined, roles: undefined, isLoggedIn: true});
       return;
     }
   }
-  res.status(404).json({ message: "Wrong user or password" });
+  res.status(404).json({ message: "Wrong user or password" } as any);
 });
 
-export default withIronSessionApiRoute(handler, sessionOptions);
+export default handler;

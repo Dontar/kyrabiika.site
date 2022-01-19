@@ -12,6 +12,7 @@ export interface User extends MongoId {
   roles?: string[];
   phone?: string;
   address?: string;
+  address_pos: google.maps.LatLngLiteral;
   orders: Order[];
 }
 
@@ -47,4 +48,9 @@ export interface SiteConfig extends MongoId {
   small_promo: string;
   addr_worktime: string;
   promo_items: MenuItem[];
+}
+
+export interface LoggedInUser extends User {
+  isLoggedIn?: boolean;
+  password?: string;
 }

@@ -12,9 +12,10 @@ export function classes(obj: Record<string, boolean>): string {
 
 export const formatter = new Intl.NumberFormat("bg-BG", { style: "currency", currency: "BGN" });
 
-export function convert(i: any) {
+export function convert<T>(doc: T): T extends Types.ObjectId ? string : T {
+  const i: any = doc;
   if (i instanceof Types.ObjectId) {
-    return i.toString();
+    return i.toString() as any;
   }
   Object.keys(i).forEach(prop => {
     const val = i[prop];
@@ -37,47 +38,18 @@ export function useFetch<T, E = any>(fetcher: () => Promise<T | E>) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  return { data, error, mutate: setData };
+
+  function mutate(data: T, refetch = false) {
+    setData(data);
+    if (refetch) {
+      fetcher().then(r => setData(r as T)).catch(e => setError(e));
+    }
+  }
+
+  return { data, error, mutate };
 }
 
-export function useBoolean(): [boolean, () => void] {
+export function useToggle(): [boolean, () => void] {
   const [flag, setFlag] = useState(false);
   return [flag, () => setFlag(!flag)];
-}
-
-export async function fetchJson<JSON = unknown>(
-  input: RequestInfo,
-  init?: RequestInit
-): Promise<JSON> {
-  const response = await fetch(input, init);
-  const data = await response.json();
-
-  if (response.ok) {
-    return data;
-  }
-
-  throw new FetchError({
-    message: response.statusText,
-    response,
-    data,
-  });
-}
-
-export class FetchError extends Error {
-  response: Response
-  data: { message: string }
-
-  constructor({ message, response, data,}: {
-    message: string
-    response: Response
-    data: {
-      message: string
-    }
-  }) {
-    super(message);
-
-    this.name = "FetchError";
-    this.response = response;
-    this.data = data ?? { message: message };
-  }
 }

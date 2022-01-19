@@ -1,8 +1,5 @@
-import Link from "next/link";
-
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
 import Row from "react-bootstrap/Row";
 import Tab from "react-bootstrap/Tab";
 import ListGroup from "react-bootstrap/ListGroup";
@@ -12,22 +9,16 @@ import { SiteConfigPanel } from "../lib/comps/admin/SiteConfigPanel";
 import { ItemsPanel } from "../lib/comps/admin/ItemsPanel";
 import { UsersPanel } from "../lib/comps/admin/UsersPanel";
 import { SiteConfigContext } from "../lib/comps/admin/SiteConfigContext";
-import useUser from "../lib/utils/useUser";
+import { useOrderContext } from "../lib/comps/OrderContext";
 
 export default function Admin() {
 
-  const { user } = useUser({
-    // redirectTo: "/login",
+  useOrderContext({
+    redirectTo: "/login",
   });
 
   return (
-    <Layout navLinks={
-      <Nav>
-        <Link href="/" passHref={true}>
-          <Nav.Link>Home</Nav.Link>
-        </Link>
-      </Nav>
-    }>
+    <Layout>
       <Container fluid className="mt-2">
         <Tab.Container defaultActiveKey="#site_config">
           <Row>
