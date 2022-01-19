@@ -38,7 +38,7 @@ export const UserModel: Model<User> = models.User || model("User", new Schema({
   lastName: String,
   mail: { type: String, required: true, unique: true },
   phone: String,
-  address: [{ type: String }],
+  address: String,
   address_pos: {
     lat: Number,
     lng: Number
