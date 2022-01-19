@@ -82,10 +82,7 @@
       "lastName": "Admin",
       "mail": "local.admin@office.com",
       "phone": "0123456789",
-      "address": [
-        "Address 1",
-        "Address 2"
-      ],
+      "address": "Address 1",
       "orders": [],
       "roles": [
         "Admin",
@@ -98,10 +95,7 @@
       "lastName": "User",
       "mail": "local.user@office.com",
       "phone": "0123456789",
-      "address": [
-        "Address 1",
-        "Address 2"
-      ],
+      "address": "Address 1",
       "orders": [],
       "roles": [
         "User"

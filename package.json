@@ -6,7 +6,7 @@
     "initdb": "ts-node -O '{\"module\": \"CommonJS\"}' lib/db/InitDb.ts",
     "dev": "npm run initdb && next dev",
     "build": "npm run initdb && next build",
-    "start": "next start",
+    "start": "npm run initdb && next start",
     "lint": "next lint"
   },
   "dependencies": {
