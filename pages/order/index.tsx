@@ -7,7 +7,6 @@ import Button from "react-bootstrap/Button";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import ListGroup from "react-bootstrap/ListGroup";
-import Nav from "react-bootstrap/Nav";
 import Row from "react-bootstrap/Row";
 
 import Layout from "../../lib/comps/Layout";
@@ -46,13 +45,7 @@ export default function Order({ categories, data }: OrderProps) {
 
   // const [orderList, setOrderList] = useState<OrderItem[]>([]);
   return (
-    <Layout navLinks={
-      <Nav>
-        <Link href="/" passHref={true}>
-          <Nav.Link>Home</Nav.Link>
-        </Link>
-      </Nav>
-    }>
+    <Layout>
       <Container fluid className="mt-2">
         <Row>
           <Col lg={2}>
