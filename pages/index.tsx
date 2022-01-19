@@ -57,6 +57,7 @@ export default function Home({ menuItems, config }: HomeProps) {
             layout="responsive"
             height={450}
             width={1600}
+            priority
           />
           <Carousel.Caption>
             <h3>First slide label</h3>
