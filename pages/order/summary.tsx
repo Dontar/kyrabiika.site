@@ -25,7 +25,6 @@ import { Status, Wrapper } from "@googlemaps/react-wrapper";
 
 export default function OrderSummary() {
   const [modalShow, setModalShow] = useState(false);
-  const [address, setAddress] = useState<string>();
 
   const handleClose = () => setModalShow(false);
 
@@ -33,18 +32,8 @@ export default function OrderSummary() {
     redirectTo: "/login"
   });
 
-  useEffect(() => {
-    setAddress(order.user?.address);
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
-
-  const onNewPosition = (pos: google.maps.LatLngLiteral, address: string) => {
-    order.setUserAddress(address);
-    order.setUserAddressPos(pos);
-  };
-
-  const onChangeAddress: React.ChangeEventHandler<HTMLInputElement> = e => {
-    setAddress(e.target.value);
+  const onNewPosition = (pos: google.maps.LatLngLiteral, address?: string) => {
+    order.setUserAddress(address!, pos);
   };
 
   const render = (status: Status): ReactElement => {
@@ -54,22 +43,24 @@ export default function OrderSummary() {
   };
 
   return (
-    <Layout navLinks={
-      <Nav>
-        <Link href="/" passHref>
-          <Nav.Link>Home</Nav.Link>
-        </Link>
-      </Nav>
-    }>
+    <Layout>
       <Container className="mt-5">
         <Row>
           <Col md={8}>
             <h4>Products</h4>
             <hr />
             <ListGroup className="mb-3">
-              {order.items.map((item, idx) => (
-                <OrderItemRow key={idx} item={item} onRemove={() => order.delItem(item)} />
-              ))}
+              {order.items.length ? (
+                order.items.map((item, idx) => (
+                  <OrderItemRow key={idx} item={item} onRemove={() => order.delItem(item)} />
+                ))
+              ) : (
+                <ListGroup.Item style={{ height: "100px" }} className="text-center">
+                  There are no products selected.
+                  You can order <Link href="/order">here</Link>.
+
+                </ListGroup.Item>
+              )}
             </ListGroup>
             <h4>Address &amp; Delivery</h4>
             <hr />
@@ -77,30 +68,40 @@ export default function OrderSummary() {
               <ListGroup className="mb-3">
                 <ListGroup.Item>
                   <Row>
-                    <Col>
-                      {/* <InputGroup>
-                        <Form.Control type="text" placeholder="Enter address..." list="street-db" value={address} onChange={onChangeAddress} />
-                        <datalist id="street-db">
-                          {streetDb.map((street, idx) => (<option key={idx} value={street.name}>{`${street.name}, ${street.type}`}</option>))}
-                        </datalist>
-                        <Button variant="outline-secondary">
-                          <Icon icon={faCrosshairs} />
-                        </Button>
-                      </InputGroup> */}
-                      <Form.Text>{order.userName}</Form.Text>
+                    <Col className="py-2" md={2}>
+                      <small className="text-muted">Contact</small>
                     </Col>
                     <Col>
-                      <Form.Control type="text" placeholder="Enter phone..." value={order.user?.phone} onChange={(e) => order.setUserPhone(e.target.value)} />
+                      <div>{order.userName}</div>
+                      <small>{order.user?.mail}</small>
+                    </Col>
+                    <Col>
+                      <div><small className="text-muted">Phone</small></div>
+                      {order.user?.phone}
                     </Col>
                   </Row>
                 </ListGroup.Item>
                 <ListGroup.Item>
-                  <GoogleMap pin={order.user?.address_pos} address={address} onNewPosition={onNewPosition} />
-                  <Form.Control as="textarea" value={order.user?.address} className="mt-1"/>
+                  <Row>
+                    <Col className="py-2" md={2}>
+                      <small className="text-muted">Address</small>
+                    </Col>
+                    <Col className="py-2">
+                      <span>{order.user?.address}</span>
+                    </Col>
+                  </Row>
+                </ListGroup.Item>
+                <ListGroup.Item>
+                  <GoogleMap pin={order.user?.address_pos} address={order.user?.address} onNewPosition={onNewPosition} />
                 </ListGroup.Item>
 
                 <ListGroup.Item action onClick={() => setModalShow(true)}>
-                  Tue 28 Sep (12:00 - 12:30)
+                  <Row>
+                    <Col className="py-2" md={2}>
+                      <small className="text-muted">Delivery time</small>
+                    </Col>
+                    <Col className="py-2">Tue 28 Sep (12:00 - 12:30)</Col>
+                  </Row>
                 </ListGroup.Item>
               </ListGroup>
 
