@@ -8,11 +8,11 @@ import Nav from "react-bootstrap/Nav";
 
 import Link from "next/link";
 import { useRouter } from "next/router";
-import { fetchJson } from "../utils/Utils";
 
 import useSWR from "swr";
 import { LoggedInUser, SiteConfig } from "../db/DbTypes";
 import { useOrderContext } from "./OrderContext";
+import rest from "../utils/rest-client";
 
 export interface LayoutProps {
   navLinks?: React.ReactNode;
@@ -27,7 +27,7 @@ export default function Layout({ navLinks, children }: React.PropsWithChildren<L
   const logOut = async (e: any) => {
     e.preventDefault();
     order.clear();
-    await order.setUser(fetchJson<LoggedInUser>("/api/logout"), false);
+    await order.setUser(rest.get<LoggedInUser>("/api/logout"), false);
     router.push("/");
   };
 
@@ -43,17 +43,11 @@ export default function Layout({ navLinks, children }: React.PropsWithChildren<L
           <Navbar.Collapse id="basic-navbar-nav" className="justify-content-end">
             {navLinks}
             <Nav>
-              {order.user?.isLoggedIn === false ? (
-                <Link href="/login" passHref={true}>
-                  <Nav.Link>Login / Register</Nav.Link>
-                </Link>
-              ) : (
-                <Link href="/profile" passHref={true}>
-                  <Nav.Link>{order.userName}</Nav.Link>
-                </Link>
-              )}
-              {order.user?.isLoggedIn === true && (
+              {order.user?.isLoggedIn === true ? (
                 <>
+                  <Link href="/profile" passHref={true}>
+                    <Nav.Link>{order.userName}</Nav.Link>
+                  </Link>
                   <Link href="/admin" passHref={true}>
                     <Nav.Link>Admin</Nav.Link>
                   </Link>
@@ -61,6 +55,11 @@ export default function Layout({ navLinks, children }: React.PropsWithChildren<L
                     <Nav.Link onClick={(e: any) => logOut(e)}>Logout</Nav.Link>
                   </Link>
                 </>
+              ) : (
+                <Link href="/login" passHref={true}>
+                  <Nav.Link>Login / Register</Nav.Link>
+                </Link>
+
               )}
             </Nav>
 

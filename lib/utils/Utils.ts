@@ -38,32 +38,18 @@ export function useFetch<T, E = any>(fetcher: () => Promise<T | E>) {
     }
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
-  return { data, error, mutate: setData };
+
+  function mutate(data: T, refetch = false) {
+    setData(data);
+    if (refetch) {
+      fetcher().then(r => setData(r as T)).catch(e => setError(e));
+    }
+  }
+
+  return { data, error, mutate };
 }
 
 export function useToggle(): [boolean, () => void] {
   const [flag, setFlag] = useState(false);
   return [flag, () => setFlag(!flag)];
-}
-
-export async function fetchJson<JSON = unknown>(input: RequestInfo, init?: RequestInit): Promise<JSON> {
-  const response = await fetch(input, init);
-  const data = await response.json();
-
-  if (response.ok) {
-    return data;
-  }
-
-  throw new FetchError(
-    response.statusText,
-    response,
-    data ?? { message: response.statusText }
-  );
-}
-
-export class FetchError extends Error {
-  constructor(message: string, public response: Response, public data?: { message: string }) {
-    super(message);
-    this.name = "FetchError";
-  }
 }

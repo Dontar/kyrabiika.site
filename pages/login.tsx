@@ -12,18 +12,21 @@ import CloseButton from "react-bootstrap/CloseButton";
 import Stack from "react-bootstrap/Stack";
 
 import Layout from "../lib/comps/Layout";
-import { fetchJson, FetchError } from "../lib/utils/Utils";
 import { useOrderContext } from "../lib/comps/OrderContext";
+import rest, { FetchError } from "../lib/utils/rest-client";
 
 export default function Login() {
   const [input, setInput] = useState({
+    firstName: "",
+    lastName: "",
     mail: "",
+    phone: "",
     password: "",
     rePassword: "",
   });
   const [validated, setValidated] = useState(false);
-  const [errorLogMsg, setErrorLogMsg] = useState("");
-  const [errorRegMsg, setErrorRegMsg] = useState("");
+  const [errorLogMsg, setErrorLogMsg] = useState<string>();
+  const [errorRegMsg, setErrorRegMsg] = useState<string>();
   const [show, setShow] = useState(false);
 
   const order = useOrderContext({
@@ -36,26 +39,14 @@ export default function Login() {
     setInput(input => ({ ...input, [event.target.name]: event.target.value }));
   };
 
-  const sendRequest = async (path: string, setMsg: any) => {
-    try {
-      order.setUser(
-        await fetchJson(path, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify(input),
-        })
-      );
-    } catch (error) {
-      if (error instanceof FetchError) {
-        setMsg(error.data?.message);
-      }
-      console.error("An unexpected error:", error);
-    }
-  };
-
   const handleSubmitLogin = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
-    sendRequest("/api/login", setErrorLogMsg);
+    order.setUser(rest.post("/api/login", input)).catch(e => {
+      if (e instanceof FetchError) {
+        return setErrorLogMsg(e.data?.message || e.message);
+      }
+      console.error("An unexpected error:", e);
+    });
   };
 
   const handleSubmitRegister = (event: React.FormEvent<HTMLFormElement>) => {
@@ -78,7 +69,13 @@ export default function Login() {
       // setErrorRegMsg('Please use a valid email')
       return;
     }
-    sendRequest("/api/register", setErrorRegMsg);
+
+    order.setUser(rest.post("/api/register", input)).catch(e => {
+      if (e instanceof FetchError) {
+        return setErrorRegMsg(e.data?.message || e.message);
+      }
+      console.error("An unexpected error:", e);
+    });
   };
 
   const setPopover = (text: string) => {
@@ -97,33 +94,33 @@ export default function Login() {
 
   return (
     <Layout>
-      <Container>
-        <Row className="mt-3 justify-content-center" xs={1} md={3}>
+      <Container className="pt-5">
+        <Row className="justify-content-center" xs={1} md={3}>
           <Col className="border-end">
             <h3>Login</h3>
             <hr />
             <Stack as={Form} noValidate validated={validated} onSubmit={handleSubmitLogin} gap={2}>
               <Form.Group controlId="loginEmail">
                 <Form.Label>Email address</Form.Label>
-                <Form.Control required name='mail' type="email" placeholder="Enter email" onChange={handleInputChange} />
-                <Form.Text className="text-muted">
+                <Form.Control required name='mail' type="email" placeholder="Enter email" onChange={handleInputChange} autoComplete="username" />
+                {/* <Form.Text className="text-muted">
                   Please enter a valid email address
-                </Form.Text>
+                </Form.Text> */}
               </Form.Group>
               <Form.Group controlId="loginPassword">
                 <Form.Label>Password</Form.Label>
-                <Form.Control required name='password' type="password" placeholder="Password" onChange={handleInputChange} />
-                <Form.Text className="text-muted">
+                <Form.Control required name='password' type="password" placeholder="Password" onChange={handleInputChange} autoComplete="current-password" />
+                {/* <Form.Text className="text-muted">
                   Please use at least eight symbols
-                </Form.Text>
+                </Form.Text> */}
               </Form.Group>
               {errorLogMsg &&
                 <Alert variant="danger" onClose={() => setErrorLogMsg("")} dismissible>
                   {errorLogMsg}
                 </Alert>
               }
-              <hr />
               <div>
+                <hr />
                 <Button variant="outline-success" type="submit" className="float-end">
                   Login
                 </Button>
@@ -133,45 +130,53 @@ export default function Login() {
           <Col>
             <h3>Register</h3>
             <hr />
-            <Stack as={Form} noValidate validated={validated} onSubmit={handleSubmitRegister} gap={2}>
+            <Row as={Form} noValidate validated={validated} onSubmit={handleSubmitRegister} className="gap-2">
+              <Form.Group as={Col}>
+                <Form.Label>First name</Form.Label>
+                <Form.Control required name="firstName" placeholder="First name..." onChange={handleInputChange} autoComplete="on" />
+              </Form.Group>
+              <Form.Group as={Col}>
+                <Form.Label>Last name</Form.Label>
+                <Form.Control required name="lastName" placeholder="Last name..." onChange={handleInputChange} autoComplete="on" />
+              </Form.Group>
               <Form.Group>
-                <Form.Label>Name</Form.Label>
-                <Form.Control required name="name" placeholder="Enter name" onChange={handleInputChange} />
+                <Form.Label>Phone</Form.Label>
+                <Form.Control required name="phone" placeholder="Phone..." onChange={handleInputChange} autoComplete="tel" />
               </Form.Group>
               <OverlayTrigger show={show} onEntered={() => setTimeout(() => { setShow(false); }, 3000)} placement="right" overlay={setPopover("Please use a valid email")}>
                 <Form.Group controlId="registerEmail">
                   <Form.Label>Email address</Form.Label>
-                  <Form.Control required name='mail' type="email" placeholder="Enter email" onChange={handleInputChange} />
-                  <Form.Text className="text-muted">
+                  <Form.Control required name='mail' type="email" placeholder="Enter email" onChange={handleInputChange} autoComplete="username" />
+                  {/* <Form.Text className="text-muted">
                     Please enter a valid email address
-                  </Form.Text>
+                  </Form.Text> */}
                 </Form.Group>
               </OverlayTrigger>
               <Form.Group controlId="registerPassword">
                 <Form.Label>Password</Form.Label>
-                <Form.Control required name='password' type="password" placeholder="Password" onChange={handleInputChange} />
-                <Form.Text className="text-muted">
+                <Form.Control required name='password' type="password" placeholder="Password" onChange={handleInputChange} autoComplete="new-password" />
+                {/* <Form.Text className="text-muted">
                   Please use at least eight symbols
-                </Form.Text>
+                </Form.Text> */}
               </Form.Group>
               <OverlayTrigger show={show} onEntered={() => setTimeout(() => { setShow(false); }, 3000)} placement="right" overlay={setPopover("Repeat Password must match Password")}>
                 <Form.Group controlId="rePassword">
                   <Form.Label>Repeat Password</Form.Label>
-                  <Form.Control required name='rePassword' type="password" placeholder="Repeat Password" onChange={handleInputChange} />
+                  <Form.Control required name='rePassword' type="password" placeholder="Repeat Password" onChange={handleInputChange} autoComplete="new-password" />
                 </Form.Group>
               </OverlayTrigger>
               {errorRegMsg &&
-                <Alert variant="outline-danger" onClose={() => setErrorRegMsg("")} dismissible>
+                <Alert variant="danger" onClose={() => setErrorRegMsg("")} dismissible>
                   {errorRegMsg}
                 </Alert>
               }
-              <hr />
               <div>
+                <hr />
                 <Button variant="outline-success" type="submit" className="float-end">
                   Register
                 </Button>
               </div>
-            </Stack>
+            </Row>
           </Col>
         </Row>
       </Container>

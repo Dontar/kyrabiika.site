@@ -2,13 +2,13 @@ import { createContext, PropsWithChildren, ReactNode, useContext, useEffect, use
 import Router from "next/router";
 import useSWR from "swr";
 
-import { LoggedInUser, MenuItem, Order, OrderItem, OrderProgress } from "../db/DbTypes";
-import { fetchJson } from "../utils/Utils";
+import { LoggedInUser, MenuItem, Order, OrderItem, OrderProgress, User } from "../db/DbTypes";
+import rest from "../utils/rest-client";
 
 function useOrderState() {
   const [items, setItems] = useState<OrderItem[]>([]);
   const [progress, setProgress] = useState<OrderProgress>();
-  const { data: user, mutate: setUser } = useSWR<LoggedInUser>("/api/user", fetchJson);
+  const { data: user, mutate: setUser } = useSWR<LoggedInUser>("/api/user", rest.get);
   return {
     items, progress, user,
     setItems, setProgress, setUser,
@@ -26,14 +26,11 @@ function useOrderState() {
       items.splice(idx, 1);
       setItems([...items]);
     },
-    setUserAddress(address: string) {
-      setUser({ ...user!, address });
-    },
-    setUserAddressPos(address_pos: google.maps.LatLngLiteral) {
-      setUser({ ...user!, address_pos });
+    setUserAddress(address: string, address_pos: google.maps.LatLngLiteral) {
+      setUser(rest.post("/api/user", { address, address_pos }).then(({data}) => data));
     },
     setUserPhone(phone: string) {
-      setUser({ ...user!, phone });
+      setUser(rest.post("/api/user", { phone }).then(({data}) => data));
     },
     clear() {
       setItems([]);
@@ -57,11 +54,14 @@ function useOrderState() {
     },
     get finalOrderPrice(): number {
       return this.orderPrice + this.deliveryTax;
+    },
+    get order(): Order {
+      return { items, progress, user: user! as User, date: new Date() };
     }
   };
 }
 
-export type OrderState = Partial<Order> & ReturnType<typeof useOrderState>;
+export type OrderState = ReturnType<typeof useOrderState>;
 
 const Order = createContext<OrderState>({} as unknown as OrderState);
 
