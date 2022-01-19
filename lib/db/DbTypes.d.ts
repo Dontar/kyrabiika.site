@@ -52,4 +52,5 @@ export interface SiteConfig extends MongoId {
 
 export interface LoggedInUser extends User {
   isLoggedIn?: boolean;
+  password?: string;
 }

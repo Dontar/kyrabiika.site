@@ -13,10 +13,10 @@ const handler = rest();
 handler.use(db);
 handler.use(formParser());
 
-handler.patch(async (req, res) => {
+handler.withAuth.patch<MenuItem>(async (req, res) => {
   const { _id } = req.query;
   const file = req.files.image;
-  const item = req.body as MenuItem;
+  const item = req.body;
 
   if (file && !Array.isArray(file)) {
     const filePath = path.join(imagesRootPath, item.name);
@@ -29,7 +29,7 @@ handler.patch(async (req, res) => {
   res.json(item);
 });
 
-handler.del(async (req, res) => {
+handler.withAuth.del(async (req, res) => {
   const { _id } = req.query;
   await MenuItemModel.deleteOne({ _id });
   res.status(200).end();

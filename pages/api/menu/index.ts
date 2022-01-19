@@ -8,13 +8,14 @@ import { createJsonStream } from "../../../lib/utils/json-stream";
 import rest from "../../../lib/utils/rest";
 import formParser from "../../../lib/utils/form-parser";
 import { imagesRootPath } from "../../../lib/utils/session";
+import { MenuItem } from "../../../lib/db/DbTypes";
 
 const handler = rest();
 
 handler.use(db);
 handler.use(formParser());
 
-handler.put(async (req, res) => {
+handler.withAuth.put<MenuItem>(async (req, res) => {
   const item = new MenuItemModel(req.body);
   const file = req.files.image;
 
@@ -28,7 +29,7 @@ handler.put(async (req, res) => {
   res.json(await item.save());
 });
 
-handler.get(async (_req, res) => {
+handler.withAuth.get(async (_req, res) => {
   const items = MenuItemModel.find().cursor();
   await pipeline(items, createJsonStream(), res);
 });

@@ -6,7 +6,7 @@ import rest from "../../lib/utils/rest";
 
 const handler = rest();
 
-handler.withSession.get(async (_req, res) => {
+handler.withAuth.get(async (_req, res) => {
   const users = UserModel.find().cursor();
   await pipeline(users, createJsonStream(), res);
 });
