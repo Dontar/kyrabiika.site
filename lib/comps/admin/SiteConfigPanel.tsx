@@ -142,7 +142,7 @@ function SelectPromoItemsModal() {
                   <small className="text-muted">{item.description}</small>
                 </Stack>
               </Stack>
-              <Form.Check type="checkbox" checked={item.selected} onChange={e => (item.selected = !item.selected, mutate([...items]))} />
+              <Form.Check type="checkbox" checked={item.selected} onChange={() => (item.selected = !item.selected, mutate([...items]))} />
             </Form.Group>
           ))}
         </ListGroup>

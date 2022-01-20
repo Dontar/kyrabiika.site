@@ -14,7 +14,7 @@ handler.get(async (_req, res) => {
 handler.withAuth.post<SiteConfig>(async (req, res) => {
   const data = req.body;
   if (data._id) {
-    const r = await SiteConfigModel.updateOne({ _id: data._id }, data);
+    await SiteConfigModel.updateOne({ _id: data._id }, data);
     res.status(200).end();
   }
 });

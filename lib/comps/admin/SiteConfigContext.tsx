@@ -1,4 +1,4 @@
-import { createContext, PropsWithChildren, ReactNode, useContext, useEffect, useState } from "react";
+import { createContext, PropsWithChildren, ReactNode, useContext, useState } from "react";
 import { MenuItem, SiteConfig } from "../../db/DbTypes";
 import { useToggle, useFetch } from "../../utils/Utils";
 
@@ -8,7 +8,6 @@ function useSiteConfigState() {
   const [isDirty, setDirty] = useState(false);
   const {
     data: config,
-    error: configError,
     mutate: mutateConfig
   } = useFetch<SiteConfig>(
     () => fetch("/api/config").then(r => r.json())

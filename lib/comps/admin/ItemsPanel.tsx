@@ -26,7 +26,7 @@ export function ItemsPanel() {
   const [item, setItem] = useState<Partial<MenuItem>>();
   const [categories, setCats] = useState<string[]>([]);
   const {
-    data: items, error: itemsError, mutate
+    data: items, mutate
   } = useSWR<MenuItem[]>("/api/menu", url => fetch(url).then(r => r.json()));
 
   const onRemove = (idx: number) => async () => {

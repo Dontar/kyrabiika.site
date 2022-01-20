@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useEffect } from "react";
+import React, { ReactElement, useState } from "react";
 
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -6,9 +6,7 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import ListGroup from "react-bootstrap/ListGroup";
 import Modal from "react-bootstrap/Modal";
-import Nav from "react-bootstrap/Nav";
 import Row from "react-bootstrap/Row";
-import Form from "react-bootstrap/Form";
 
 import Layout from "../../lib/comps/Layout";
 import Link from "next/link";

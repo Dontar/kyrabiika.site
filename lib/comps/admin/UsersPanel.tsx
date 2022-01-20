@@ -19,7 +19,7 @@ import { User } from "../../db/DbTypes";
 import { TabHeader } from "./TabHeader";
 
 export function UsersPanel() {
-  const { data: users, error: usersError } = useSWR<User[]>("/api/users", url => fetch(url).then(r => r.json()));
+  const { data: users } = useSWR<User[]>("/api/users", url => fetch(url).then(r => r.json()));
 
   return (
     <Container>

@@ -1,8 +1,5 @@
-import Link from "next/link";
-
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
 import ProgressBar from "react-bootstrap/ProgressBar";
 import Row from "react-bootstrap/Row";
 
