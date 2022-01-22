@@ -1,17 +1,18 @@
 import bcrypt from "bcrypt";
 import { db, UserModel } from "../../lib/db/Connection";
+import { LoggedInUser } from "../../lib/db/DbTypes";
 import rest from "../../lib/utils/rest";
 
 const handler = rest();
 
 handler.use(db);
 
-handler.withSession.post<any>(async (req, res) => {
-  const registerInfo = req.body ?? {};
-  const user = await UserModel.findOne({ mail: registerInfo?.mail });
+handler.withSession.post(async (req, res) => {
+  const registerInfo = (req.body ?? {}) as LoggedInUser;
+  const user = await UserModel.findOne({ mail: registerInfo.mail });
 
   if (user === null) {
-    registerInfo.password = await bcrypt.hash(registerInfo.password, process.env.DB_SALT_ROUNDS || 9);
+    registerInfo.password = await bcrypt.hash(registerInfo.password!, process.env.DB_SALT_ROUNDS || 9);
 
     const user = await (new UserModel(registerInfo)).save();
 
