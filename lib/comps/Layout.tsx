@@ -1,4 +1,4 @@
-import React, { Fragment } from "react";
+import React, { Fragment, useCallback, useState } from "react";
 
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -10,10 +10,6 @@ import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import ListGroup from "react-bootstrap/ListGroup";
 import Badge from "react-bootstrap/Badge";
 
-import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
-import { faShoppingCart } from "@fortawesome/free-solid-svg-icons/faShoppingCart";
-
-
 import Link from "next/link";
 import { useRouter } from "next/router";
 import Avatar from "react-avatar";
@@ -23,21 +19,23 @@ import { LoggedInUser, SiteConfig } from "../db/DbTypes";
 import { useOrderContext } from "./OrderContext";
 import rest from "../utils/rest-client";
 
-export default function Layout({ children }: React.PropsWithChildren<unknown>) {
-  const { data } = useSWR<SiteConfig>("/api/config", url => fetch(url).then(r => r.json()));
+export default function Layout(p: JSX.IntrinsicElements["div"]) {
+  const { children, ...props } = p;
+  const { data: config } = useSWR<SiteConfig>("/api/config", rest.get);
+  const [showAvatarMenu, setShowAvatarMenu] = useState(false);
 
   const router = useRouter();
   const order = useOrderContext();
 
-  const logOut = async (e: React.MouseEvent<Element>) => {
+  const logOut = useCallback(async (e: React.MouseEvent<Element>) => {
     e.preventDefault();
     order.clear();
     await order.setUser(rest.get<LoggedInUser>("/api/logout"), false);
     router.push("/");
-  };
+  }, [order, router]);
 
   return (
-    <Fragment>
+    <div {...props} onClickCapture={() => setShowAvatarMenu(false)}>
       <Navbar bg="light" expand="md" sticky="top" className="shadow-sm">
         <Container fluid>
           <Navbar.Brand href="/">
@@ -45,40 +43,37 @@ export default function Layout({ children }: React.PropsWithChildren<unknown>) {
             <span className="ms-2 navbar-brand-office">office</span>
           </Navbar.Brand>
 
-          <Nav className="gap-2 flex-nowrap">
+          <Nav className="gap-2 flex-row">
             {order.user?.isLoggedIn === true ? (
               <>
                 <Link href="/order" passHref>
                   <Nav.Link className="d-flex p-0 border rounded-circle bg-secondary text-white justify-content-center position-relative" style={{ width: "36px", height: "36px" }}>
-                    <Icon icon={faShoppingCart} className="align-self-center"/>
+                    <i className="fas fa-shopping-cart align-self-center" />
                     {!!order.items.length && (<Badge pill bg="danger" className="position-absolute top-0 start-100 translate-middle">{order.items.length}</Badge>)}
                   </Nav.Link>
                 </Link>
-                <OverlayTrigger trigger="click" placement="bottom-start" overlay={(
+                <OverlayTrigger show={showAvatarMenu} onToggle={show => setShowAvatarMenu(show)} trigger="click" placement="bottom-start" overlay={(
                   <Popover id="popover-basic">
-                    <Popover.Body>
-
-                      <ListGroup variant="flush">
-                        <Link href="/profile" passHref>
-                          <ListGroup.Item action>Profile</ListGroup.Item>
-                        </Link>
-                        <Link href="/admin" passHref>
-                          <ListGroup.Item action>Admin</ListGroup.Item>
-                        </Link>
-                        <ListGroup.Item action onClick={e => logOut(e)}>Logout</ListGroup.Item>
-                      </ListGroup>
-                    </Popover.Body>
+                    <ListGroup variant="flush" className="rounded" style={{ width: "15em" }}>
+                      <Link href="/profile" passHref>
+                        <ListGroup.Item action>Profile</ListGroup.Item>
+                      </Link>
+                      <Link href="/admin" passHref>
+                        <ListGroup.Item action>Admin</ListGroup.Item>
+                      </Link>
+                      <ListGroup.Item action onClick={e => logOut(e)}>Logout</ListGroup.Item>
+                    </ListGroup>
                   </Popover>
                 )}>
-                  <Avatar name={order.userName} email={order.user.mail} round size="36px" className="my-auto" />
+                  <Nav.Item className="my-auto">
+                    <Avatar name={order.userName} email={order.user.mail} round size="36px" style={{ cursor: "pointer" }} />
+                  </Nav.Item>
                 </OverlayTrigger>
-
               </>
             ) : (
               <Link href="/login" passHref={true}>
-                <Nav.Link>Login / Register</Nav.Link>
+                <Nav.Link>Sing in / Sing up</Nav.Link>
               </Link>
-
             )}
           </Nav>
         </Container>
@@ -88,23 +83,31 @@ export default function Layout({ children }: React.PropsWithChildren<unknown>) {
         <Container className="py-5">
           <Row>
             <Col sm>
-              <p>
-                {data?.small_promo.split("\n").map((line, idx) => (<Fragment key={idx}>{line}<br /></Fragment>))}
-              </p>
+              <StringsToHTML>
+                {config?.small_promo}
+              </StringsToHTML>
             </Col>
             <Col sm>
-              <p>
-                {data?.address.split("\n").map((line, idx) => (<Fragment key={idx}>{line}<br /></Fragment>))}
-              </p>
+              <StringsToHTML>
+                {config?.address}
+              </StringsToHTML>
             </Col>
             <Col sm>
-              <p>
-                {data?.addr_worktime.split("\n").map((line, idx) => (<Fragment key={idx}>{line}<br /></Fragment>))}
-              </p>
+              <StringsToHTML>
+                {config?.addr_worktime}
+              </StringsToHTML>
             </Col>
           </Row>
         </Container>
       </Container>
-    </Fragment>
+    </div>
   );
+}
+
+function StringsToHTML({ children }: React.PropsWithChildren<unknown>) {
+  let ch = children;
+  if (typeof children == "string") {
+    ch = children.split("\n").map((line, idx) => (<Fragment key={idx}>{line}<br /></Fragment>));
+  }
+  return (<p>{ch}</p>);
 }
