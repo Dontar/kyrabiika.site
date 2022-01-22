@@ -11,10 +11,6 @@ import Spinner from "react-bootstrap/Spinner";
 import Stack from "react-bootstrap/Stack";
 import Modal from "react-bootstrap/Modal";
 
-import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
-import { faSave } from "@fortawesome/free-regular-svg-icons/faSave";
-import { faPlusSquare } from "@fortawesome/free-regular-svg-icons/faPlusSquare";
-
 import { TabHeader } from "./TabHeader";
 import { MenuItemRow } from "./MenuItemRow";
 import { useSiteConfigContext } from "./SiteConfigContext";
@@ -71,7 +67,7 @@ export function SiteConfigPanel() {
       <TabHeader title="Site config" button={<Button variant="success" disabled={!isDirty} onClick={onSave} className="text-nowrap">
         {isSaving
           ? <Spinner as="span" animation="border" size="sm" role="status" aria-hidden="true" />
-          : <Icon icon={faSave} />}
+          : <i className="far fa-save" />}
         <span className="ms-1">Save</span>
       </Button>} />
       <Row xs={1} md={2}>
@@ -87,7 +83,7 @@ export function SiteConfigPanel() {
           <Stack direction="horizontal" className="my-1">
             <label>Showcased products</label>
             <Button className="ms-auto" variant="outline-primary" size="sm" onClick={toggleModal}>
-              <Icon icon={faPlusSquare} />
+              <i className="far fa-plus-square" />
               <span className="ms-1">Add</span>
             </Button>
           </Stack>

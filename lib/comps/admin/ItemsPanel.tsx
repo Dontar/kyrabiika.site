@@ -11,10 +11,6 @@ import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
 
 import Image from "next/image";
-import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
-import { faCircleXmark } from "@fortawesome/free-regular-svg-icons/faCircleXmark";
-import { faEdit } from "@fortawesome/free-regular-svg-icons/faEdit";
-import { faPlusSquare } from "@fortawesome/free-regular-svg-icons/faPlusSquare";
 
 import Cropper from "react-easy-crop";
 
@@ -51,7 +47,7 @@ export function ItemsPanel() {
     <Container>
       <TabHeader title="Items" button={
         <Button onClick={showModal({})}>
-          <Icon icon={faPlusSquare} />
+          <i className="far fa-plus-square" />
           <span className="ms-1">Add</span>
         </Button>
       } />
@@ -65,11 +61,11 @@ export function ItemsPanel() {
             </Stack>
 
             <Button variant="outline-success" size="sm" className="text-nowrap" onClick={showModal(item)}>
-              <Icon icon={faEdit} />
+              <i className="far fa-edit"/>
               <span className="ms-1">Edit</span>
             </Button>
             <Button variant="outline-danger" size="sm" onClick={onRemove(idx)}>
-              <Icon icon={faCircleXmark} />
+              <i className="far fa-times-circle"/>
             </Button>
 
           </ListGroup.Item>

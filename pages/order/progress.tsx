@@ -5,10 +5,6 @@ import Row from "react-bootstrap/Row";
 
 import Layout from "../../lib/comps/Layout";
 
-import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
-import { faListAlt } from "@fortawesome/free-regular-svg-icons/faListAlt";
-import { faTruck } from "@fortawesome/free-solid-svg-icons/faTruck";
-import { faCheese } from "@fortawesome/free-solid-svg-icons/faCheese";
 import { classes } from "../../lib/utils/Utils";
 import { useOrderContext } from "../../lib/comps/OrderContext";
 
@@ -25,19 +21,19 @@ export default function OrderProgress() {
         <Row className="mb-2">
           <Col className={classes({ "text-center": true, "text-muted": order.progress !== "Processing" })}>
             <div>
-              <Icon size="5x" icon={faListAlt} />
+              <i className="far fa-list-alt fs-1" />
             </div>
             Processing
           </Col>
           <Col className={classes({ "text-center": true, "text-muted": order.progress !== "Preparing" })}>
             <div>
-              <Icon size="5x" icon={faCheese} />
+              <i className="fas fa-cheese fs-1" />
             </div>
             Preparing
           </Col>
           <Col className={classes({ "text-center": true, "text-muted": order.progress !== "Delivering" })}>
             <div>
-              <Icon size="5x" icon={faTruck} />
+              <i className="fas fa-truck fs-1" />
             </div>
             Delivering
           </Col>

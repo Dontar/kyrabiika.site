@@ -4,8 +4,6 @@ import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
 import Stack from "react-bootstrap/Stack";
 
-import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
-import { faCircleXmark } from "@fortawesome/free-regular-svg-icons/faCircleXmark";
 import Image from "next/image";
 
 import { MenuItem } from "../../db/DbTypes";
@@ -25,7 +23,7 @@ export function MenuItemRow({ item, onRemove }: MenuItemRowProps): JSX.Element {
       </Stack>
       <div>
         <Button variant="outline-danger" size="sm" onClick={onRemove}>
-          <Icon icon={faCircleXmark} />
+        <i className="far fa-times-circle"/>
         </Button>
       </div>
     </ListGroup.Item>

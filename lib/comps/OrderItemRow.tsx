@@ -5,8 +5,6 @@ import Button from "react-bootstrap/Button";
 import ListGroup from "react-bootstrap/ListGroup";
 import Stack from "react-bootstrap/Stack";
 
-import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
-import { faCircleXmark } from "@fortawesome/free-regular-svg-icons/faCircleXmark";
 import Image from "next/image";
 
 import { OrderItem } from "../db/DbTypes";
@@ -29,7 +27,7 @@ export function OrderItemRow({ item, onRemove }: OrderItemsListProps): JSX.Eleme
       <div className="px-1">{formatter.format(item.item.price * item.count)}</div>
       <div className="ps-1">
         <Button variant="outline-danger" size="sm" onClick={onRemove}>
-          <Icon icon={faCircleXmark} />
+          <i className="far fa-times-circle" />
         </Button>
       </div>
     </ListGroup.Item>
