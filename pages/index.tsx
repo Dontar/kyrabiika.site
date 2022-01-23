@@ -4,7 +4,6 @@ import Button from "react-bootstrap/Button";
 import Carousel from "react-bootstrap/Carousel";
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
-import Nav from "react-bootstrap/Nav";
 import Row from "react-bootstrap/Row";
 
 import Link from "next/link";
@@ -38,15 +37,7 @@ export const getStaticProps: GetStaticProps<HomeProps> = async (_context) => {
 
 export default function Home({ menuItems, config }: HomeProps) {
   return (
-    <Layout
-      navLinks={
-        <Nav>
-          <Link href="/order" passHref={true}>
-            <Nav.Link>Order</Nav.Link>
-          </Link>
-        </Nav>
-      }
-    >
+    <Layout>
       <Carousel id="home">
         <Carousel.Item>
           <Image

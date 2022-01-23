@@ -70,7 +70,7 @@ export default function Login() {
       return;
     }
 
-    order.setUser(rest.post("/api/register", input)).catch(e => {
+    order.setUser(rest.post("/api/register", {...input, rePassword: undefined})).catch(e => {
       if (e instanceof FetchError) {
         return setErrorRegMsg(e.data?.message || e.message);
       }

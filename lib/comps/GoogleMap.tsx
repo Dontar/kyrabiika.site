@@ -20,6 +20,7 @@ export default function GoogleMap(props: GoogleMapOptions) {
   async function findGeo(request: google.maps.GeocoderRequest) {
     const geocode = new google.maps.Geocoder();
     const { results: [result] } = await geocode.geocode({ ...request, region: "bg-BG" });
+    console.info(result);
     return result;
   }
 

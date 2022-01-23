@@ -1,4 +1,4 @@
-import React, { ReactElement, useState, useEffect } from "react";
+import React, { ReactElement, useState } from "react";
 
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -6,16 +6,11 @@ import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import ListGroup from "react-bootstrap/ListGroup";
 import Modal from "react-bootstrap/Modal";
-import Nav from "react-bootstrap/Nav";
 import Row from "react-bootstrap/Row";
-import Form from "react-bootstrap/Form";
 
 import Layout from "../../lib/comps/Layout";
 import Link from "next/link";
 
-import { FontAwesomeIcon as Icon } from "@fortawesome/react-fontawesome";
-import { faCalendar } from "@fortawesome/free-solid-svg-icons/faCalendar";
-import { faClock } from "@fortawesome/free-solid-svg-icons/faClock";
 import { OrderItemRow } from "../../lib/comps/OrderItemRow";
 import { useOrderContext } from "../../lib/comps/OrderContext";
 import { formatter } from "../../lib/utils/Utils";
@@ -157,7 +152,7 @@ function ScheduleOrder({ modalShow, handleClose }: { modalShow: boolean, handleC
       <Modal.Body>
         <Row>
           <Col style={{ maxHeight: "20em" }} className="overflow-auto">
-            <Icon className="text-muted" icon={faCalendar} />
+            <i className="far fa-calendar text-muted" />
             <span>Start date</span>
             <ListGroup variant="flush">
               <ListGroup.Item action>Today</ListGroup.Item>
@@ -179,7 +174,7 @@ function ScheduleOrder({ modalShow, handleClose }: { modalShow: boolean, handleC
             </ListGroup>
           </Col>
           <Col style={{ maxHeight: "20em" }} className="overflow-auto">
-            <Icon className="text-muted" icon={faClock} />
+            <i className="far fa-clock text-muted" />
             <span>Start time</span>
             <ListGroup variant="flush">
               <ListGroup.Item action>ASAP</ListGroup.Item>

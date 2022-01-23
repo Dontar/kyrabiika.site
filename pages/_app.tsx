@@ -1,5 +1,4 @@
 import "../styles/global.scss";
-// import "react-image-crop/dist/ReactCrop.css";
 
 import type { AppProps } from "next/app";
 import { SSRProvider } from "@react-aria/ssr";
@@ -7,8 +6,6 @@ import reportWebVitals from "../lib/utils/ReportWebVitals";
 import { OrderContext } from "../lib/comps/OrderContext";
 import { useRouter } from "next/router";
 import NProgress from "nprogress";
-import "../styles/nprogress.css";
-
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();

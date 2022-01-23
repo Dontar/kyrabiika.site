@@ -1,5 +1,3 @@
-import { Require_id } from "mongoose";
-
 interface MongoId {
   _id?: any;
 }
