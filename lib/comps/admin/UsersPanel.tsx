@@ -11,7 +11,7 @@ import md5 from "crypto-js/md5";
 import Image from "next/image";
 
 import { User } from "../../db/DbTypes";
-import { TabHeader } from "./TabHeader";
+import { TabHeader } from "../TabHeader";
 
 export function UsersPanel() {
   const { data: users } = useSWR<User[]>("/api/users", url => fetch(url).then(r => r.json()));

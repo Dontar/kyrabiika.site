@@ -15,7 +15,7 @@ import Image from "next/image";
 import Cropper from "react-easy-crop";
 
 import { MenuItem } from "../../db/DbTypes";
-import { TabHeader } from "./TabHeader";
+import { TabHeader } from "../TabHeader";
 import { Area, Point } from "react-easy-crop/types";
 
 export function ItemsPanel() {

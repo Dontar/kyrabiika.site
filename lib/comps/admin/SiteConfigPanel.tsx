@@ -11,7 +11,7 @@ import Spinner from "react-bootstrap/Spinner";
 import Stack from "react-bootstrap/Stack";
 import Modal from "react-bootstrap/Modal";
 
-import { TabHeader } from "./TabHeader";
+import { TabHeader } from "../TabHeader";
 import { MenuItemRow } from "./MenuItemRow";
 import { useSiteConfigContext } from "./SiteConfigContext";
 
