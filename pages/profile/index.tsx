@@ -1,18 +1,15 @@
+import React from "react";
+
 import Col from "react-bootstrap/Col";
-import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
 import Tab from "react-bootstrap/Tab";
 import ListGroup from "react-bootstrap/ListGroup";
+import Container from "react-bootstrap/Container";
 
-import Layout from "../lib/comps/Layout";
-import { useOrderContext } from "../lib/comps/OrderContext";
+import Layout from "../../lib/comps/Layout";
+import UserProfile from "../../lib/comps/profile/UserProfile";
 
 export default function Profile() {
-
-  useOrderContext({
-    redirectTo: "/login",
-  });
-
   return (
     <Layout>
       <Container fluid className="mt-2">
@@ -27,12 +24,11 @@ export default function Profile() {
             <Col>
               <Tab.Content>
                 <Tab.Pane eventKey="#profile" title="Profile">
-
-
+                  <UserProfile />
                 </Tab.Pane>
                 <Tab.Pane eventKey="#orders" title="Orders">
-
-
+                  <h3>Orders</h3>
+                  <hr />
 
                 </Tab.Pane>
               </Tab.Content>
