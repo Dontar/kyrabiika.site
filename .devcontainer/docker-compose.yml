@@ -6,16 +6,16 @@ services:
       context: .
       dockerfile: Dockerfile
       # args:
-        # [Choice] Node.js version: 16, 14, 12
-        # VARIANT: 16
-        # On Linux, you may need to update USER_UID and USER_GID below if not your local UID is not 1000.
-        # USER_UID: 1000
-        # USER_GID: 1000
+      # [Choice] Node.js version: 16, 14, 12
+      # VARIANT: 16
+      # On Linux, you may need to update USER_UID and USER_GID below if not your local UID is not 1000.
+      # USER_UID: 1000
+      # USER_GID: 1000
 
-    # volumes:
+      # volumes:
       # - repo:/workspaces:cached
 
-    # Overrides default command so things don't shut down after the process ends.
+      # Overrides default command so things don't shut down after the process ends.
     command: sleep infinity
 
     entrypoint:
@@ -30,7 +30,7 @@ services:
     # (Adding the "ports" property to this file will not forward from a Codespace.)
 
   db:
-    image: mongo:4-focal
+    image: mongo:latest
     restart: unless-stopped
     volumes:
       - mongodb-data:/data/db
@@ -41,10 +41,8 @@ services:
       MONGO_INITDB_ROOT_USERNAME: root
       MONGO_INITDB_ROOT_PASSWORD: example
       MONGO_INITDB_DATABASE: database
-
     # Add "forwardPorts": ["27017"] to **devcontainer.json** to forward MongoDB locally.
     # (Adding the "ports" property to this file will not forward from a Codespace.)
 
 volumes:
-  mongodb-data:
-  # repo:
+  mongodb-data: # repo:
