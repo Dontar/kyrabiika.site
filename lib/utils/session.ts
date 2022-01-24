@@ -16,4 +16,4 @@ declare module "iron-session" {
   }
 }
 
-export const imagesRootPath = process.env.DB_IMAGES ?? "/workspaces/kyrabiika.site/images";
+export const imagesRootPath = process.env.DB_IMAGES ?? `${process.cwd()}/images`;
