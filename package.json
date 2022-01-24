@@ -3,10 +3,11 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "initdb": "ts-node -O '{\"module\": \"CommonJS\"}' lib/db/InitDb.ts",
-    "dev": "npm run initdb && next dev",
-    "build": "npm run initdb && next build",
-    "start": "npm run initdb && next start",
+    "build:init-db": "npx tsc -p ./tsconfig.db.json",
+    "init-db": "node init-db",
+    "dev": "npm run build:init-db && npm run init-db && next dev",
+    "build": "npm run build:init-db && npm run init-db && next build",
+    "start": "npm run init-db && next start",
     "lint": "next lint"
   },
   "dependencies": {
