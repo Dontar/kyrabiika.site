@@ -14,8 +14,7 @@ COPY --chown=nextjs:nodejs /package-lock.json ./
 COPY --chown=nextjs:nodejs /public ./public
 COPY --chown=nextjs:nodejs /next ./next
 COPY --chown=nextjs:nodejs /init-db ./init-db
-
-RUN npm ci
+COPY --chown=nextjs:nodejs /node_modules ./node_modules
 
 USER nextjs
 
