@@ -3,7 +3,7 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
-    "build:init-db": "npx tsc -p ./tsconfig.db.json",
+    "build:init-db": "tsc -p ./tsconfig.db.json",
     "init-db": "node init-db",
     "dev": "npm run build:init-db && npm run init-db && next dev",
     "build": "npm run build:init-db && npm run init-db && next build",
