@@ -24,6 +24,10 @@ version: 0.1.0
 appVersion: "latest"
 
 dependencies:
-- name: mongodb
-  version: 10.29.3
-  repository: "https://charts.bitnami.com/bitnami"
+  - name: mongodb
+    version: 10.29.3
+    repository: "https://charts.bitnami.com/bitnami"
+
+  - name: common
+    version: 4.3.0 # make sure to use the latest common library version available
+    repository: https://library-charts.k8s-at-home.com

@@ -92,4 +92,4 @@ steps:
       force: true
       values:
         - image.tag=&{DRONE_TAG/v/}
-        - service.nodePort=30999
+        - service.main.ports.http.nodePort=30999
