@@ -72,23 +72,74 @@ steps:
         from_secret: registry_user
       password:
         from_secret: registry_pass
-      repo: registry.local/kyrabiika-site
+      repo: registry.local.net/kyrabiika-site
       insecure: true
-      registry: registry.local
+      registry: registry.local.net
       auto_tag: true
 
+  # Deploy docker image with helm
   - name: helm deploy
     image: bitsbeats/drone-helm3
     settings:
-      kube_api_server: https://k3s.local:6443
+      # skip creation of kubeconfig (optional, default:false)
+      # kube_skip: false
+
+      # path to kubeconfig (optional, default:/root/.kube/config)
+      # kube_config: /root/.kube/config
+
+      # kubernetes api server (required)
+      kube_api_server:
+        from_secret: kube_api
+
+      # kubernetes token (required)
       kube_token:
         from_secret: kube_token
+
+      # kubernetes http ca (optional)
+      kube_certificate:
+        from_secret: kube_cert
+
+      # disable kubernetes tls verify (optional, default:false)
+      # kube_skip_tls: false
+
+      # the helm chart to be deployed (required)
       chart: ./chart
-      update_dependencies: true
-      namespace: cookie
+
+      # helm release name (required)
       release: cookie
+
+      # kubernets and helm namespace (required)
+      namespace: cookie
+
+      # helm lint option (optional, default:true)
+      # lint: true
+
+      # helm atomic option (optional, default:true)
+      atomic: true
+
+      # helm wait option (optional, default:true)
       wait: true
-      force: true
+
+      # helm force option (optional, default:false)
+      # force: false
+
+      # helm cleanup option (optional, default:false)
+      # cleanup_on_fail: false
+
+      # helm dryrun option (optional, default:false)
+      # dry_run: false
+
+      # additonal helm repos (optional)
+      # helm_repos:
+
+      # helm update dependencies option (optional, default:false)
+      update_dependencies: true
+
+      # additional –set options (optional)
       values:
-        - image.tag=&{DRONE_TAG/v/}
+        - image.tag=${DRONE_TAG/v/}
         - service.main.ports.http.nodePort=30999
+        # - imagePullSecrets[0].name=registry-local
+
+      # additonal values files (optional)
+      # vaules_yaml:

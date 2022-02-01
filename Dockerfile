@@ -12,7 +12,8 @@ COPY --chown=nextjs:nodejs /package.json ./
 COPY --chown=nextjs:nodejs /package-lock.json ./
 
 COPY --chown=nextjs:nodejs /public ./public
-COPY --chown=nextjs:nodejs /next ./next
+COPY --chown=nextjs:nodejs /images ./images
+COPY --chown=nextjs:nodejs /.next ./.next
 COPY --chown=nextjs:nodejs /init-db ./init-db
 COPY --chown=nextjs:nodejs /node_modules ./node_modules
 
@@ -27,4 +28,4 @@ ENV PORT 3000
 # Uncomment the following line in case you want to disable telemetry.
 # ENV NEXT_TELEMETRY_DISABLED 1
 
-CMD ["npm", "run start"]
+CMD ["npm", "run", "start"]

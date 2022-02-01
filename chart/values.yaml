@@ -1,5 +1,5 @@
 image:
-  repository: registry.local/kyrabiika-site
+  repository: registry.local.net/kyrabiika-site
   tag: "latest"
   pullPolicy: IfNotPresent
 
