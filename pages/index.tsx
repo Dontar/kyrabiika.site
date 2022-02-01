@@ -1,53 +1,43 @@
-import React from 'react';
-import { Button, Carousel, Col, Container, Nav, Row } from 'react-bootstrap';
+import React from "react";
 
-import Layout from '../lib/Layout';
+import Button from "react-bootstrap/Button";
+import Carousel from "react-bootstrap/Carousel";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import Row from "react-bootstrap/Row";
 
-import Link from 'next/link';
-import Image from 'next/image';
-import { GetStaticProps } from 'next';
-import { connect, MenuItemModel } from '../lib/Connection';
-import { MenuItem } from '../lib/DbTypes';
-import { MenuItemCard } from '../lib/MenuItemCard';
+import Link from "next/link";
+import Image from "next/image";
+import type { GetStaticProps } from "next";
+
+import Layout from "../lib/comps/Layout";
+import { connect, SiteConfigModel } from "../lib/db/Connection";
+import { MenuItem, SiteConfig } from "../lib/db/DbTypes";
+import { MenuItemCard } from "../lib/comps/MenuItemCard";
+import { convert } from "../lib/utils/Utils";
 
 type HomeProps = {
   menuItems: MenuItem[];
+  config: SiteConfig | null;
 }
 
 export const getStaticProps: GetStaticProps<HomeProps> = async (_context) => {
   await connect();
 
-  const items = await MenuItemModel.find();
+  const config = convert(await SiteConfigModel.findOne().lean({ autopopulate: true }));
+
   return {
     props: {
-      menuItems: items.map(i => {
-        const result = i.toObject();
-        result._id = result._id.toString();
-        return result;
-      })
-    }
-  }
-}
+      menuItems: config?.promo_items!,
+      config
+    },
+    revalidate: 30
+  };
+};
 
-export default function Home({ menuItems }: HomeProps) {
-
+export default function Home({ menuItems, config }: HomeProps) {
   return (
-    <Layout
-      navLinks={
-        <Nav>
-          <Nav.Link href="#home">Home</Nav.Link>
-          <Nav.Link href="#products">Products</Nav.Link>
-          <Nav.Link href="#history">History</Nav.Link>
-          <Nav.Link href="#contacts">Contacts</Nav.Link>
-          <Link href="/order" passHref={true}>
-            <Nav.Link>Order</Nav.Link>
-          </Link>
-          <Link href="/admin" passHref={true}>
-            <Nav.Link>Admin</Nav.Link>
-          </Link>
-        </Nav>
-      }
-    >
+    <Layout>
       <Carousel id="home">
         <Carousel.Item>
           <Image
@@ -58,6 +48,7 @@ export default function Home({ menuItems }: HomeProps) {
             layout="responsive"
             height={450}
             width={1600}
+            priority
           />
           <Carousel.Caption>
             <h3>First slide label</h3>
@@ -77,7 +68,7 @@ export default function Home({ menuItems }: HomeProps) {
         </Row>
         <div className="text-center mt-5">
           <Link href="/order" passHref>
-            <Button variant="success" style={{ width: '20em' }}>Order</Button>
+            <Button variant="success" style={{ width: "20em" }}>Order</Button>
           </Link>
         </div>
       </Container>
@@ -85,24 +76,9 @@ export default function Home({ menuItems }: HomeProps) {
         <h1 className="text-center">Born by acident.</h1>
         <hr />
         <h5 className="text-center">Who are we?</h5>
-        <Row xs={1} md={2}>
-          <Col >
-            <p>
-              Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-              blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-              blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-              blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-            </p>
-          </Col>
-          <Col >
-            <p>
-              Blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-              blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-              blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-              blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah blah
-            </p>
-          </Col>
-        </Row>
+        <p className="mission-statement">
+          {config?.mission_statement}
+        </p>
       </Container>
     </Layout>
   );

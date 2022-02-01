@@ -1,16 +1,21 @@
-import React, { useState } from 'react';
-import Link from 'next/link';
-import { Button, Col, Container, ListGroup, Nav, Row } from 'react-bootstrap';
+import React, { useState } from "react";
 
-import Layout from '../../lib/Layout';
+import Link from "next/link";
+import { GetStaticProps } from "next";
 
-import { OrderItemRow } from '../../lib/OrderItemRow';
-import { GetStaticProps } from 'next';
-import { connect, MenuItemModel } from '../../lib/Connection';
-import { MenuItem } from '../../lib/DbTypes';
-import { classes, formatter } from '../../lib/Utils';
-import { OrderState, useOrderContext } from '../../lib/OrderContext';
-import { MenuItemCard } from '../../lib/MenuItemCard';
+import Button from "react-bootstrap/Button";
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import ListGroup from "react-bootstrap/ListGroup";
+import Row from "react-bootstrap/Row";
+
+import Layout from "../../lib/comps/Layout";
+import { OrderItemRow } from "../../lib/comps/OrderItemRow";
+import { connect, MenuItemModel } from "../../lib/db/Connection";
+import { MenuItem } from "../../lib/db/DbTypes";
+import { classes, convert, formatter } from "../../lib/utils/Utils";
+import { OrderState, useOrderContext } from "../../lib/comps/OrderContext";
+import { MenuItemCard } from "../../lib/comps/MenuItemCard";
 
 type OrderProps = {
   categories: string[];
@@ -19,35 +24,28 @@ type OrderProps = {
 
 export const getStaticProps: GetStaticProps<OrderProps> = async (_context) => {
   await connect();
-  const items = await MenuItemModel.find();
+  const data: MenuItem[] = (await MenuItemModel.find().lean({ autopopulate: true })).map(convert);
   return {
     props: {
-      categories: Array.from(items.reduce<Set<string>>((result, item) => {
+      categories: Array.from(data.reduce((result, item) => {
         result.add(item.category);
         return result;
-      }, new Set())),
-      data: items.map(i => {
-        const result = i.toObject();
-        result._id = result._id.toString();
-        return result;
-      })
-    }
-  }
-}
+      }, new Set<string>())),
+      data
+    },
+    revalidate: 30
+  };
+};
 
 export default function Order({ categories, data }: OrderProps) {
-  const [selectedCat, setSelected] = useState('Всички');
-  const order = useOrderContext();
+  const [selectedCat, setSelected] = useState("Всички");
+  const order = useOrderContext({
+    redirectTo: "/login"
+  });
 
   // const [orderList, setOrderList] = useState<OrderItem[]>([]);
   return (
-    <Layout navLinks={
-      <Nav>
-        <Link href="/" passHref={true}>
-          <Nav.Link>Home</Nav.Link>
-        </Link>
-      </Nav>
-    }>
+    <Layout>
       <Container fluid className="mt-2">
         <Row>
           <Col lg={2}>
@@ -55,9 +53,9 @@ export default function Order({ categories, data }: OrderProps) {
           </Col>
           <Col>
             <Row>
-              {data.filter(i => i.category == selectedCat || selectedCat == 'Всички').map((item, idx) => (
-                <Col className="mb-3" lg={4} md={6} key={idx} >
-                  <MenuItemCard item={item} onBuy={() => order.addItem(item)} />
+              {data.filter(i => i.category == selectedCat || selectedCat == "Всички").map((item, idx) => (
+                <Col className="mb-3" lg={4} md={6} key={idx}>
+                  <MenuItemCard item={item} onBuy={count => order.addItem(item, count)} />
                 </Col>
               ))}
             </Row>
@@ -75,11 +73,6 @@ export default function Order({ categories, data }: OrderProps) {
       </Container>
     </Layout>
   );
-}
-
-type CategoriesListProps = {
-  categories: string[];
-  onSelected?: (category: string) => void;
 }
 
 function OrderRow({ order }: { order: OrderState }) {
@@ -101,8 +94,13 @@ function OrderRow({ order }: { order: OrderState }) {
   );
 }
 
+type CategoriesListProps = {
+  categories: string[];
+  onSelected?: (category: string) => void;
+}
+
 function CategoriesList({ categories, onSelected }: CategoriesListProps): JSX.Element {
-  const [selected, setSelected] = useState('Всички');
+  const [selected, setSelected] = useState("Всички");
   return (
     <ListGroup className="position-sticky" style={{ top: "4em" }} variant="flush">
       {["Всички", ...categories].map(((cat, idx) => (

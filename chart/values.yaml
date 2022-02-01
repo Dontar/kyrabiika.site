@@ -1,0 +1,25 @@
+image:
+  repository: registry.local.net/kyrabiika-site
+  tag: "latest"
+  pullPolicy: IfNotPresent
+
+env:
+  DB_SERVER: mongodb://root:example@{{ include "mongodb.dns" . }}:27017/kyrabiika?authSource=admin&readPreference=primary&ssl=false
+  # SECRET_COOKIE_PASSWORD:
+  NODE_ENV: production
+  # DB_IMAGES:
+  # DB_SALT_ROUNDS:
+
+# -- Configure the services for the chart here.
+# Additional services can be added by adding a dictionary key similar to the 'main' service.
+# @default -- See below
+service:
+  main:
+    type: NodePort
+    ports:
+      http:
+        port: 3000
+
+mongodb:
+  auth:
+    rootPassword: "example"

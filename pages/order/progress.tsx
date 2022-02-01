@@ -1,49 +1,39 @@
-import React from 'react';
-import Link from 'next/link';
-import { Col, Container, Nav, ProgressBar, Row } from 'react-bootstrap';
+import Col from "react-bootstrap/Col";
+import Container from "react-bootstrap/Container";
+import ProgressBar from "react-bootstrap/ProgressBar";
+import Row from "react-bootstrap/Row";
 
-import Layout from '../../lib/Layout';
+import Layout from "../../lib/comps/Layout";
 
-import { FontAwesomeIcon as Icon } from '@fortawesome/react-fontawesome';
-import { faListAlt } from '@fortawesome/free-regular-svg-icons';
-import { faCheese, faTruck } from '@fortawesome/free-solid-svg-icons';
-import { classes } from '../../lib/Utils';
-import { useOrderContext } from '../../lib/OrderContext';
-
-// const formatter = new Intl.NumberFormat('bg-BG', { style: 'currency', currency: 'BGN' });
-
+import { classes } from "../../lib/utils/Utils";
+import { useOrderContext } from "../../lib/comps/OrderContext";
 
 export default function OrderProgress() {
-  const order = useOrderContext();
-  // const [now, setNow] = useState(0);
+  const order = useOrderContext({
+    redirectTo: "/login"
+  });
 
   return (
-    <Layout navLinks={
-      <Nav>
-        <Link href="/" passHref>
-          <Nav.Link>Home</Nav.Link>
-        </Link>
-      </Nav>
-    }>
+    <Layout>
       <Container className="mt-5 p-5">
         <h2 className="text-center">Delivery</h2>
         <div style={{ height: "8em" }} />
         <Row className="mb-2">
-          <Col className={classes({ 'text-center': true, 'text-muted': order.progress !== 'Processing' })}>
+          <Col className={classes({ "text-center": true, "text-muted": order.progress !== "Processing" })}>
             <div>
-              <Icon size="5x" icon={faListAlt} />
+              <i className="far fa-list-alt fs-1" />
             </div>
             Processing
           </Col>
-          <Col className={classes({ 'text-center': true, 'text-muted': order.progress !== 'Preparing' })}>
+          <Col className={classes({ "text-center": true, "text-muted": order.progress !== "Preparing" })}>
             <div>
-              <Icon size="5x" icon={faCheese} />
+              <i className="fas fa-cheese fs-1" />
             </div>
             Preparing
           </Col>
-          <Col className={classes({ 'text-center': true, 'text-muted': order.progress !== 'Delivering' })}>
+          <Col className={classes({ "text-center": true, "text-muted": order.progress !== "Delivering" })}>
             <div>
-              <Icon size="5x" icon={faTruck} />
+              <i className="fas fa-truck fs-1" />
             </div>
             Delivering
           </Col>
