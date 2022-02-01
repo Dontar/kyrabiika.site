@@ -22,7 +22,7 @@
     "react-custom-scrollbars-2": "^4.3.0",
     "react-dom": "17.0.2",
     "react-responsive": "^8.2.0",
-    "send": "^0.17.1",
+    "send": "^0.17.2",
     "swr": "^1.0.1",
     "web-vitals": "^2.1.2"
   },
