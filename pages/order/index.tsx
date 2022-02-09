@@ -39,9 +39,7 @@ export const getStaticProps: GetStaticProps<OrderProps> = async (_context) => {
 
 export default function Order({ categories, data }: OrderProps) {
   const [selectedCat, setSelected] = useState("Всички");
-  const order = useOrderContext({
-    redirectTo: "/login"
-  });
+  const order = useOrderContext();
 
   // const [orderList, setOrderList] = useState<OrderItem[]>([]);
   return (
