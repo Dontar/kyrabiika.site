@@ -72,7 +72,7 @@ export default function Layout(p: JSX.IntrinsicElements["div"]) {
               </>
             ) : (
               <Link href="/login" passHref={true}>
-                <Nav.Link>Sing in / Sing up</Nav.Link>
+                <Nav.Link>Sign in / Sign up</Nav.Link>
               </Link>
             )}
           </Nav>
