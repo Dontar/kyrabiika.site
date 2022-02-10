@@ -1,7 +1,6 @@
 import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
 import { sessionOptions } from "./session";
-import { getSession } from "next-auth/react";
 
 export type Handler<T = any> = (req: Omit<NextApiRequest, "body"> & { body: T }, res: NextApiResponse<T>, next?: (result?: unknown | Error) => unknown) => void | Promise<void>;
 
@@ -78,7 +77,7 @@ export default function rest() {
   const withSession = {} as RestAPIBase;
   HTTPMethods.forEach(method => {
     withSession[method] = (handler: Handler) => {
-      handlers.set(method.toUpperCase(), handler);
+      handlers.set(method.toUpperCase(), withIronSessionApiRoute(handler, sessionOptions));
       return withSession;
     };
   });
@@ -86,15 +85,13 @@ export default function rest() {
   const withAuth = {} as RestAPIBase;
   HTTPMethods.forEach(method => {
     withAuth[method] = (handler: Handler) => {
-      handlers.set(method.toUpperCase(), async (req, res) => {
-        const session = await getSession({ req });
-        if (session) {
-          req["session"] = session;
+      handlers.set(method.toUpperCase(), withIronSessionApiRoute((req, res) => {
+        if (req.session.user) {
           return handler(req, res);
         } else {
           res.status(401).end();
         }
-      });
+      }, sessionOptions));
       return withAuth;
     };
   });

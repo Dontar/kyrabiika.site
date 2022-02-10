@@ -6,6 +6,7 @@ import reportWebVitals from "../lib/utils/ReportWebVitals";
 import { OrderContext } from "../lib/comps/OrderContext";
 import { useRouter } from "next/router";
 import NProgress from "nprogress";
+import { SessionProvider } from "next-auth/react";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -27,9 +28,11 @@ function MyApp({ Component, pageProps }: AppProps) {
 
   return (
     <SSRProvider>
-      <OrderContext>
-        <Component {...pageProps} />
-      </OrderContext>
+      <SessionProvider session={pageProps.session}>
+        <OrderContext>
+          <Component {...pageProps} />
+        </OrderContext>
+      </SessionProvider>
     </SSRProvider>
   );
 }

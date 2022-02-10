@@ -9,9 +9,7 @@ import { classes } from "../../lib/utils/Utils";
 import { useOrderContext } from "../../lib/comps/OrderContext";
 
 export default function OrderProgress() {
-  const order = useOrderContext({
-    redirectTo: "/login"
-  });
+  const order = useOrderContext();
 
   return (
     <Layout>

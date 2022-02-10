@@ -23,9 +23,7 @@ export default function OrderSummary() {
 
   const handleClose = () => setModalShow(false);
 
-  const order = useOrderContext({
-    redirectTo: "/login"
-  });
+  const order = useOrderContext();
 
   const onNewPosition = (pos: google.maps.LatLngLiteral, address?: string) => {
     order.setUserAddress(address!, pos);

@@ -1,4 +1,5 @@
 import React, { Fragment, useCallback, useState } from "react";
+import { signOut } from "next-auth/react";
 
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -30,9 +31,12 @@ export default function Layout(p: JSX.IntrinsicElements["div"]) {
   const logOut = useCallback(async (e: React.MouseEvent<Element>) => {
     e.preventDefault();
     order.clear();
-    await order.setUser(rest.get<LoggedInUser>("/api/logout"), false);
-    router.push("/");
-  }, [order, router]);
+    console.log("signOut" + `${window.location.origin}`);
+    signOut();
+    // await order.setUser(rest.get<LoggedInUser>("/api/logout"), false);
+    // order.setUser({} as LoggedInUser);
+    // router.push("/map");
+  }, [order]);
 
   return (
     <div {...props} onClickCapture={() => setShowAvatarMenu(false)}>
@@ -75,6 +79,15 @@ export default function Layout(p: JSX.IntrinsicElements["div"]) {
                 <Nav.Link>Sing in / Sing up</Nav.Link>
               </Link>
             )}
+            <Link href="/map" passHref={true}>
+              <Nav.Link>Map</Nav.Link>
+            </Link>
+            <Link href="/profile" passHref>
+              <ListGroup.Item action>Profile</ListGroup.Item>
+            </Link>
+            <Link href="/order" passHref>
+              <ListGroup.Item action>Order</ListGroup.Item>
+            </Link>
           </Nav>
         </Container>
       </Navbar>

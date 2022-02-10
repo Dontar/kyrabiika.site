@@ -1,4 +1,6 @@
 import React from "react";
+import { useSession } from "next-auth/react";
+import Router from "next/router";
 
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
@@ -10,6 +12,19 @@ import Layout from "../../lib/comps/Layout";
 import UserProfile from "../../lib/comps/profile/UserProfile";
 
 export default function Profile() {
+  const { status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      // The user is not authenticated, handle it here.
+      Router.push("/login");
+    }
+  });
+
+  if (status === "loading") {
+    console.log('inside Profile index')
+    return null;
+  }
+
   return (
     <Layout>
       <Container fluid className="mt-2">

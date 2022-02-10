@@ -1,4 +1,9 @@
-import React, { useState } from "react";
+import React, { FC, useState } from "react";
+import Router from "next/router";
+import { getProviders, signIn, getSession } from "next-auth/react";
+import { AppProviders, BuiltInProviders, Provider } from "next-auth/providers";
+import { SignInResponse } from "next-auth/react/types";
+import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
@@ -15,7 +20,34 @@ import Layout from "../lib/comps/Layout";
 import { useOrderContext } from "../lib/comps/OrderContext";
 import rest, { FetchError } from "../lib/utils/rest-client";
 
-export default function Login() {
+type LoginProps = {
+  callBackUrl: string,
+  providers: Provider[]
+}
+
+export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
+
+  const { req } = context;
+  const providers = await getProviders();
+  const session = await getSession({ req });
+  if (session) {
+    return {
+      redirect: {
+        destination: "/",
+        permanent: false,
+      },
+    };
+  }
+
+  return {
+    props: {
+      callBackUrl: context.req.headers.referer || "/",
+      providers: providers
+    }
+  };
+};
+
+export default function Login({ providers, callBackUrl }: LoginProps) {
   const [input, setInput] = useState({
     firstName: "",
     lastName: "",
@@ -29,6 +61,7 @@ export default function Login() {
   const [errorRegMsg, setErrorRegMsg] = useState<string>();
   const [show, setShow] = useState(false);
 
+  // You dont need this anymore, redirection is happen in getServerSideProps, if session is available.
   const order = useOrderContext({
     redirectTo: "back",
     redirectIfFound: true,
@@ -39,17 +72,32 @@ export default function Login() {
     setInput(input => ({ ...input, [event.target.name]: event.target.value }));
   };
 
-  const handleSubmitLogin = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault();
-    order.setUser(rest.post("/api/login", input)).catch(e => {
-      if (e instanceof FetchError) {
-        return setErrorLogMsg(e.data?.message || e.message);
-      }
-      console.error("An unexpected error:", e);
+  const handleSubmitLogin = async (event?: React.FormEvent<HTMLFormElement>) => {
+    event?.preventDefault();
+    const status: SignInResponse | undefined = await signIn("credentials", {
+      redirect: false, /* leave ths option if you don't want to be a redirected after sign in */
+      username: input.mail,
+      password: input.password,
+      // callbackUrl: callBackUrl
     });
+    if (status!.ok === true) {
+      console.log(callBackUrl);
+      await order.setUser();
+      Router.push(callBackUrl);
+      // return null;
+    };
+    if (status!.error === "CredentialsSignin") {
+      return setErrorLogMsg("Wrong user or password");
+    };
+    // order.setUser(rest.post("/api/login", input)).catch(e => {
+    //   if (e instanceof FetchError) {
+    //     return setErrorLogMsg(e.data?.message || e.message);
+    //   }
+    //   console.error("An unexpected error:", e);
+    // });
   };
 
-  const handleSubmitRegister = (event: React.FormEvent<HTMLFormElement>) => {
+  const handleSubmitRegister = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     const form = event.currentTarget;
     if (form.checkValidity() === false) {
@@ -70,12 +118,17 @@ export default function Login() {
       return;
     }
 
-    order.setUser(rest.post("/api/register", {...input, rePassword: undefined})).catch(e => {
+    const newUser = await rest.post("/api/register", { ...input, rePassword: undefined }).catch(e => {
       if (e instanceof FetchError) {
         return setErrorRegMsg(e.data?.message || e.message);
       }
       console.error("An unexpected error:", e);
     });
+    console.log(newUser);
+
+    if (!!newUser) {
+      handleSubmitLogin();
+    }
   };
 
   const setPopover = (text: string) => {
@@ -104,15 +157,15 @@ export default function Login() {
                 <Form.Label>Email address</Form.Label>
                 <Form.Control required name='mail' type="email" placeholder="Enter email" onChange={handleInputChange} autoComplete="username" />
                 {/* <Form.Text className="text-muted">
-                  Please enter a valid email address
-                </Form.Text> */}
+                      Please enter a valid email address
+                    </Form.Text> */}
               </Form.Group>
               <Form.Group controlId="loginPassword">
                 <Form.Label>Password</Form.Label>
                 <Form.Control required name='password' type="password" placeholder="Password" onChange={handleInputChange} autoComplete="current-password" />
                 {/* <Form.Text className="text-muted">
-                  Please use at least eight symbols
-                </Form.Text> */}
+                      Please use at least eight symbols
+                    </Form.Text> */}
               </Form.Group>
               {errorLogMsg &&
                 <Alert variant="danger" onClose={() => setErrorLogMsg("")} dismissible>
@@ -126,6 +179,19 @@ export default function Login() {
                 </Button>
               </div>
             </Stack>
+            <hr />
+            {
+              Object.values(providers).map(provider => {
+                if (provider?.name === "Credentials") return null;
+                return (
+                  <Row key={provider.name}>
+                    <Button onClick={() => signIn(provider.id)}>
+                      Sign in with {provider.name}
+                    </Button>
+                  </Row>
+                );
+              })
+            }
           </Col>
           <Col>
             <h3>Register</h3>

@@ -1,4 +1,6 @@
 import React, { useState } from "react";
+import { useSession } from "next-auth/react";
+import Router from "next/router";
 
 import Link from "next/link";
 import { GetStaticProps } from "next";
@@ -39,9 +41,20 @@ export const getStaticProps: GetStaticProps<OrderProps> = async (_context) => {
 
 export default function Order({ categories, data }: OrderProps) {
   const [selectedCat, setSelected] = useState("Всички");
-  const order = useOrderContext({
-    redirectTo: "/login"
+  const order = useOrderContext();
+
+  const { status } = useSession({
+    required: true,
+    onUnauthenticated() {
+      // The user is not authenticated, handle it here.
+      Router.push("/login");
+    }
   });
+
+  if (status === "loading") {
+    console.log('inside Order index')
+    return null;
+  }
 
   // const [orderList, setOrderList] = useState<OrderItem[]>([]);
   return (

@@ -27,10 +27,10 @@ function useOrderState() {
       setItems([...items]);
     },
     setUserAddress(address: string, address_pos: google.maps.LatLngLiteral) {
-      setUser(rest.post("/api/user", { address, address_pos }).then(({data}) => data));
+      setUser(rest.post("/api/user", { address, address_pos }).then(({ data }) => data));
     },
     setUserPhone(phone: string) {
-      setUser(rest.post("/api/user", { phone }).then(({data}) => data));
+      setUser(rest.post("/api/user", { phone }).then(({ data }) => data));
     },
     clear() {
       setItems([]);
@@ -70,25 +70,25 @@ export function useOrderContext({
   redirectIfFound = false,
 } = {}) {
   const context = useContext(Order);
-  useEffect(() => {
-    const user = context.user;
-    // if no redirect needed, just return (example: already on /dashboard)
-    // if user data not yet there (fetch in progress, logged in or not) then don't do anything yet
-    if (!redirectTo || !user) return;
+  // useEffect(() => {
+  //   const user = context.user;
+  //   // if no redirect needed, just return (example: already on /dashboard)
+  //   // if user data not yet there (fetch in progress, logged in or not) then don't do anything yet
+  //   if (!redirectTo || !user) return;
 
-    if (
-      // If redirectTo is set, redirect if the user was not found.
-      (redirectTo && !redirectIfFound && !user?.isLoggedIn) ||
-      // If redirectIfFound is also set, redirect if the user was found
-      (redirectIfFound && user?.isLoggedIn)
-    ) {
-      if (redirectTo === "back") {
-        Router.back();
-      } else {
-        Router.push(redirectTo);
-      }
-    }
-  }, [context.user, redirectIfFound, redirectTo]);
+  //   if (
+  //     // If redirectTo is set, redirect if the user was not found.
+  //     (redirectTo && !redirectIfFound && !user?.isLoggedIn) ||
+  //     // If redirectIfFound is also set, redirect if the user was found
+  //     (redirectIfFound && user?.isLoggedIn)
+  //   ) {
+  //     if (redirectTo === "back") {
+  //       Router.back();
+  //     } else {
+  //       Router.push(redirectTo);
+  //     }
+  //   }
+  // }, [context.user, redirectIfFound, redirectTo]);
 
   return context;
 }

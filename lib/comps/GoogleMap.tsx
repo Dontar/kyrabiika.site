@@ -12,6 +12,7 @@ export default function GoogleMap(props: GoogleMapOptions) {
   const pin = useRef<google.maps.Marker>();
   const info = useRef<google.maps.InfoWindow>();
 
+
   const defaultPos = {
     lat: 42.697750,
     lng: 23.321758,
@@ -36,7 +37,7 @@ export default function GoogleMap(props: GoogleMapOptions) {
 
   async function updateInfo(result?: Partial<google.maps.GeocoderResult>) {
     if (!info.current) {
-      info.current = new google.maps.InfoWindow();
+      info.current = new google.maps.InfoWindow({ disableAutoPan: true });
     }
     try {
       if (!result) {
@@ -45,7 +46,7 @@ export default function GoogleMap(props: GoogleMapOptions) {
         });
       }
       info.current.setContent(result.formatted_address);
-      info.current.open(map.current, pin.current);
+      info.current.open({ ...map.current, shouldFocus: false }, pin.current);
       return result.formatted_address;
     } catch (e) {
       console.error(e);
@@ -62,7 +63,7 @@ export default function GoogleMap(props: GoogleMapOptions) {
         fullscreenControl: false,
         mapTypeControl: false,
         rotateControl: false,
-        streetViewControl: false
+        streetViewControl: false,
       });
       map.current.addListener("click", async (e: google.maps.MapMouseEvent) => {
         if (e.latLng && props.onNewPosition) {

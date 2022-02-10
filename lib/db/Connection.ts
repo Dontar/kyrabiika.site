@@ -44,8 +44,11 @@ export const UserModel: Model<User> = models.User || model("User", new Schema({
     lng: Number
   },
   orders: [{ type: Schema.Types.ObjectId, ref: "Order", autopopulate: true }],
-  roles: [{ type: String, required: true, default: ["User"] }],
-  password: { type: String, required: true }
+  roles: { type: [String], required: true, default: ["User"] },
+  password: { type: String, required: true },
+  google: String,
+  facebook: String,
+  github: String
 }));
 
 export const SiteConfigModel: Model<SiteConfig> = models.SiteConfig || model("SiteConfig", new Schema({

@@ -4,14 +4,17 @@ interface MongoId {
 
 export interface User extends MongoId {
   firstName: string;
-  lastName: string;
+  lastName?: string;
   mail: string;
   password: string;
   roles?: string[];
   phone?: string;
   address?: string;
-  address_pos: google.maps.LatLngLiteral;
-  orders: Order[];
+  address_pos?: google.maps.LatLngLiteral;
+  orders?: Order[];
+  google?: string;
+  facebook?: string;
+  github?: string | undefined | null;
 }
 
 export interface MenuItem extends MongoId {

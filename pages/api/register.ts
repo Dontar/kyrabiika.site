@@ -9,6 +9,7 @@ handler.use(db);
 
 handler.withSession.post(async (req, res) => {
   const registerInfo = (req.body ?? {}) as LoggedInUser;
+
   const user = await UserModel.findOne({ mail: registerInfo.mail });
 
   if (user === null) {
@@ -16,11 +17,11 @@ handler.withSession.post(async (req, res) => {
 
     const user = await (new UserModel(registerInfo)).save();
 
-    req.session.user = user._id.toString();
-    await req.session.save();
+    // req.session.user = user._id.toString();
+    // await req.session.save();
     res.json({ ...user.toObject(), isLoggedIn: true, password: undefined });
   } else {
-    res.status(403).json({ message: "User already exists." });
+    res.status(403).json({ message: "The email has already been used" });
   }
 });
 

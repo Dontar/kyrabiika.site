@@ -19,7 +19,7 @@ handler.withSession.post<LoggedInUser>(async (req, res) => {
     if (isMatched) {
       req.session.user = user._id;
       await req.session.save();
-      res.json({...user, password: undefined, roles: undefined, isLoggedIn: true});
+      res.json({ ...user, password: undefined, roles: undefined, isLoggedIn: true });
       return;
     }
   }
