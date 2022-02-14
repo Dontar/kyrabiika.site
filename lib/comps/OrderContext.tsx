@@ -38,8 +38,8 @@ function useOrderState() {
       setUser({} as LoggedInUser);
     },
     get userName() {
-      if (user && user?.firstName && user?.lastName) {
-        return user.firstName + " " + user.lastName;
+      if (user && user?.firstName) {
+        return `${user.firstName} ${user.lastName || ""}`;
       }
       return "Guest";
     },

@@ -1,9 +1,9 @@
-import { withIronSessionApiRoute } from "iron-session/next";
 import { NextApiRequest, NextApiResponse } from "next";
 import { sessionOptions } from "./session";
 import { getSession } from "next-auth/react";
+import { Session } from "next-auth";
 
-export type Handler<T = any> = (req: Omit<NextApiRequest, "body"> & { body: T }, res: NextApiResponse<T>, next?: (result?: unknown | Error) => unknown) => void | Promise<void>;
+export type Handler<T = any> = (req: Omit<NextApiRequest, "body"> & { body: T, session?: Session }, res: NextApiResponse<T>, next?: (result?: unknown | Error) => unknown) => void | Promise<void>;
 
 type HTTPMethod = "get" | "post" | "put" | "patch" | "del";
 const HTTPMethods: HTTPMethod[] = ["get", "post", "put", "patch", "del"];
@@ -89,7 +89,7 @@ export default function rest() {
       handlers.set(method.toUpperCase(), async (req, res) => {
         const session = await getSession({ req });
         if (session) {
-          req["session"] = session;
+          req.session = session;
           return handler(req, res);
         } else {
           res.status(401).end();

@@ -17,7 +17,11 @@
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "preserve",
-    "incremental": true
+    "incremental": true,
+    "inlineSourceMap": true,
+    "typeRoots": [
+      "./lib/types"
+    ]
   },
   "include": [
     "next-env.d.ts",

@@ -1,5 +1,7 @@
 import React, { Fragment, useCallback, useState } from "react";
 import { signOut } from "next-auth/react";
+import { useSession } from "next-auth/react";
+import { Session } from "next-auth";
 
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -12,7 +14,6 @@ import ListGroup from "react-bootstrap/ListGroup";
 import Badge from "react-bootstrap/Badge";
 
 import Link from "next/link";
-import { useRouter } from "next/router";
 import Avatar from "react-avatar";
 
 import useSWR from "swr";
@@ -25,8 +26,9 @@ export default function Layout(p: JSX.IntrinsicElements["div"]) {
   const { data: config } = useSWR<SiteConfig>("/api/config", rest.get);
   const [showAvatarMenu, setShowAvatarMenu] = useState(false);
 
-  const router = useRouter();
   const order = useOrderContext();
+
+  const { data: session } = useSession();
 
   const logOut = useCallback(async (e: React.MouseEvent<Element>) => {
     e.preventDefault();
@@ -37,6 +39,7 @@ export default function Layout(p: JSX.IntrinsicElements["div"]) {
     // order.setUser({} as LoggedInUser);
     // router.push("/map");
   }, [order]);
+
 
   return (
     <div {...props} onClickCapture={() => setShowAvatarMenu(false)}>
@@ -70,7 +73,10 @@ export default function Layout(p: JSX.IntrinsicElements["div"]) {
                   </Popover>
                 )}>
                   <Nav.Item className="my-auto">
-                    <Avatar name={order.userName} email={order.user.mail} round size="36px" style={{ cursor: "pointer" }} />
+                    {!!session?.provider && session.provider !== "credentials"
+                      ? <Avatar src={session.user.image ?? ""} round size="36px" style={{ cursor: "pointer" }} />
+                      : <Avatar name={order.userName} email={order.user?.mail} round size="36px" style={{ cursor: "pointer" }} />
+                    }
                   </Nav.Item>
                 </OverlayTrigger>
               </>

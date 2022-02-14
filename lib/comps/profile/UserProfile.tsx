@@ -61,7 +61,7 @@ export default function UserProfile() {
       }
       console.error("An unexpected error:", e);
     });
-    console.log(newUser);
+    console.log("Profile", newUser);
 
     if (!!newUser) {
       order.setUser();

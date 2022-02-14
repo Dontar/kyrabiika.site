@@ -1,3 +1,8 @@
+import { useSession } from "next-auth/react";
+// import { Session } from "next-auth/core/types";
+import { useRouter } from "next/router";
+import { Session } from "next-auth";
+
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
 import Row from "react-bootstrap/Row";
@@ -9,13 +14,27 @@ import { SiteConfigPanel } from "../lib/comps/admin/SiteConfigPanel";
 import { ItemsPanel } from "../lib/comps/admin/ItemsPanel";
 import { UsersPanel } from "../lib/comps/admin/UsersPanel";
 import { SiteConfigContext } from "../lib/comps/admin/SiteConfigContext";
-import { useOrderContext } from "../lib/comps/OrderContext";
+import { NextResponse } from "next/server";
+
 
 export default function Admin() {
-
-  useOrderContext({
-    redirectTo: "/login",
+  const router = useRouter();
+  const { data: session } = useSession({
+    required: true,
+    onUnauthenticated() {
+      // The user is not authenticated, handle it here.
+      router.push("/login");
+    }
   });
+  // const user = session;
+
+  if (!session || !session?.userRoles?.includes('Admin')) {
+    console.log('inside Admin index');
+    router.push("/");
+    return null;
+    // return NextResponse.redirect("/login");
+  }
+
 
   return (
     <Layout>

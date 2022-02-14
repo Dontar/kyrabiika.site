@@ -9,10 +9,10 @@ const handler = rest();
 
 handler.withSession.get<Partial<LoggedInUser>>(async (req, res) => {
   const session = await getSession({ req });
-  console.log('In User.tx', session);
+  console.log("In User.tx", session);
   if (session !== null) {
     const user = await UserModel
-      .findOne({ mail: session.user?.email })
+      .findOne({ mail: session?.user.email ?? "" })
       .select("-password -roles")
       .lean();
 
@@ -25,15 +25,15 @@ handler.withSession.get<Partial<LoggedInUser>>(async (req, res) => {
 });
 
 handler.withAuth.post<LoggedInUser>(async (req, res) => {
-  const mail = req.session.user.email;
+  const mail = req.session?.user.email;
   let userData = req.body;
   if (userData.hasOwnProperty("password") && userData.password !== "") {
     userData.password = await bcrypt.hash(userData.password!, process.env.DB_SALT_ROUNDS || 9);
   } else {
-    let { password, ...rest } = userData;
+    let { password: _, ...rest } = userData;
     userData = rest;
   }
-  const user = await UserModel.findOneAndUpdate({ mail }, userData, { new: true }).lean();
+  const user = await UserModel.findOneAndUpdate({ mail: mail || "" }, userData, { new: true }).lean();
   if (user) {
     res.json({ ...user, isLoggedIn: true });
   } else {

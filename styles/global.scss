@@ -2,6 +2,7 @@
 @use "../node_modules/@fortawesome/fontawesome-free/scss/fontawesome";
 @use "../node_modules/@fortawesome/fontawesome-free/scss/regular";
 @use "../node_modules/@fortawesome/fontawesome-free/scss/solid";
+@use "../node_modules/@fortawesome/fontawesome-free/scss/brands";
 @import url("https://fonts.googleapis.com/css2?family=Cabin+Sketch:wght@700&display=swap");
 @import url("/webfonts/BrittanySignature.css");
 @import "./nprogress.css";
@@ -17,7 +18,7 @@
   padding: 0;
 }
 .navbar-brand-office {
-  font-family: 'BrittanySignature';
+  font-family: "BrittanySignature";
   font-size: 22pt;
 }
 // .bg-mainnav {
@@ -38,5 +39,3 @@
 .mw-10 {
   min-height: 10rem !important;
 }
-
-

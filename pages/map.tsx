@@ -8,18 +8,7 @@ import Layout from "../lib/comps/Layout";
 
 export default function Map() {
 
-  const { status } = useSession({
-    required: true,
-    onUnauthenticated() {
-      // The user is not authenticated, handle it here.
-      Router.push("/login");
-    }
-  });
 
-  if (status === "loading") {
-    console.log('inside MAP index')
-    return <h1>Is Loading</h1>;
-  }
 
   return (
     <Layout>

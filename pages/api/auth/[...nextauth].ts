@@ -1,29 +1,29 @@
 import NextAuth from "next-auth";
 import bcrypt from "bcrypt";
-import { Types } from "mongoose";
+
+
 
 import GoogleProvider from "next-auth/providers/google";
 import FacebookProvider from "next-auth/providers/facebook";
 import GithubProvider from "next-auth/providers/github";
-import TwitterProvider from "next-auth/providers/twitter";
-import Auth0Provider from "next-auth/providers/auth0";
+
 import CredentialsProvider from "next-auth/providers/credentials";
 
-import rest from "../../../lib/utils/rest-client";
-import { db, UserModel } from "../../../lib/db/Connection";
-import { LoggedInUser } from "../../../lib/db/DbTypes";
+import { UserModel } from "../../../lib/db/Connection";
+import { User } from "../../../lib/db/DbTypes";
 import { DefaultUser } from "next-auth/core/types";
+
 
 // import AppleProvider from "next-auth/providers/apple"
 // import EmailProvider from "next-auth/providers/email"
 
 // For more information on each option (and a full list of options) go to
 // https://next-auth.js.org/configuration/options
-interface User extends DefaultUser {
+interface ProviderUser extends DefaultUser {
   phone?: string,
   roles?: string[],
 }
-let counter = 0;
+
 export default NextAuth({
   // https://next-auth.js.org/configuration/providers
   providers: [
@@ -44,19 +44,19 @@ export default NextAuth({
       },
     }),
     */
-    // FacebookProvider({
-    //   clientId: process.env.FACEBOOK_ID,
-    //   clientSecret: process.env.FACEBOOK_SECRET,
-    // }),
+    FacebookProvider({
+      clientId: process.env.FACEBOOK_ID ?? "",
+      clientSecret: process.env.FACEBOOK_SECRET ?? "",
+    }),
+    GoogleProvider({
+      clientId: process.env.GOOGLE_ID ?? "",
+      clientSecret: process.env.GOOGLE_SECRET ?? "",
+    }),
     GithubProvider({
       clientId: process.env.GITHUB_ID,
       clientSecret: process.env.GITHUB_SECRET,
       // https://docs.github.com/en/developers/apps/building-oauth-apps/scopes-for-oauth-apps
     }),
-    // GoogleProvider({
-    //   clientId: process.env.GOOGLE_ID,
-    //   clientSecret: process.env.GOOGLE_SECRET,
-    // }),
     // // TwitterProvider({
     // //   clientId: process.env.TWITTER_ID,
     // //   clientSecret: process.env.TWITTER_SECRET,
@@ -77,7 +77,7 @@ export default NextAuth({
         username: { label: "Username", type: "text", placeholder: "jsmith" },
         password: { label: "Password", type: "password" }
       },
-      async authorize(credentials, req) {
+      async authorize(credentials, /*req*/_) {
         // Add logic here to look up the user from the credentials supplied
         // if (counter >= 5) {
         //   setTimeout(() => {
@@ -94,7 +94,7 @@ export default NextAuth({
           const isMatched = await bcrypt.compare(loginInfo!.password, user.password);
 
           if (isMatched === true) {
-            const newUser: User = { id: user._id, name: `${user.firstName} ${user.lastName}`, email: user.mail, roles: user.roles };
+            const newUser: ProviderUser = { id: user._id, name: `${user.firstName} ${user.lastName}`, email: user.mail, roles: user.roles };
             return newUser;
           }
         }
@@ -154,7 +154,7 @@ export default NextAuth({
   // pages is not specified for that route.
   // https://next-auth.js.org/configuration/pages
   pages: {
-    signIn: '/login',  // Displays signin buttons
+    signIn: "/login",  // Displays signin buttons
     // signOut: '/auth/signout', // Displays form with sign out button
     // error: '/auth/error', // Error code passed in query string as ?error=
     // verifyRequest: '/auth/verify-request', // Used for check email page
@@ -165,25 +165,26 @@ export default NextAuth({
   // when an action is performed.
   // https://next-auth.js.org/configuration/callbacks
   callbacks: {
-    async signIn({ user, account, profile, email, credentials }) {
-      console.log('signIn');
+    async signIn({ user, account, profile: _, email, credentials }) {
+      console.log("signIn");
 
       if (!credentials) {
         const { email, name } = user;
-        const resUser = await UserModel.findOne({
-          mail: email
+        const resUser: User = await UserModel.findOne({
+          mail: email ?? ""
         }).lean();
 
+        const provider = account.provider as "github" | "google" | "facebook";
         if (resUser !== null) {
-          if (!resUser[account.provider]) {
-            await UserModel.findOneAndUpdate({ mail: email }, { [account.provider]: account.providerAccountId }, { new: true });
+          if (!resUser[provider]) {
+            await UserModel.findOneAndUpdate({ mail: email ?? "" }, { [account.provider]: account.providerAccountId }, { new: true });
           }
           return true;
         }
         const newUserInfo = {
           firstName: name,
           mail: email,
-          [account.provider]: account.providerAccountId,
+          [provider]: account.providerAccountId,
           password: user.id
         };
         newUserInfo.password = await bcrypt.hash(newUserInfo.password, process.env.DB_SALT_ROUNDS || 9);
@@ -196,21 +197,23 @@ export default NextAuth({
       }
       return true;
     },
-    async redirect({ url, baseUrl }) { return baseUrl; },
+    async redirect({ url: _, baseUrl }) { return baseUrl; },
 
     async jwt({ token, user, account }) {
       // Persist the OAuth access_token to the token right after signin
       if (account) {
         // token.accessToken = account.access_token;
-        token.roles = user?.roles;
+        token.roles = user?.roles as string[];
+        token.provider = account.provider ?? "";
       };
       return token;
     },
-    async session({ session, user, token }) {
+    async session({ session, user: _, token }) {
       // Send properties to the client, like an access_token from a provider.
       // session.accessToken = token.accessToken;
-      session.userRoles = token.roles;
-      session.user!.id! = token.sub;
+      session.userRoles = token.roles ?? ["User"];
+      session.user.id = token.sub ?? "";
+      session.provider = token.provider ?? "";
       // session.user.id: = token.sub;
       // console.log(session);
       return session;

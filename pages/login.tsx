@@ -1,7 +1,7 @@
 import React, { FC, useState } from "react";
 import Router from "next/router";
 import { getProviders, signIn, getSession } from "next-auth/react";
-import { AppProviders, BuiltInProviders, Provider } from "next-auth/providers";
+import { Provider } from "next-auth/providers";
 import { SignInResponse } from "next-auth/react/types";
 import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 
@@ -72,8 +72,7 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
     setInput(input => ({ ...input, [event.target.name]: event.target.value }));
   };
 
-  const handleSubmitLogin = async (event?: React.FormEvent<HTMLFormElement>) => {
-    event?.preventDefault();
+  const handleSubmitLogin = async () => {
     const status: SignInResponse | undefined = await signIn("credentials", {
       redirect: false, /* leave ths option if you don't want to be a redirected after sign in */
       username: input.mail,
@@ -81,7 +80,6 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
       // callbackUrl: callBackUrl
     });
     if (status!.ok === true) {
-      console.log(callBackUrl);
       await order.setUser();
       Router.push(callBackUrl);
       // return null;
@@ -152,7 +150,7 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
           <Col className="border-end">
             <h3>Login</h3>
             <hr />
-            <Stack as={Form} noValidate validated={validated} onSubmit={handleSubmitLogin} gap={2}>
+            <Stack as={Form} noValidate validated={validated} onSubmit={(e: React.SyntheticEvent) => { e.preventDefault(); handleSubmitLogin(); }} gap={2}>
               <Form.Group controlId="loginEmail">
                 <Form.Label>Email address</Form.Label>
                 <Form.Control required name='mail' type="email" placeholder="Enter email" onChange={handleInputChange} autoComplete="username" />
@@ -180,18 +178,24 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
               </div>
             </Stack>
             <hr />
-            {
-              Object.values(providers).map(provider => {
-                if (provider?.name === "Credentials") return null;
-                return (
-                  <Row key={provider.name}>
-                    <Button onClick={() => signIn(provider.id)}>
-                      Sign in with {provider.name}
-                    </Button>
-                  </Row>
-                );
-              })
-            }
+            <h4 className="py-2">Sign in with</h4>
+            <Row xs="auto">
+              {
+                Object.values(providers).map(provider => {
+                  if (provider?.name === "Credentials") return null;
+                  return (
+                    <Col className="px-1" key={provider.name}>
+                      <Button style={{ width: "4rem", padding: "0.3rem" }} variant="outline-secondary" onClick={() => signIn(provider.id)}>
+                        {/* <i className="fas fa-shopping-cart fa-2xl align-self-center" /> */}
+                        <i className={`fab fa-brands fa-lg fa-${provider.name.toLowerCase()}`}></i>
+                        {/* <span>&nbsp;</span> */}
+                        {/* {provider.name} */}
+                      </Button>
+                    </Col>
+                  );
+                })
+              }
+            </Row>
           </Col>
           <Col>
             <h3>Register</h3>
