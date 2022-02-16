@@ -27,6 +27,9 @@ handler.withSession.get<Partial<LoggedInUser>>(async (req, res) => {
 handler.withAuth.post<LoggedInUser>(async (req, res) => {
   const mail = req.session?.user.email;
   let userData = req.body;
+  if (userData.mail !== mail) {
+    return res.status(401).json({ isLoggedIn: false } as LoggedInUser);
+  }
   if (userData.hasOwnProperty("password") && userData.password !== "") {
     userData.password = await bcrypt.hash(userData.password!, process.env.DB_SALT_ROUNDS || 9);
   } else {

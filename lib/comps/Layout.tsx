@@ -1,7 +1,6 @@
 import React, { Fragment, useCallback, useState } from "react";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
-import { Session } from "next-auth";
 
 import Col from "react-bootstrap/Col";
 import Container from "react-bootstrap/Container";
@@ -85,15 +84,6 @@ export default function Layout(p: JSX.IntrinsicElements["div"]) {
                 <Nav.Link>Sing in / Sing up</Nav.Link>
               </Link>
             )}
-            <Link href="/map" passHref={true}>
-              <Nav.Link>Map</Nav.Link>
-            </Link>
-            <Link href="/profile" passHref>
-              <ListGroup.Item action>Profile</ListGroup.Item>
-            </Link>
-            <Link href="/order" passHref>
-              <ListGroup.Item action>Order</ListGroup.Item>
-            </Link>
           </Nav>
         </Container>
       </Navbar>

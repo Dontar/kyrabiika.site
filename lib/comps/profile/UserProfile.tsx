@@ -125,7 +125,7 @@ export default function UserProfile() {
               <Form.Group controlId="registerLastName" as={Col}>
                 <Form.Label>Last name</Form.Label>
                 <Form.Control
-                  value={input?.lastName}
+                  value={input?.lastName ?? ""}
                   required
                   name="lastName"
                   placeholder="Last name..."
@@ -151,7 +151,7 @@ export default function UserProfile() {
               <Form.Group controlId="registerPhone" as={Col}>
                 <Form.Label>Phone</Form.Label>
                 <Form.Control
-                  value={input?.phone}
+                  value={input?.phone ?? ""}
                   required
                   name="phone"
                   placeholder="Phone..."
@@ -165,7 +165,7 @@ export default function UserProfile() {
                 <Form.Label>Address</Form.Label>
                 <Form.Control
                   as="textarea"
-                  value={input?.address}
+                  value={input?.address ?? ""}
                   readOnly
                   name="address"
                 />
