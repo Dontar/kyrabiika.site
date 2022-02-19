@@ -1,4 +1,4 @@
-import React, { FC, useState } from "react";
+import React, { useState, useRef } from "react";
 import Router from "next/router";
 import { getProviders, signIn, getSession } from "next-auth/react";
 import { Provider } from "next-auth/providers";
@@ -15,10 +15,14 @@ import Popover from "react-bootstrap/Popover";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import CloseButton from "react-bootstrap/CloseButton";
 import Stack from "react-bootstrap/Stack";
+import Modal from "react-bootstrap/Modal";
+import InputGroup from "react-bootstrap/InputGroup";
+import FormControl from "react-bootstrap/FormControl";
 
 import Layout from "../lib/comps/Layout";
 import { useOrderContext } from "../lib/comps/OrderContext";
 import rest, { FetchError } from "../lib/utils/rest-client";
+
 
 type LoginProps = {
   callBackUrl: string,
@@ -59,7 +63,10 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
   const [validated, setValidated] = useState(false);
   const [errorLogMsg, setErrorLogMsg] = useState<string>();
   const [errorRegMsg, setErrorRegMsg] = useState<string>();
+  const [showResetPass, setShowResetPass] = useState(false);
   const [show, setShow] = useState(false);
+  const [showResetError, setShowResetError] = useState(false);
+  const resetEmail = useRef<HTMLInputElement>(null);
 
   // You dont need this anymore, redirection is happen in getServerSideProps, if session is available.
   const order = useOrderContext({
@@ -71,6 +78,24 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
     event.preventDefault();
     setInput(input => ({ ...input, [event.target.name]: event.target.value }));
   };
+
+  const handleCloseResetPass = () => setShowResetPass(false);
+  const handleShowResetPass = () => setShowResetPass(true);
+  const sendResetEmail = () => {
+    let email = "";
+    if (null !== resetEmail.current) {
+      email = resetEmail.current.value;
+    }
+    const regex = new RegExp(/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/);
+    if (!regex.test(email)) {
+      setShowResetError(true);
+      // setErrorRegMsg('Please use a valid email')
+      return;
+    }
+    setShowResetPass(false);
+    console.log(email);
+  };
+
 
   const handleSubmitLogin = async () => {
     const status: SignInResponse | undefined = await signIn("credentials", {
@@ -132,9 +157,9 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
   const setPopover = (text: string) => {
     return (
       <Popover id="popover-basic" className="border border-danger">
-        <Popover.Header>
+        <Popover.Header className="d-flex justify-content-between">
           Warning
-          <CloseButton onClick={() => setShow(false)} />
+          <CloseButton onClick={() => setShowResetError(false)} />
         </Popover.Header>
         <Popover.Body>
           {text}
@@ -172,9 +197,14 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
               }
               <div>
                 <hr />
-                <Button variant="outline-success" type="submit" className="float-end">
-                  Login
-                </Button>
+                <Col className="d-flex justify-content-between">
+                  <Button variant="link" style={{ boxShadow: "none" }} className="ps-0 resetButton" onClick={handleShowResetPass}>
+                    Reset password
+                  </Button>
+                  <Button variant="outline-success" type="submit" >
+                    Login
+                  </Button>
+                </Col>
               </div>
             </Stack>
             <hr />
@@ -250,6 +280,28 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
           </Col>
         </Row>
       </Container>
+      <Modal show={showResetPass} onHide={handleCloseResetPass}>
+        <Modal.Header closeButton>
+          <Modal.Title>Reset your password</Modal.Title>
+        </Modal.Header>
+        <Modal.Body>{"Enter your user account's email address and we will send you a password reset link."}</Modal.Body>
+        <Modal.Footer>
+          <OverlayTrigger show={showResetError} onEntered={() => setTimeout(() => { setShow(false); }, 3000)} placement="right" overlay={setPopover("Please use a valid email!")}>
+            <InputGroup className="mb-3">
+              <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
+              <FormControl
+                name='resetMail' type="email"
+                placeholder="Email address"
+                ref={resetEmail}
+                defaultValue={input.mail}
+              />
+            </InputGroup>
+          </OverlayTrigger>
+          <Button variant="info" onClick={sendResetEmail}>
+            Send reset link
+          </Button>
+        </Modal.Footer>
+      </Modal>
     </Layout>
   );
 }
