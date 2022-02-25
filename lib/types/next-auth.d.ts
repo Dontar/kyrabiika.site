@@ -29,4 +29,10 @@ declare module "next-auth/jwt" {
   }
 }
 
+export interface resetPassProps {
+  mail: string;
+  newPass: string;
+  token: string;
+}
+
 

@@ -1,5 +1,5 @@
 import { model, Schema, models, Model, connect as mnConnect, plugin } from "mongoose";
-import { MenuItem, Order, User, SiteConfig } from "./DbTypes";
+import { MenuItem, Order, User, SiteConfig, RandomToken } from "./DbTypes";
 import autopopulate from "mongoose-autopopulate";
 
 plugin(autopopulate);
@@ -57,6 +57,11 @@ export const SiteConfigModel: Model<SiteConfig> = models.SiteConfig || model("Si
   small_promo: String,
   addr_worktime: String,
   promo_items: [{ type: Schema.Types.ObjectId, ref: "MenuItem", autopopulate: true }]
+}));
+
+export const RandomTokenModel: Model<RandomToken> = models.RandomToken || model("RandomToken", new Schema({
+  mail: { type: String, required: true, unique: true },
+  token: String,
 }));
 
 export const connectionString = process.env.DB_SERVER ?? "mongodb://root:example@db:27017/kyrabiika?authSource=admin&readPreference=primary&ssl=false";

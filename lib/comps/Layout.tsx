@@ -41,7 +41,7 @@ export default function Layout(p: JSX.IntrinsicElements["div"]) {
 
 
   return (
-    <div {...props} onClickCapture={() => setShowAvatarMenu(false)}>
+    <div {...props} className="d-flex flex-column min-vh-100" onClickCapture={() => setShowAvatarMenu(false)} >
       <Navbar bg="light" expand="md" sticky="top" className="shadow-sm">
         <Container fluid>
           <Navbar.Brand href="/">
@@ -87,8 +87,10 @@ export default function Layout(p: JSX.IntrinsicElements["div"]) {
           </Nav>
         </Container>
       </Navbar>
-      {children}
-      <Container id="contacts" fluid className="bg-secondary bg-gradient mt-5 text-light">
+      <div className="mb-5">
+        {children}
+      </div>
+      <Container id="contacts" fluid className="mt-auto bg-secondary bg-gradient text-light">
         <Container className="py-5">
           <Row>
             <Col sm>

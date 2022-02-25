@@ -81,7 +81,7 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
 
   const handleCloseResetPass = () => setShowResetPass(false);
   const handleShowResetPass = () => setShowResetPass(true);
-  const sendResetEmail = () => {
+  const sendResetEmail = async () => {
     let email = "";
     if (null !== resetEmail.current) {
       email = resetEmail.current.value;
@@ -94,6 +94,20 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
     }
     setShowResetPass(false);
     console.log(email);
+
+    const resetPass = await rest.post("/api/resetPass", { mail: email }).catch(e => {
+      if (e instanceof FetchError) {
+        return setErrorLogMsg(e.data?.message || e.message);
+      }
+      console.error("An unexpected error:", e);
+    });
+
+    if (!!resetPass) {
+      setErrorLogMsg(resetPass.message);
+      // order.setUser();
+      // Router.back();
+    }
+
   };
 
 
@@ -106,7 +120,7 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
     });
     if (status!.ok === true) {
       await order.setUser();
-      Router.push(callBackUrl);
+      Router.push("/");
       // return null;
     };
     if (status!.error === "CredentialsSignin") {
@@ -286,7 +300,7 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
         </Modal.Header>
         <Modal.Body>{"Enter your user account's email address and we will send you a password reset link."}</Modal.Body>
         <Modal.Footer>
-          <OverlayTrigger show={showResetError} onEntered={() => setTimeout(() => { setShow(false); }, 3000)} placement="right" overlay={setPopover("Please use a valid email!")}>
+          <OverlayTrigger show={showResetError} onEntered={() => setTimeout(() => { setShowResetError(false); }, 3000)} placement="right" overlay={setPopover("Please use a valid email!")}>
             <InputGroup className="mb-3">
               <InputGroup.Text id="basic-addon1">@</InputGroup.Text>
               <FormControl

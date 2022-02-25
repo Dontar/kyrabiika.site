@@ -55,3 +55,8 @@ export interface LoggedInUser extends User {
   isLoggedIn?: boolean;
   password?: string;
 }
+
+export interface RandomToken extends MongoId {
+  mail: string;
+  token: string
+}
