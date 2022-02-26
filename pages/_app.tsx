@@ -7,6 +7,7 @@ import { OrderContext } from "../lib/comps/OrderContext";
 import { useRouter } from "next/router";
 import NProgress from "nprogress";
 import { SessionProvider } from "next-auth/react";
+import { APIMessageProvider } from "../lib/comps/GlobalMessageHook";
 
 function MyApp({ Component, pageProps }: AppProps) {
   const router = useRouter();
@@ -30,7 +31,9 @@ function MyApp({ Component, pageProps }: AppProps) {
     <SSRProvider>
       <SessionProvider session={pageProps.session}>
         <OrderContext>
-          <Component {...pageProps} />
+          <APIMessageProvider>
+            <Component {...pageProps} />
+          </APIMessageProvider>
         </OrderContext>
       </SessionProvider>
     </SSRProvider>

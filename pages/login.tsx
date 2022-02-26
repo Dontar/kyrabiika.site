@@ -1,4 +1,4 @@
-import React, { useState, useRef } from "react";
+import React, { useState, useRef, useContext } from "react";
 import Router from "next/router";
 import { getProviders, signIn, getSession } from "next-auth/react";
 import { Provider } from "next-auth/providers";
@@ -22,6 +22,8 @@ import FormControl from "react-bootstrap/FormControl";
 import Layout from "../lib/comps/Layout";
 import { useOrderContext } from "../lib/comps/OrderContext";
 import rest, { FetchError } from "../lib/utils/rest-client";
+import { APIMessageContext } from "../lib/comps/GlobalMessageHook";
+
 
 
 type LoginProps = {
@@ -61,8 +63,8 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
     rePassword: "",
   });
   const [validated, setValidated] = useState(false);
-  const [errorLogMsg, setErrorLogMsg] = useState<string>();
-  const [errorRegMsg, setErrorRegMsg] = useState<string>();
+  const { message, writeMessage, closeMessage } = useContext(APIMessageContext);
+
   const [showResetPass, setShowResetPass] = useState(false);
   const [show, setShow] = useState(false);
   const [showResetError, setShowResetError] = useState(false);
@@ -93,17 +95,17 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
       return;
     }
     setShowResetPass(false);
-    console.log(email);
 
     const resetPass = await rest.post("/api/resetPass", { mail: email }).catch(e => {
       if (e instanceof FetchError) {
-        return setErrorLogMsg(e.data?.message || e.message);
+        return writeMessage("danger", e.data?.message || e.message);
       }
       console.error("An unexpected error:", e);
     });
 
     if (!!resetPass) {
-      setErrorLogMsg(resetPass.message);
+      console.log(resetPass);
+      writeMessage("success", resetPass.message);
       // order.setUser();
       // Router.back();
     }
@@ -124,7 +126,7 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
       // return null;
     };
     if (status!.error === "CredentialsSignin") {
-      return setErrorLogMsg("Wrong user or password");
+      return writeMessage("danger", "Wrong user or password.");
     };
     // order.setUser(rest.post("/api/login", input)).catch(e => {
     //   if (e instanceof FetchError) {
@@ -157,7 +159,7 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
 
     const newUser = await rest.post("/api/register", { ...input, rePassword: undefined }).catch(e => {
       if (e instanceof FetchError) {
-        return setErrorRegMsg(e.data?.message || e.message);
+        return writeMessage("danger", e.data?.message || e.message);
       }
       console.error("An unexpected error:", e);
     });
@@ -204,11 +206,6 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
                       Please use at least eight symbols
                     </Form.Text> */}
               </Form.Group>
-              {errorLogMsg &&
-                <Alert variant="danger" onClose={() => setErrorLogMsg("")} dismissible>
-                  {errorLogMsg}
-                </Alert>
-              }
               <div>
                 <hr />
                 <Col className="d-flex justify-content-between">
@@ -223,7 +220,7 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
             </Stack>
             <hr />
             <h4 className="py-2">Sign in with</h4>
-            <Row xs="auto">
+            <Row xs="auto" className="mb-5">
               {
                 Object.values(providers).map(provider => {
                   if (provider?.name === "Credentials") return null;
@@ -279,11 +276,6 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
                   <Form.Control required name='rePassword' type="password" placeholder="Repeat Password" onChange={handleInputChange} autoComplete="new-password" />
                 </Form.Group>
               </OverlayTrigger>
-              {errorRegMsg &&
-                <Alert variant="danger" onClose={() => setErrorRegMsg("")} dismissible>
-                  {errorRegMsg}
-                </Alert>
-              }
               <div>
                 <hr />
                 <Button variant="outline-success" type="submit" className="float-end">

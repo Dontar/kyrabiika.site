@@ -1,4 +1,4 @@
-import React, { Fragment, useCallback, useState } from "react";
+import React, { Fragment, useCallback, useContext, useEffect, useState } from "react";
 import { signOut } from "next-auth/react";
 import { useSession } from "next-auth/react";
 
@@ -11,6 +11,8 @@ import Popover from "react-bootstrap/Popover";
 import OverlayTrigger from "react-bootstrap/OverlayTrigger";
 import ListGroup from "react-bootstrap/ListGroup";
 import Badge from "react-bootstrap/Badge";
+import Alert from "react-bootstrap/Alert";
+import Button from "react-bootstrap/Button";
 
 import Link from "next/link";
 import Avatar from "react-avatar";
@@ -19,11 +21,13 @@ import useSWR from "swr";
 import { LoggedInUser, SiteConfig } from "../db/DbTypes";
 import { useOrderContext } from "./OrderContext";
 import rest from "../utils/rest-client";
+import { APIMessageContext } from "./GlobalMessageHook";
 
 export default function Layout(p: JSX.IntrinsicElements["div"]) {
   const { children, ...props } = p;
   const { data: config } = useSWR<SiteConfig>("/api/config", rest.get);
   const [showAvatarMenu, setShowAvatarMenu] = useState(false);
+  const { message, closeMessage } = useContext(APIMessageContext);
 
   const order = useOrderContext();
 
@@ -42,51 +46,63 @@ export default function Layout(p: JSX.IntrinsicElements["div"]) {
 
   return (
     <div {...props} className="d-flex flex-column min-vh-100" onClickCapture={() => setShowAvatarMenu(false)} >
-      <Navbar bg="light" expand="md" sticky="top" className="shadow-sm">
-        <Container fluid>
-          <Navbar.Brand href="/">
-            <span>КуРабиЙкА</span>
-            <span className="ms-2 navbar-brand-office">office</span>
-          </Navbar.Brand>
+      <div className="sticky-top">
+        <Navbar bg="light" expand="md" className="shadow-sm">
+          <Container fluid>
+            <Navbar.Brand href="/">
+              <span>КуРабиЙкА</span>
+              <span className="ms-2 navbar-brand-office">office</span>
+            </Navbar.Brand>
 
-          <Nav className="gap-2 flex-row">
-            {order.user?.isLoggedIn === true ? (
-              <>
-                <Link href="/order" passHref>
-                  <Nav.Link className="d-flex p-0 border rounded-circle bg-secondary text-white justify-content-center position-relative" style={{ width: "36px", height: "36px" }}>
-                    <i className="fas fa-shopping-cart align-self-center" />
-                    {!!order.items.length && (<Badge pill bg="danger" className="position-absolute top-0 start-100 translate-middle">{order.items.length}</Badge>)}
-                  </Nav.Link>
+            <Nav className="gap-2 flex-row">
+              {order.user?.isLoggedIn === true ? (
+                <>
+                  <Link href="/order" passHref>
+                    <Nav.Link className="d-flex p-0 border rounded-circle bg-secondary text-white justify-content-center position-relative" style={{ width: "36px", height: "36px" }}>
+                      <i className="fas fa-shopping-cart align-self-center" />
+                      {!!order.items.length && (<Badge pill bg="danger" className="position-absolute top-0 start-100 translate-middle">{order.items.length}</Badge>)}
+                    </Nav.Link>
+                  </Link>
+                  <OverlayTrigger show={showAvatarMenu} onToggle={show => setShowAvatarMenu(show)} trigger="click" placement="bottom-start" overlay={(
+                    <Popover id="popover-basic">
+                      <ListGroup variant="flush" className="rounded" style={{ width: "15em" }}>
+                        <Link href="/profile" passHref>
+                          <ListGroup.Item action>Profile</ListGroup.Item>
+                        </Link>
+                        <Link href="/admin" passHref>
+                          <ListGroup.Item action>Admin</ListGroup.Item>
+                        </Link>
+                        <ListGroup.Item action onClick={e => logOut(e)}>Logout</ListGroup.Item>
+                      </ListGroup>
+                    </Popover>
+                  )}>
+                    <Nav.Item className="my-auto">
+                      {!!session?.provider && session.provider !== "credentials"
+                        ? <Avatar src={session.user.image ?? ""} round size="36px" style={{ cursor: "pointer" }} />
+                        : <Avatar name={order.userName} email={order.user?.mail} round size="36px" style={{ cursor: "pointer" }} />
+                      }
+                    </Nav.Item>
+                  </OverlayTrigger>
+                </>
+              ) : (
+                <Link href="/login" passHref={true}>
+                  <Nav.Link>Sing in / Sing up</Nav.Link>
                 </Link>
-                <OverlayTrigger show={showAvatarMenu} onToggle={show => setShowAvatarMenu(show)} trigger="click" placement="bottom-start" overlay={(
-                  <Popover id="popover-basic">
-                    <ListGroup variant="flush" className="rounded" style={{ width: "15em" }}>
-                      <Link href="/profile" passHref>
-                        <ListGroup.Item action>Profile</ListGroup.Item>
-                      </Link>
-                      <Link href="/admin" passHref>
-                        <ListGroup.Item action>Admin</ListGroup.Item>
-                      </Link>
-                      <ListGroup.Item action onClick={e => logOut(e)}>Logout</ListGroup.Item>
-                    </ListGroup>
-                  </Popover>
-                )}>
-                  <Nav.Item className="my-auto">
-                    {!!session?.provider && session.provider !== "credentials"
-                      ? <Avatar src={session.user.image ?? ""} round size="36px" style={{ cursor: "pointer" }} />
-                      : <Avatar name={order.userName} email={order.user?.mail} round size="36px" style={{ cursor: "pointer" }} />
-                    }
-                  </Nav.Item>
-                </OverlayTrigger>
-              </>
-            ) : (
-              <Link href="/login" passHref={true}>
-                <Nav.Link>Sing in / Sing up</Nav.Link>
-              </Link>
-            )}
-          </Nav>
-        </Container>
-      </Navbar>
+              )}
+            </Nav>
+          </Container>
+        </Navbar>
+        {message && message.text.length > 0 &&
+          <Col sm={{ span: 10, offset: 1 }} >
+            <Alert className="p-2 m-1 position-relative" variant={message?.variant} >
+              {message.text}
+              <Button className="position-absolute top-0 end-0 ps-2 border-0 " variant="outline-dark" size="sm" onClick={() => closeMessage()}>
+                <i className="fas fa-times" />
+              </Button>
+            </Alert>
+          </Col>
+        }
+      </div>
       <div className="mb-5">
         {children}
       </div>
