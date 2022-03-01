@@ -21,7 +21,7 @@ handler.withSession.post(async (req, res) => {
     // await req.session.save();
     res.json({ ...user.toObject(), isLoggedIn: true, password: undefined });
   } else {
-    res.status(403).json({ message: "The email has already been used" });
+    res.status(403).json({ message: "The email has already been used." });
   }
 });
 

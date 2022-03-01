@@ -42,11 +42,14 @@ handler.withSession.post(async (req, res) => {
       await RandomTokenModel.deleteOne({ mail });
     }, 3600000);
 
-    main(mail!, uuid)
+    await main(mail!, uuid)
       .then(() => {
-        res.json({ message: "The reset password link was sent. Please check your email" });
+        res.json({ message: "The reset password link was sent. Please check your Inbox along with the SPAM folder!" });
       })
-      .catch(console.error);
+      .catch((error) => {
+        console.log("Send email error: " + error.response);
+        res.status(550).json({ message: "Server error, please try again later!" });
+      });
   } else {
     res.status(403).json({ message: "The email has not been found" });
   }
@@ -71,79 +74,84 @@ handler.withSession.put(async (req, res) => {
 });
 
 async function main(mail: string, uuid: string) {
-  let transporter = nodemailer.createTransport({
-    host: "smtp.ethereal.email",
-    port: 587,
-    secure: false, // true for 465, false for other ports
+  let transporter = await nodemailer.createTransport({
+    host: "smtp.mail.yahoo.com",
+    port: 465,
+    service: "yahoo",
+    name: "kyrabiika",
+    secure: true, // true for 465, false for other ports
     auth: {
-      user: "myrtle.rosenbaum26@ethereal.email",
-      pass: "59tSxp6rmrzrUUq4WJ"
+      user: "kyrabiika@yahoo.com",
+      pass: "yifbczbblcfhrlrv"
     },
+    // tls: {
+    //   // do not fail on invalid certs
+    //   rejectUnauthorized: false
+    // },
+    // debug: false,
+    // logger: true
   });
-  console.log(path.join(process.cwd(), 'images'));
-  let message = {
-    from: "'kyrabiika.site  '<admin@kyrabiika.site>",
-    to: `${mail}`,
-    subject: "It is a reset link for Kyrabiika site ✔ " + new Date().toLocaleString('en-GB', { timeZone: 'EET' }),
+  // let transporter = nodemailer.createTransport({
+  //   host: "smtp.ethereal.email",
+  //   port: 587,
+  //   secure: false, // true for 465, false for other ports
+  //   auth: {
+  //     user: "myrtle.rosenbaum26@ethereal.email",
+  //     pass: "59tSxp6rmrzrUUq4WJ"
+  //   },
+  // });
 
-    html: `<p><b>Hello</b> Dear customer, <img src="cid:note@example.com"/></p>
-        <p>Here's a reset password link which is valid for 10 min.<br/><img src="cid:nyan@example.com"/></p>
+  transporter.verify(function (error, success) {
+    if (error) {
+      console.log(error);
+    } else {
+      console.log("Server is ready to take our messages", success);
+    }
+  });
+
+  let message = {
+    from: {
+      name: "КуРабиЙка офис",
+      address: "kyrabiika@yahoo.com"
+    },
+    to: `${mail}`,
+    subject: "It is a reset link for Kyrabiika site ✔ " + new Date().toLocaleString("en-GB", { timeZone: "EET" }),
+
+    html: `<img src="cid:logo@kyrabiika.site"/>
+        <p><img src="cid:accept@kyrabiika.site"/>&nbsp&nbsp<b>Hello</b> Dear customer, </p>
+        <p>Here's a reset password link which is valid for 10 min.</p>
+        <br/>
         <a>${process.env.NEXTAUTH_URL}/reset?code=${uuid}</a>`,
+
     attachments: [
-      // Binary Buffer attachment
       {
-        filename: 'image.png',
+        filename: "image.png",
         content: Buffer.from(
-          'iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD/' +
-          '//+l2Z/dAAAAM0lEQVR4nGP4/5/h/1+G/58ZDrAz3D/McH8yw83NDDeNGe4U' +
-          'g9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAAAAElFTkSuQmCC',
-          'base64'
+          "iVBORw0KGgoAAAANSUhEUgAAABAAAAAQAQMAAAAlPW0iAAAABlBMVEUAAAD/" +
+          "//+l2Z/dAAAAM0lEQVR4nGP4/5/h/1+G/58ZDrAz3D/McH8yw83NDDeNGe4U" +
+          "g9C9zwz3gVLMDA/A6P9/AFGGFyjOXZtQAAAAAElFTkSuQmCC",
+          "base64"
         ),
-        cid: 'note@example.com' // should be as unique as possible
+        cid: "accept@kyrabiika.site" // should be as unique as possible
       },
       {
-        filename: 'kyrabiikasite.png',
-        path: path.join(process.cwd(), 'images/kyrabiikasite.png'),
-        cid: 'nyan@example.com' // should be as unique as possible
+        filename: "kyrabiikasite.png",
+        path: path.join(process.cwd(), "images/kyrabiikasite.png"),
+        cid: "logo@kyrabiika.site" // should be as unique as possible
       }
     ],
-
-    list: {
-      // List-Help: <mailto:admin@example.com?subject=help>
-      help: 'admin@example.com?subject=help',
-
-      // List-Unsubscribe: <http://example.com> (Comment)
-      unsubscribe: [
-        {
-          url: 'http://example.com/unsubscribe',
-          comment: 'A short note about this url'
-        },
-        'unsubscribe@example.com'
-      ],
-
-      // List-ID: "comment" <example.com>
-      id: {
-        url: 'mylist.example.com',
-        comment: 'This is my awesome list'
-      }
-    }
   };
 
-  transporter.sendMail(message, (error, info) => {
-    if (error) {
-      console.log('Error occurred');
-      console.log(error.message);
-      return process.exit(1);
-    }
-    console.log('Message sent successfully!');
-    // Click the link after the console.log below and you can see the email and the generated reset pass link
-    // Preview only available when sending through an Ethereal account
-    console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
-    // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+  let info = await transporter.sendMail(message);
 
-    // only needed when using pooled connections
-    transporter.close();
-  });
+  console.log("Message sent: %s", info.messageId);
+  // Message sent: <b658f8ca-6296-ccf4-8306-87d57a0b4321@example.com>
+
+  // Preview only available when sending through an Ethereal account
+  console.log("Preview URL: %s", nodemailer.getTestMessageUrl(info));
+  // Preview URL: https://ethereal.email/message/WaQKMgKddxQDoou...
+
+  return info;
 }
 
 export default handler;
