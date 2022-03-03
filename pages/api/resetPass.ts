@@ -40,7 +40,7 @@ handler.withSession.post(async (req, res) => {
 
     setTimeout(async () => {
       await RandomTokenModel.deleteOne({ mail });
-    }, 3600000);
+    }, 600000);
 
     await main(mail!, uuid)
       .then(() => {

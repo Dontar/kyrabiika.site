@@ -9,7 +9,7 @@ const handler = rest();
 
 handler.withSession.get<Partial<LoggedInUser>>(async (req, res) => {
   const session = await getSession({ req });
-  console.log("In User.tx", session);
+  // console.log("In User.tx", session);
   if (session !== null) {
     const user = await UserModel
       .findOne({ mail: session?.user.email ?? "" })

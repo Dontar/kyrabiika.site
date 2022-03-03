@@ -64,6 +64,8 @@ export default function GoogleMap(props: GoogleMapOptions) {
         mapTypeControl: false,
         rotateControl: false,
         streetViewControl: false,
+        draggableCursor: "default"
+        // draggingCursor: 'url(https://upload.wikimedia.org/wikipedia/commons/thumb/1/10/LoCos_Point.svg/1024px-LoCos_Point.svg.png), auto'
       });
       map.current.addListener("click", async (e: google.maps.MapMouseEvent) => {
         if (e.latLng && props.onNewPosition) {

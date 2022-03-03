@@ -41,10 +41,10 @@ export default function UserProfile() {
 
 
   useEffect(() => {
-    setInp(order.user!);
-    pin.current = order.user!.address_pos;
-    info.current = order.user!.address;
-  }, [order.user]);
+    setInp(order.user);
+    pin.current = order.user?.address_pos;
+    info.current = order.user?.address;
+  }, [order]);
 
 
   const handleSubmitRegister = async (event: React.FormEvent<HTMLFormElement>) => {
