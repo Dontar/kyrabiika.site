@@ -4,8 +4,11 @@ import bcrypt from "bcrypt";
 import rest from "../../lib/utils/rest";
 import { UserModel } from "../../lib/db/Connection";
 import { LoggedInUser } from "../../lib/db/DbTypes";
+import { resetPassProps } from "../../lib/types/next-auth";
 
 const handler = rest();
+
+type Mail = { userMail?: string, message?: string }
 
 handler.withSession.get<Partial<LoggedInUser>>(async (req, res) => {
   const session = await getSession({ req });
@@ -41,6 +44,21 @@ handler.withAuth.post<LoggedInUser>(async (req, res) => {
     res.json({ ...user, isLoggedIn: true });
   } else {
     res.status(401).json({ isLoggedIn: false } as LoggedInUser);
+  }
+});
+
+handler.withAuth.put<Mail>(async (req, res) => {
+  const { mail, newPass, } = (req.body ?? {}) as resetPassProps;
+  if (!!mail && !!newPass) {
+    let password = await bcrypt.hash(newPass, process.env.DB_SALT_ROUNDS || 9);
+    const user = await UserModel.findOneAndUpdate({ mail: mail || "" }, { password }).lean();
+    if (user) {
+      res.json({ userMail: user.mail });
+    } else {
+      res.status(403).json({ message: "The password was not changed, please try again later." });
+    }
+  } else {
+    res.status(403).json({ message: "Something went wrong, please try again later!" });
   }
 });
 
