@@ -31,7 +31,7 @@ export default function Profile() {
       <Container fluid className="mt-2">
         <Tab.Container defaultActiveKey="#profile">
           <Row>
-            <Col lg={2}>
+            <Col md={2} className="mb-3">
               <ListGroup className="position-sticky" style={{ top: "4em" }} variant="flush">
                 <ListGroup.Item action href="#profile">Profile</ListGroup.Item>
                 <ListGroup.Item action href="#orders">Orders</ListGroup.Item>

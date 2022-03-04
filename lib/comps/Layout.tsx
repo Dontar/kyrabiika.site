@@ -93,9 +93,11 @@ export default function Layout(p: JSX.IntrinsicElements["div"]) {
           </Container>
         </Navbar>
         {message && message.text.length > 0 &&
-          <Col sm={{ span: 10, offset: 1 }} >
+          <Col md={{ span: 10, offset: 1 }} >
             <Alert className="p-2 m-1 position-relative" variant={message?.variant} >
-              {message.text}
+              <div className="pe-3" >
+                {message.text}
+              </div>
               <Button className="position-absolute top-0 end-0 ps-2 border-0 " variant="outline-dark" size="sm" onClick={() => closeMessage()}>
                 <i className="fas fa-times" />
               </Button>

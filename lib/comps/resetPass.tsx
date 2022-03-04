@@ -1,21 +1,26 @@
-import React, { useEffect, useState, useContext, ReactPropTypes } from "react";
+import React, { useState, useContext } from "react";
 import { useRouter } from "next/router";
 import { useSession } from "next-auth/react";
 
 import Container from "react-bootstrap/Container";
 import Form from "react-bootstrap/Form";
 import Row from "react-bootstrap/Row";
-import Col from "react-bootstrap/Col";
 import Button from "react-bootstrap/Button";
 import Stack from "react-bootstrap/Stack";
-
+import Alert from "react-bootstrap/Alert";
 
 import rest, { FetchError } from "../utils/rest-client";
 import { APIMessageContext } from "../comps/GlobalMessageHook";
 
 type mail = { userMail: string }
 
-export default function ResetPass({ name }: { name: string }) {
+type resetProps = {
+  mail: string;
+  setShowResetComp: (a: boolean) => void;
+};
+
+export default function ResetPass({ mail, setShowResetComp }: resetProps) {
+  const [errorMsg, setErrorMsg] = useState<string>("");
   const [input, setInput] = useState({
     password: "",
     rePassword: "",
@@ -45,16 +50,17 @@ export default function ResetPass({ name }: { name: string }) {
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
     if (input.password.length < 8) {
-      writeMessage("warning", "Password must be at least eight symbols long.");
+      setErrorMsg("Password must be at least eight symbols long!");
       return;
     }
     if (input.password !== input.rePassword) {
-      writeMessage("warning", "Password confirmation doesn't match the password.");
+      setErrorMsg("Confirm password must match password!");
       return;
     }
 
     try {
-      const resetPass: mail = await rest.put("/api/user", { mail: name, newPass: input.password });
+      setShowResetComp(false);
+      const resetPass: mail = await rest.put("/api/user", { mail, newPass: input.password });
       if (!!resetPass.userMail) {
         writeMessage("success", "The password was changed successfully.");
       } else {
@@ -70,24 +76,29 @@ export default function ResetPass({ name }: { name: string }) {
     }
   };
 
+
   return (
     <Container >
       <Row style={{ margin: "auto", width: "18rem" }}>
         <Stack className="pt-0" as={Form} noValidate onSubmit={handleSubmit} gap={2}>
-          {/* {message && message.text.length > 0 &&
-                <Alert className="p-2 pe-5" variant={message?.variant} onClose={() => writeMessage(null)} dismissible>
-                  {message.text}
-                </Alert>
-              } */}
           <div className="mb-2">
             <h4 style={{ textAlign: "center" }}>Change password for</h4>
-            <h4 style={{ textAlign: "center" }}>{`@ ${name}`}</h4>
+            <h4 style={{ textAlign: "center" }}>{`${mail}`}</h4>
           </div>
+          {errorMsg && errorMsg.length > 0 &&
+            <Alert className="p-2 m-0 position-relative" variant="warning" >
+              <div className="pe-3" >
+                {errorMsg}
+              </div>
+              <Button className="position-absolute top-0 end-0 ps-2 border-0 " variant="outline-dark" size="sm" onClick={() => setErrorMsg("")}>
+                <i className="fas fa-times" />
+              </Button>
+            </Alert>
+          }
           <Form.Group controlId="password">
             <Form.Label>Password</Form.Label>
             <Form.Control required name='password' type="password" onChange={handleInputChange} />
           </Form.Group>
-
           <Form.Group controlId="rePassword">
             <Form.Label>Confirm password</Form.Label>
             <Form.Control required name='rePassword' type="password" onChange={handleInputChange} />
@@ -101,7 +112,7 @@ export default function ResetPass({ name }: { name: string }) {
           </Button>
         </Stack>
       </Row>
-    </Container>
+    </Container >
   );
 }
 

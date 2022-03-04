@@ -192,7 +192,7 @@ export default function UserProfile() {
         <Modal.Header closeButton className="border-0 p-2">
         </Modal.Header>
         <Modal.Body className="pb-5 pt-0">
-          <ResetPass name={`${input?.firstName} ${input?.lastName}`} />
+          <ResetPass setShowResetComp={setShowResetComp} mail={`${input?.mail}`} />
         </Modal.Body>
       </Modal>
     </>

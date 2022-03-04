@@ -8,7 +8,7 @@ import { resetPassProps } from "../../lib/types/next-auth";
 
 const handler = rest();
 
-type Mail = { userMail?: string, message?: string }
+type Mail = { userMail?: string; message?: string; }
 
 handler.withSession.get<Partial<LoggedInUser>>(async (req, res) => {
   const session = await getSession({ req });
