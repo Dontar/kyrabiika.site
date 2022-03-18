@@ -209,7 +209,7 @@ export default function Login({ providers, callBackUrl }: LoginProps) {
               <div>
                 <hr />
                 <Col className="d-flex justify-content-between">
-                  <Button variant="link" style={{ boxShadow: "none" }} className="ps-0 resetButton" onClick={handleShowResetPass}>
+                  <Button variant="link" style={{ boxShadow: "none" }} className="ps-0 " onClick={handleShowResetPass}>
                     Reset password
                   </Button>
                   <Button variant="outline-success" type="submit" >

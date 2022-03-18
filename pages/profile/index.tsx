@@ -10,6 +10,7 @@ import Container from "react-bootstrap/Container";
 
 import Layout from "../../lib/comps/Layout";
 import UserProfile from "../../lib/comps/profile/UserProfile";
+import UserAddresses from "../../lib/comps/profile/UserAddresses";
 
 export default function Profile() {
   const router = useRouter();
@@ -35,12 +36,16 @@ export default function Profile() {
               <ListGroup className="position-sticky" style={{ top: "4em" }} variant="flush">
                 <ListGroup.Item action href="#profile">Profile</ListGroup.Item>
                 <ListGroup.Item action href="#orders">Orders</ListGroup.Item>
+                <ListGroup.Item action href="#addresses">Addresses</ListGroup.Item>
               </ListGroup>
             </Col>
             <Col>
               <Tab.Content>
                 <Tab.Pane eventKey="#profile" title="Profile">
                   <UserProfile />
+                </Tab.Pane>
+                <Tab.Pane eventKey="#addresses" title="Adresses">
+                  <UserAddresses />
                 </Tab.Pane>
                 <Tab.Pane eventKey="#orders" title="Orders">
                   <h3>Orders</h3>

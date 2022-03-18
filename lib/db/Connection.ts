@@ -1,5 +1,5 @@
 import { model, Schema, models, Model, connect as mnConnect, plugin } from "mongoose";
-import { MenuItem, Order, User, SiteConfig, RandomToken } from "./DbTypes";
+import { MenuItem, Order, User, SiteConfig, RandomToken, Address } from "./DbTypes";
 import autopopulate from "mongoose-autopopulate";
 
 plugin(autopopulate);
@@ -38,11 +38,19 @@ export const UserModel: Model<User> = models.User || model("User", new Schema({
   lastName: String,
   mail: { type: String, required: true, unique: true },
   phone: String,
-  address: String,
-  address_pos: {
-    lat: Number,
-    lng: Number
-  },
+  address: [{
+    id: String,
+    completeAddress: String,
+    city: String,
+    complex: String,
+    street: String,
+    zip: String,
+    entrance: String,
+    floor: String,
+    apartment: String,
+    phone: String,
+    address_pos: String,
+  }],
   orders: [{ type: Schema.Types.ObjectId, ref: "Order", autopopulate: true }],
   roles: { type: [String], required: true, default: ["User"] },
   password: { type: String, required: true },

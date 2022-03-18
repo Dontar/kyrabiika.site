@@ -1,5 +1,5 @@
-type HTTPMethod = "get" | "post" | "put" | "patch" | "del";
-const HTTPMethods: HTTPMethod[] = ["get", "post", "put", "patch", "del"];
+export type HTTPMethod = "get" | "post" | "put" | "patch" | "delete";
+const HTTPMethods: HTTPMethod[] = ["get", "post", "put", "patch", "delete"];
 
 export class FetchError extends Error {
   constructor(message: string, public response: Response, public data?: { message: string }) {

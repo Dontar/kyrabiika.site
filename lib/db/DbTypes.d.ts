@@ -2,6 +2,20 @@ interface MongoId {
   _id?: any;
 }
 
+export type Address = {
+  id: string;
+  completeAddress: string;
+  city?: string;
+  complex?: string;
+  street?: string;
+  zip?: string;
+  entrance?: string;
+  floor?: string;
+  apartment?: string;
+  phone?: string;
+  address_pos?: google.maps.LatLngLiteral;
+}
+
 export interface User extends MongoId {
   firstName: string;
   lastName?: string;
@@ -9,8 +23,8 @@ export interface User extends MongoId {
   password: string;
   roles?: string[];
   phone?: string;
-  address?: string;
-  address_pos?: google.maps.LatLngLiteral;
+  address?: Address[];
+  // address_pos?: google.maps.LatLngLiteral;
   orders?: Order[];
   google?: string;
   facebook?: string;

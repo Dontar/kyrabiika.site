@@ -5,8 +5,8 @@ import { Session } from "next-auth";
 
 export type Handler<T = any> = (req: Omit<NextApiRequest, "body"> & { body: T, session?: Session }, res: NextApiResponse<T>, next?: (result?: unknown | Error) => unknown) => void | Promise<void>;
 
-type HTTPMethod = "get" | "post" | "put" | "patch" | "del";
-const HTTPMethods: HTTPMethod[] = ["get", "post", "put", "patch", "del"];
+type HTTPMethod = "get" | "post" | "put" | "patch" | "delete";
+const HTTPMethods: HTTPMethod[] = ["get", "post", "put", "patch", "delete"];
 
 interface RestAPIBase extends Record<HTTPMethod, <T>(handler: Handler<T>) => RestAPIBase> { }
 

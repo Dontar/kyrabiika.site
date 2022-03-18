@@ -28,7 +28,7 @@ export default function UserProfile() {
   const order = useOrderContext();
 
   const [validated, setValidated] = useState(false);
-  const [errorRegMsg, setErrorRegMsg] = useState<string>();
+  const [errorRegMsg, setErrorRegMsg] = useState<string>("");
   const [dirty, setDirty] = useState(false);
   const [showResetComp, setShowResetComp] = useState(false);
 
