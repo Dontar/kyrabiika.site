@@ -44,12 +44,17 @@ export const UserModel: Model<User> = models.User || model("User", new Schema({
     city: String,
     complex: String,
     street: String,
+    streetNum: String,
     zip: String,
+    building: String,
     entrance: String,
     floor: String,
     apartment: String,
     phone: String,
-    address_pos: String,
+    address_pos: {
+      lat: Number,
+      lng: Number
+    },
   }],
   orders: [{ type: Schema.Types.ObjectId, ref: "Order", autopopulate: true }],
   roles: { type: [String], required: true, default: ["User"] },

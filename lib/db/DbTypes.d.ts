@@ -8,7 +8,9 @@ export type Address = {
   city?: string;
   complex?: string;
   street?: string;
+  streetNum?: string;
   zip?: string;
+  building?: string;
   entrance?: string;
   floor?: string;
   apartment?: string;

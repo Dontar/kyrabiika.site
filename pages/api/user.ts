@@ -10,7 +10,7 @@ const handler = rest();
 
 type Mail = { userMail?: string; message?: string; }
 
-handler.withSession.get<Partial<LoggedInUser>>(async (req, res) => {
+handler.withSession.get<Partial<LoggedInUser> | {}>(async (req, res) => {
   const session = await getSession({ req });
   // console.log("In User.tx", session);
   if (session !== null) {
@@ -20,32 +20,28 @@ handler.withSession.get<Partial<LoggedInUser>>(async (req, res) => {
       .lean();
 
     if (user) {
-      res.json({ ...user, isLoggedIn: true });
+      res.json(user);
       return;
     }
   }
-  res.json({ isLoggedIn: false });
+  res.json({});
 });
 
-handler.withAuth.post<LoggedInUser>(async (req, res) => {
+
+handler.withAuth.post<Partial<LoggedInUser> | { message: string }>(async (req, res) => {
   const mail = req.session?.user.email;
-  let userData = req.body;
+  let userData = req.body as Partial<LoggedInUser>;
   if (userData.mail !== mail) {
-    return res.status(401).json({ isLoggedIn: false } as LoggedInUser);
-  }
-  if (userData.hasOwnProperty("password") && userData.password !== "") {
-    userData.password = await bcrypt.hash(userData.password!, process.env.DB_SALT_ROUNDS || 9);
-  } else {
-    let { password: _, ...rest } = userData;
-    userData = rest;
+    return res.status(401).json({ message: "Please Login again" });
   }
   const user = await UserModel.findOneAndUpdate({ mail: mail || "" }, userData, { new: true }).lean();
   if (user) {
-    res.json({ ...user, isLoggedIn: true });
+    res.json(user);
   } else {
-    res.status(401).json({ isLoggedIn: false } as LoggedInUser);
+    res.status(401).json({ message: "service temporarily unavailable please try again later" });
   }
 });
+
 
 handler.withAuth.put<Mail>(async (req, res) => {
   const { mail, newPass, } = (req.body ?? {}) as resetPassProps;

@@ -1,6 +1,4 @@
 import React, { useState, useEffect, useContext, useCallback, useRef } from "react";
-import Router from "next/router";
-
 
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
@@ -11,17 +9,14 @@ import Button from "react-bootstrap/Button";
 import Container from "react-bootstrap/Container";
 import Card from "react-bootstrap/Card";
 import Modal from "react-bootstrap/Modal";
-import ListGroup from "react-bootstrap/ListGroup";
-import Image from "react-bootstrap/Image";
 
 import { useOrderContext } from "../OrderContext";
-import { Address, User } from "../../db/DbTypes";
+import { Address } from "../../db/DbTypes";
 import { HTTPMethod } from "../../utils/rest-client";
 import rest, { FetchError } from "../../utils/rest-client";
 import { TabHeader } from "../TabHeader";
 import GoogleMap, { GoogleMapOptions } from "../GoogleMap2";
 import { Status, Wrapper } from "@googlemaps/react-wrapper";
-import ResetPass from "../resetPass";
 import { APIMessageContext } from "../../comps/GlobalMessageHook";
 
 
@@ -50,9 +45,30 @@ export default function UserAddresses() {
   };
 
   const handleUpdateAddress = (id: string) => {
-    let selected = addresses?.filter(x => x.id === id)[0];
-    setEditAddress(selected || {});
+    let selected = addresses?.filter(x => x.id === id);
+    if (Array.isArray(selected) && selected.length === 1) {
+      let { address_pos, ...rest } = selected[0];
+      setEditAddress(rest);
+    } else {
+      setEditAddress({});
+    }
     setShowAddNew(true);
+  };
+
+  const handleAddWithGoogle = () => {
+    setEditAddress({});
+    setShowGoogle(true);
+  };
+
+  const handleUpdateWithGoogle = (id: string) => {
+    let selected = addresses?.filter(x => x.id === id);
+    if (Array.isArray(selected) && selected.length === 1) {
+      let { id, completeAddress, address_pos } = selected[0];
+      setEditAddress({ id, completeAddress, address_pos });
+    } else {
+      setEditAddress({});
+    }
+    setShowGoogle(true);
   };
 
   const handleDeleteAddress = (id: string) => {
@@ -87,7 +103,7 @@ export default function UserAddresses() {
                 <i className="far fa-save me-1" />
                 <span className="ms-1">Add new</span>
               </Button>
-              <Button variant="outline-secondary" onClick={() => setShowGoogle(true)}>
+              <Button variant="outline-secondary" onClick={handleAddWithGoogle}>
                 <i className="fab fa-brands fa-md fa-google me-1"></i>
                 <span className="ms-1">Add with Google</span>
               </Button>
@@ -101,7 +117,7 @@ export default function UserAddresses() {
               {
                 addresses?.map((x, i) => (
                   <Card key={i} as={Stack} direction="horizontal" >
-                    <button className="m-2 border-0" style={{ background: "none", maxWidth: "8rem" }} >
+                    <button className="m-2 border-0" style={{ background: "none", maxWidth: "8rem" }} onClick={() => handleUpdateWithGoogle(x.id)}>
                       <Card.Img src="/GoogleMaps.png" />
                     </button>
                     <Card.Body className="d-flex flex-column justify-content-around">
@@ -118,22 +134,6 @@ export default function UserAddresses() {
                   </Card>
                 ))
               }
-
-              <Card as={Stack} direction="horizontal" className="d-flex align-items-stretch" >
-                <button className="m-2 border-0" >
-                  <Card.Img src="/GoogleMaps.png" style={{ width: "8rem", minHeight: "100%" }} />
-                </button>
-                <Card.Body >
-                  <Card.Title>Card Title</Card.Title>
-                  <Card.Text>
-                    Some quick example text to build on the card title and make up the bulk of
-                    the card's content.
-                  </Card.Text>
-                  <Card.Link as={Button} variant="link" style={{ boxShadow: "none", color: "green", textDecoration: "none" }} >Update address</Card.Link>
-                  <Card.Link as={Button} variant="link" className="m-0" style={{ boxShadow: "none", textDecoration: "none" }} >Update with Maps</Card.Link>
-                  <Card.Link as={Button} variant="link" className="m-0" style={{ boxShadow: "none", color: "#a10827", textDecoration: "none" }} >Remove address</Card.Link>
-                </Card.Body>
-              </Card>
             </Stack>
           </Col>
         </Row>
@@ -148,7 +148,7 @@ export default function UserAddresses() {
           {"Are you sure you want to delete the selected address?"}
         </Modal.Body>
         <Modal.Footer>
-          <Button variant="outline-success" className="me-2" onClick={() => setShowDeleteAddress(false)}>
+          <Button variant="outline-primary" className="me-2" onClick={() => setShowDeleteAddress(false)}>
             Cancel
           </Button>
           <Button variant="outline-danger" onClick={deleteAddressRequest} >
@@ -161,8 +161,19 @@ export default function UserAddresses() {
 }
 
 
+type GoogleAddressInput = Pick<Address, "id" | "completeAddress" | "address_pos">;
+type RegularAddressInput = Omit<Address, "address_pos">;
+
+type AddNewAddressType = {
+  show: boolean;
+  hide: (a: boolean) => void;
+  writeMessage: (variant: string, text: string) => void;
+  editAddress: Partial<Address> | {};
+}
+
+
 function AddWithGoogle({ show, hide, writeMessage, editAddress }: AddNewAddressType): JSX.Element {
-  const [input, setInput] = useState<Partial<Address> /*& { default: boolean }*/>(editAddress);
+  const [input, setInput] = useState<Partial<GoogleAddressInput>>({});
 
   const order = useOrderContext();
 
@@ -230,7 +241,7 @@ function AddWithGoogle({ show, hide, writeMessage, editAddress }: AddNewAddressT
 
             <Card className="mt-3">
               <Card.Body >
-                <GoogleMap pin={input?.address_pos} address={input?.completeAddress} onNewPosition={onNewPosition} />
+                <GoogleMap pin={input!.address_pos} address={input?.completeAddress} onNewPosition={onNewPosition} />
               </Card.Body>
             </Card>
           </Form.Group>
@@ -243,26 +254,19 @@ function AddWithGoogle({ show, hide, writeMessage, editAddress }: AddNewAddressT
 }
 
 
-type AddNewAddressType = {
-  show: boolean;
-  hide: (a: boolean) => void;
-  writeMessage: (variant: string, text: string) => void;
-  editAddress: Address | {};
-}
-
-const addressData = ["street", "complex", "entrance", "floor", "apartment", "city", "zip", "phone"] as const;
+const addressData = ["street", "streetNum", "zip", "city", "complex", "building", "entrance", "floor", "apartment", "phone"] as const;
 type Values = { [K in typeof addressData[number]]: string }
 
 
 function AddNewAddress({ show, hide, writeMessage, editAddress }: AddNewAddressType): JSX.Element {
   // const [address, setAddress] = useState<string>("");
   const [validated, setValidated] = useState(false);
-  const [input, setInput] = useState<Partial<Address> /*& { default: boolean }*/>(editAddress);
+  const [input, setInput] = useState<Partial<RegularAddressInput>>({});
 
   const order = useOrderContext();
 
   useEffect(() => {
-    createFullAddress(editAddress);
+    // createFullAddress(editAddress);
     setInput(editAddress);
     setValidated(false);
   }, [editAddress]);
@@ -287,7 +291,7 @@ function AddNewAddress({ show, hide, writeMessage, editAddress }: AddNewAddressT
     const address = createFullAddress(input);
 
     try {
-      const response = await rest[httpRequest]("/api/address", { ...input, completeAddress: address, });
+      const response = await rest[httpRequest]("/api/address", { ...input, completeAddress: address, address_pos: {} });
       writeMessage("success", response.message);
       order.setUser();
     } catch (e) {
@@ -298,19 +302,36 @@ function AddNewAddress({ show, hide, writeMessage, editAddress }: AddNewAddressT
     }
   };
 
-  const createFullAddress = (addr: Partial<Address>) => {
+  const addressConstructor = (param: string, value: string) => {
+    const obj: any = {
+      street: (v: string) => `ul. ${v} `,
+      streetNum: (v: string) => `${v}, `,
+      zip: (v: string) => `zip ${v}, `,
+      city: (v: string) => `${v}, `,
+      complex: (v: string) => `complex ${v}, `,
+      building: (v: string) => `building ${v}, `,
+      entrance: (v: string) => `entrance ${v}, `,
+      floor: (v: string) => `floor ${v}, `,
+      apartment: (v: string) => `app ${v}, `,
+      phone: (v: string) => `${v},`,
+    };
+
+    return obj[param](value);
+  };
+
+  const createFullAddress = useCallback((addr: Partial<Address>) => {
     let fullAddress = "";
     addressData.forEach(x => {
       let params = addr[x] || "";
       if (params.length > 0) {
-        fullAddress = `${fullAddress} ${x}: ${addr[x]},`;
+        fullAddress = `${fullAddress} ${addressConstructor(x, params)}`;
       }
       return;
     });
     fullAddress = fullAddress.substring(0, fullAddress.length - 1);
     return fullAddress;
 
-  };
+  }, []);
 
   const ifEmptyObject = () => {
     return Object.keys(editAddress).length === 0;
@@ -319,7 +340,7 @@ function AddNewAddress({ show, hide, writeMessage, editAddress }: AddNewAddressT
   return (
     <Modal show={show} onHide={() => hide(!show)} size="lg" aria-labelledby="customAddress">
       <Modal.Header closeButton>
-        <Modal.Title>{ifEmptyObject() ? "Edit address" : "Add new address"}</Modal.Title>
+        <Modal.Title>{ifEmptyObject() ? "Add new address" : "Edit address"}</Modal.Title>
       </Modal.Header>
       <Modal.Body as={Form} noValidate validated={validated} onSubmit={
         ifEmptyObject()
@@ -339,7 +360,7 @@ function AddNewAddress({ show, hide, writeMessage, editAddress }: AddNewAddressT
         </Row>
         <Row >
           <Form.Group as={Col} lg="6" className="mb-2" controlId="validationCity">
-            <Form.Label>City</Form.Label>
+            <Form.Label>City *</Form.Label>
             <Form.Control required type="text" name="city" value={input.city ?? ""} placeholder="Град" onChange={handleInputChange} />
             <Form.Control.Feedback type="invalid">
               Please provide a valid city.
@@ -351,12 +372,16 @@ function AddNewAddress({ show, hide, writeMessage, editAddress }: AddNewAddressT
           </Form.Group>
         </Row>
         <Row >
-          <Form.Group as={Col} md="9" className="mb-2" controlId="validationStreet">
-            <Form.Label>Street</Form.Label>
-            <Form.Control required type="text" name="street" value={input.street ?? ""} placeholder="Балчик" onChange={handleInputChange} />
+          <Form.Group as={Col} md="7" className="mb-2" controlId="validationStreet">
+            <Form.Label>Street *</Form.Label>
+            <Form.Control required type="text" name="street" value={input.street ?? ""} placeholder="Улица" onChange={handleInputChange} />
             <Form.Control.Feedback type="invalid">
               Please provide a street and a number.
             </Form.Control.Feedback>
+          </Form.Group>
+          <Form.Group as={Col} md="2" className="mb-2" controlId="validationZip">
+            <Form.Label>№ *</Form.Label>
+            <Form.Control required type="text" name="streetNum" value={input?.streetNum ?? ""} placeholder="Номер" onChange={handleInputChange} />
           </Form.Group>
           <Form.Group as={Col} md="3" className="mb-2" controlId="validationZip">
             <Form.Label>Zip</Form.Label>
@@ -364,15 +389,19 @@ function AddNewAddress({ show, hide, writeMessage, editAddress }: AddNewAddressT
           </Form.Group>
         </Row>
         <Row >
-          <Form.Group as={Col} md="4" className="mb-2" controlId="validationEntrance">
+          <Form.Group as={Col} md="3" className="mb-2" controlId="validationEntrance">
+            <Form.Label>Building</Form.Label>
+            <Form.Control type="text" name="building" value={input?.building ?? ""} placeholder="Блок" onChange={handleInputChange} />
+          </Form.Group>
+          <Form.Group as={Col} md="3" className="mb-2" controlId="validationEntrance">
             <Form.Label>Entrance</Form.Label>
             <Form.Control type="text" name="entrance" value={input?.entrance ?? ""} placeholder="Вход" onChange={handleInputChange} />
           </Form.Group>
-          <Form.Group as={Col} md="4" className="mb-2" controlId="validationFloor">
+          <Form.Group as={Col} md="3" className="mb-2" controlId="validationFloor">
             <Form.Label>Floor</Form.Label>
             <Form.Control type="text" name="floor" value={input?.floor ?? ""} placeholder="Етаж" onChange={handleInputChange} />
           </Form.Group>
-          <Form.Group as={Col} md="4" className="mb-2" controlId="validationApp">
+          <Form.Group as={Col} md="3" className="mb-2" controlId="validationApp">
             <Form.Label>Apartment</Form.Label>
             <Form.Control type="text" name="apartment" value={input?.apartment ?? ""} placeholder="Апартамент" onChange={handleInputChange} />
           </Form.Group>
@@ -380,7 +409,7 @@ function AddNewAddress({ show, hide, writeMessage, editAddress }: AddNewAddressT
         <hr />
         <Stack direction="horizontal" className="mb-2 d-flex align-items-end justify-content-between">
           <Form.Group as={Col} lg="4" controlId="validationPhone">
-            <Form.Label>Phone</Form.Label>
+            <Form.Label>Phone *</Form.Label>
             <Form.Control type="text" name="phone" value={input?.phone ?? ""} placeholder="Телефон" required onChange={handleInputChange} />
             <Form.Control.Feedback type="invalid">
               Please provide a valid phone number.

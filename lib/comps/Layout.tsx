@@ -55,7 +55,7 @@ export default function Layout(p: JSX.IntrinsicElements["div"]) {
             </Navbar.Brand>
 
             <Nav className="gap-2 flex-row">
-              {order.user?.isLoggedIn === true ? (
+              {!!session /*order.user?.isLoggedIn === true*/ ? (
                 <>
                   <Link href="/order" passHref>
                     <Nav.Link className="d-flex p-0 border rounded-circle bg-secondary text-white justify-content-center position-relative" style={{ width: "36px", height: "36px" }}>
