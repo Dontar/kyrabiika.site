@@ -258,7 +258,7 @@ const addressData = ["street", "streetNum", "zip", "city", "complex", "building"
 type Values = { [K in typeof addressData[number]]: string }
 
 
-function AddNewAddress({ show, hide, writeMessage, editAddress }: AddNewAddressType): JSX.Element {
+export function AddNewAddress({ show, hide, writeMessage, editAddress }: AddNewAddressType): JSX.Element {
   // const [address, setAddress] = useState<string>("");
   const [validated, setValidated] = useState(false);
   const [input, setInput] = useState<Partial<RegularAddressInput>>({});

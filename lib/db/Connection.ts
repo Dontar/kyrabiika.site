@@ -30,7 +30,11 @@ export const OrderModel: Model<Order> = models.Order || model("Order", new Schem
       "Delivered"
     ]
   },
-  user: { type: Schema.Types.ObjectId, ref: "User" }
+  // user: { type: Schema.Types.ObjectId, ref: "User" }
+  name: String,
+  mail: String,
+  phone: String,
+  selectedAddress: String
 }));
 
 export const UserModel: Model<User> = models.User || model("User", new Schema({

@@ -56,7 +56,11 @@ export interface Order extends MongoId {
   items: OrderItem[];
   date: Date;
   progress?: OrderProgress;
-  user: User;
+  // user: User;
+  name: string;
+  mail: string;
+  phone: string;
+  selectedAddress: string;
 }
 
 export interface SiteConfig extends MongoId {

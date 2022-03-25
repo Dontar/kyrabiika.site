@@ -36,7 +36,7 @@ export default function OrderProgress() {
             Delivering
           </Col>
         </Row>
-        <ProgressBars now={40} />
+        <ProgressBars now={30} />
         <div style={{ height: "12em" }} />
       </Container>
     </Layout>
