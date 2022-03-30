@@ -34,9 +34,7 @@ export default function UserAddresses() {
   const [showGoogle, setShowGoogle] = useState<boolean>(false);
 
   useEffect(() => {
-    setAddresses(order.user?.address?.reverse());
-    // pin.current = order.user?.address_pos;
-    // info.current = order.user?.address;
+    setAddresses(order.user?.address);
   }, [order]);
 
   const handleAddAddress = () => {
@@ -132,7 +130,7 @@ export default function UserAddresses() {
                       </div>
                     </Card.Body>
                   </Card>
-                ))
+                )).reverse()
               }
             </Stack>
           </Col>
@@ -174,20 +172,21 @@ type AddNewAddressType = {
 
 function AddWithGoogle({ show, hide, writeMessage, editAddress }: AddNewAddressType): JSX.Element {
   const [input, setInput] = useState<Partial<GoogleAddressInput>>({});
+  const [validated, setValidated] = useState(false);
 
   const order = useOrderContext();
 
-  const pin = useRef<google.maps.LatLngLiteral>();
-  const info = useRef<string>();
-
   useEffect(() => {
+    setValidated(false);
     setInput(editAddress);
   }, [editAddress]);
 
   const onNewPosition: GoogleMapOptions["onNewPosition"] = (pos, completeAddress) => {
     setInput({ ...input, completeAddress, address_pos: pos });
-    pin.current = pos;
-    info.current = completeAddress;
+  };
+
+  const handleInputChange = (event: any) => {
+    setInput(input => ({ ...input, [event.target.name]: event.target.value }));
   };
 
   const ifEmptyObject = () => {
@@ -196,6 +195,13 @@ function AddWithGoogle({ show, hide, writeMessage, editAddress }: AddNewAddressT
 
   const handleSubmit = async (event: React.FormEvent<HTMLFormElement>, httpRequest: HTTPMethod) => {
     event.preventDefault();
+    const form = event.currentTarget;
+    if (form.checkValidity() === false) {
+      event.stopPropagation();
+      setValidated(true);
+      return;
+    }
+
     hide(false);
     console.log(input);
     try {
@@ -217,13 +223,13 @@ function AddWithGoogle({ show, hide, writeMessage, editAddress }: AddNewAddressT
   };
 
   return (
-    <Modal show={show} onHide={() => hide(!show)} size="lg" aria-labelledby="googleMaps">
+    <Modal show={show} onHide={() => hide(false)} size="lg" aria-labelledby="googleMaps">
       <Modal.Header closeButton>
         <Modal.Title>
           Add new address with Google maps
         </Modal.Title>
       </Modal.Header>
-      <Modal.Body as={Form} noValidate onSubmit={
+      <Modal.Body as={Form} noValidate validated={validated} onSubmit={
         ifEmptyObject()
           ? (e: React.FormEvent<HTMLFormElement>) => handleSubmit(e, "post")
           : (e: React.FormEvent<HTMLFormElement>) => handleSubmit(e, "put")
@@ -234,8 +240,9 @@ function AddWithGoogle({ show, hide, writeMessage, editAddress }: AddNewAddressT
             <Form.Control
               as="textarea"
               value={input?.completeAddress ?? ""}
-              readOnly
-              name="address"
+              required
+              name="completeAddress"
+              onChange={handleInputChange}
             />
             <Form.Control.Feedback type="invalid">No address provided.</Form.Control.Feedback>
 
@@ -338,7 +345,7 @@ export function AddNewAddress({ show, hide, writeMessage, editAddress }: AddNewA
   };
 
   return (
-    <Modal show={show} onHide={() => hide(!show)} size="lg" aria-labelledby="customAddress">
+    <Modal show={show} onHide={() => hide(false)} size="lg" aria-labelledby="customAddress">
       <Modal.Header closeButton>
         <Modal.Title>{ifEmptyObject() ? "Add new address" : "Edit address"}</Modal.Title>
       </Modal.Header>

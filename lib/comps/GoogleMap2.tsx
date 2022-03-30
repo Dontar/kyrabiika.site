@@ -53,6 +53,15 @@ export default function GoogleMap(props: GoogleMapOptions) {
       return "";
     }
   }
+  function handleLocationError(
+    browserHasGeolocation: boolean,
+    pos: google.maps.LatLngLiteral
+  ) {
+    const info = browserHasGeolocation
+      ? "Error: The Geolocation service failed."
+      : "Error: Your browser doesn't support geolocation.";
+    props.onNewPosition && props.onNewPosition(pos, info);
+  }
 
   useEffect(() => {
     if (ref.current && !map.current) {
@@ -72,6 +81,36 @@ export default function GoogleMap(props: GoogleMapOptions) {
           const location = e.latLng.toJSON();
           const { formatted_address } = await findGeo({ location });
           props.onNewPosition(location, formatted_address);
+        }
+      });
+      const locationButton = document.createElement("div");
+
+      locationButton.textContent = "Go to Current Location";
+      locationButton.classList.add("custom-map-control-button");
+      map.current.controls[google.maps.ControlPosition.TOP_CENTER].push(locationButton);
+      locationButton.addEventListener("click", () => {
+        // Try HTML5 geolocation.
+        if (navigator.geolocation) {
+          navigator.geolocation.getCurrentPosition(
+            async (position: GeolocationPosition) => {
+              const location = {
+                lat: position.coords.latitude,
+                lng: position.coords.longitude,
+              };
+              const { formatted_address } = await findGeo({ location });
+              // info.current.setPosition(pos);
+              // infoWindow.setContent("Location found.");
+              // infoWindow.open(map);
+              setPin(location);
+              props.onNewPosition && props.onNewPosition(location, formatted_address);
+            },
+            () => {
+              handleLocationError(true, defaultPos);
+            }
+          );
+        } else {
+          // Browser doesn't support Geolocation
+          handleLocationError(false, defaultPos);
         }
       });
     }
