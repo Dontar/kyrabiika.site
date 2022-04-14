@@ -24,6 +24,9 @@ export function convert<T>(doc: T): T extends Types.ObjectId ? string : T {
     } else if (Array.isArray(val)) {
       i[prop] = i[prop].map(convert);
     }
+    else if (val.hasOwnProperty("_id")) {
+      i[prop]._id = val._id.toString();
+    }
   });
   return i;
 }

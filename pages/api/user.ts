@@ -17,7 +17,7 @@ handler.withSession.get<Partial<LoggedInUser> | {}>(async (req, res) => {
     const user = await UserModel
       .findOne({ mail: session?.user.email ?? "" })
       .select("-password -roles")
-      .lean();
+      .lean({ autopopulate: true });
 
     if (user) {
       res.json(user);

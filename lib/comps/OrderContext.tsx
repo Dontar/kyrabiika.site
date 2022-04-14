@@ -26,6 +26,9 @@ function useOrderState() {
       items.splice(idx, 1);
       setItems([...items]);
     },
+    clearOrder() {
+      setItems([]);
+    },
     setUserAddress(address: string, address_pos: google.maps.LatLngLiteral) {
       setUser(rest.post("/api/user", { address, address_pos }).then(({ data }) => data));
     },
@@ -44,7 +47,7 @@ function useOrderState() {
       return "Guest";
     },
     get orderPrice(): number {
-      return this.items.reduce((a, i) => (a += i.count, a), 0);
+      return this.items.reduce((a, i) => (a += i.count), 0);
     },
     get hasItems(): boolean {
       return this.items.length > 0;

@@ -14,7 +14,6 @@ export type Address = {
   entrance?: string;
   floor?: string;
   apartment?: string;
-  phone?: string;
   address_pos?: google.maps.LatLngLiteral;
 }
 

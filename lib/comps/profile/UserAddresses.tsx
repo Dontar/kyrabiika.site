@@ -261,7 +261,7 @@ function AddWithGoogle({ show, hide, writeMessage, editAddress }: AddNewAddressT
 }
 
 
-const addressData = ["street", "streetNum", "zip", "city", "complex", "building", "entrance", "floor", "apartment", "phone"] as const;
+const addressData = ["street", "streetNum", "zip", "city", "complex", "building", "entrance", "floor", "apartment"] as const;
 type Values = { [K in typeof addressData[number]]: string }
 
 
@@ -320,7 +320,6 @@ export function AddNewAddress({ show, hide, writeMessage, editAddress }: AddNewA
       entrance: (v: string) => `entrance ${v}, `,
       floor: (v: string) => `floor ${v}, `,
       apartment: (v: string) => `app ${v}, `,
-      phone: (v: string) => `${v},`,
     };
 
     return obj[param](value);
@@ -414,19 +413,7 @@ export function AddNewAddress({ show, hide, writeMessage, editAddress }: AddNewA
           </Form.Group>
         </Row>
         <hr />
-        <Stack direction="horizontal" className="mb-2 d-flex align-items-end justify-content-between">
-          <Form.Group as={Col} lg="4" controlId="validationPhone">
-            <Form.Label>Phone *</Form.Label>
-            <Form.Control type="text" name="phone" value={input?.phone ?? ""} placeholder="Телефон" required onChange={handleInputChange} />
-            <Form.Control.Feedback type="invalid">
-              Please provide a valid phone number.
-            </Form.Control.Feedback>
-          </Form.Group>
-          {/* <Form.Group as={Col} xs="3" controlId="default">
-            <Form.Check type="checkbox" name="default" checked={input.default} label="Set as default address" onChange={handleInputChange} />
-          </Form.Group> */}
-          <Button type="submit" >{ifEmptyObject() ? "Add new address" : "Edit address"}</Button>
-        </Stack>
+        <Button type="submit" className="float-end">{ifEmptyObject() ? "Add new address" : "Edit address"}</Button>
       </Modal.Body>
     </Modal >
   );

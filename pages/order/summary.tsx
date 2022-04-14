@@ -1,4 +1,5 @@
 import React, { ReactElement, useState, useContext, useEffect } from "react";
+import { useRouter } from "next/router";
 
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -11,6 +12,10 @@ import Dropdown from "react-bootstrap/Dropdown";
 import DropdownButton from "react-bootstrap/DropdownButton";
 import Stack from "react-bootstrap/Stack";
 import Form from "react-bootstrap/Form";
+import OverlayTrigger from "react-bootstrap/OverlayTrigger";
+import Popover from "react-bootstrap/Popover";
+import CloseButton from "react-bootstrap/CloseButton";
+
 
 import Layout from "../../lib/comps/Layout";
 import Link from "next/link";
@@ -23,19 +28,27 @@ import { APIMessageContext } from "../../lib/comps/GlobalMessageHook";
 
 import GoogleMap from "../../lib/comps/GoogleMap";
 import { Status, Wrapper } from "@googlemaps/react-wrapper";
-import { Address } from "../../lib/db/DbTypes";
+import { LoggedInUser, Order } from "../../lib/db/DbTypes";
+import DropdownMenu from "react-bootstrap/esm/DropdownMenu";
+import rest, { FetchError } from "../../lib/utils/rest-client";
+
+type returnOrderSave = {
+  id: string;
+  message: string;
+}
+
 
 export default function OrderSummary() {
   const [modalShow, setModalShow] = useState(false);
-  const [showAddNew, setShowAddNew] = useState<boolean>(false);
-  const [editAddress, setEditAddress] = useState<Address | {}>({});
-  const [validated, setValidated] = useState(false);
-  const [input, setInput] = useState({});
+  const [input, setInput] = useState<Order | {}>({});
+  const [show, setShow] = useState(false);
+  const [show2, setShow2] = useState(false);
 
-  const handleClose = () => setModalShow(false);
-
+  const router = useRouter();
   const order = useOrderContext();
   const { writeMessage } = useContext(APIMessageContext);
+
+  const handleClose = () => setModalShow(false);
 
   useEffect(() => {
     const orderTransform = order.items.map(x => {
@@ -48,11 +61,10 @@ export default function OrderSummary() {
 
     setInput(input => ({
       ...input,
-      fullName: `${order.user?.firstName} ${order.user?.lastName}`,
+      name: `${order.user?.firstName} ${order.user?.lastName}`,
       mail: order.user?.mail,
       phone: order.user?.phone,
       items: orderTransform,
-      date: new Date()
     }));
     console.log("I am in useEffect");
   }, [order]);
@@ -61,38 +73,68 @@ export default function OrderSummary() {
     setInput(input => ({ ...input, [event.target.name]: event.target.value }));
   };
 
-  const handleDropdown = (eventKey: string) => {
+  const handleDropdown = (eventKey: string | null) => {
     console.log(eventKey);
-    if (eventKey === "99") {
-      setShowAddNew(true);
+    if (eventKey === null) {
       return;
     }
-    const selectedAddress = order.user?.address?.filter(x => x.id === eventKey);
-    setInput(input => ({ ...input, completeAddress: selectedAddress && selectedAddress[0].completeAddress }));
+    if (eventKey === "99") {
+      router.push("/profile?location=addresses");
+      return;
+    }
+    const address = order.user?.address?.filter(x => x.id === eventKey);
+    if (address?.length === 1) {
+      const [{ completeAddress }] = address;
+      setInput(input => ({ ...input, selectedAddress: completeAddress }));
+    }
     console.log(input)
   };
 
-  const confirmation = () => {
-    order.setProgress("Confirmed");
+  const confirmation = async () => {
+    if (!(input.phone?.length > 0)) {
+      setShow2(true);
+      return;
+    }
+    if (!(input.selectedAddress?.length > 0)) {
+      setShow(true);
+      return;
+    }
+    setShow(false);
     const date = new Date().toString().slice(0, 33);
-    setInput(input => ({ ...input, date }));
     console.log(input)
+    try {
+      const response: returnOrderSave = await rest.post("/api/order", { ...input, date, progress: "Confirmed" });
+      writeMessage("success", response.message);
+      order.clearOrder();
+      order.setProgress("Confirmed");
+      order.setUser();
+      router.push("/order/progress");
+    } catch (e) {
+      if (e instanceof FetchError) {
+        return writeMessage("danger", e.data?.message || e.message);
+      }
+      console.error("An unexpected error:", e);
+    }
   };
 
-  // const onNewPosition = (pos: google.maps.LatLngLiteral, address?: string) => {
-  //   order.setUserAddress(address!, pos);
-  // };
+  const setPopover = (text: string, close: any) => {
+    return (
+      <Popover id="popover-basic" className="border border-danger">
+        <Popover.Body className="p-2 d-flex justify-content-between">
+          <div>
+            {text}
 
-  // const render = (status: Status): ReactElement => {
-  //   if (status === Status.LOADING) return <h3>{status} ..</h3>;
-  //   if (status === Status.FAILURE) return <h3>{status} ...</h3>;
-  //   return <></>;
-  // };
+          </div>
+          <CloseButton onClick={() => close(false)} />
+        </Popover.Body>
+      </Popover>
+    );
+  };
 
   return (
     <Layout>
       <Container className="mt-5">
-        <Row>
+        <Row >
           <Col md={8}>
             <h4>Products</h4>
             <hr />
@@ -111,88 +153,59 @@ export default function OrderSummary() {
             </ListGroup>
             <h4>Address &amp; Delivery</h4>
             {/* <Button onClick={() => setShowAddNew(!showAddNew)}>Open</Button> */}
-            <Stack as={Form} noValidate validated={validated} onSubmit={(e: React.SyntheticEvent) => { e.preventDefault(); handleSubmitLogin(); }} gap={4}>
-              <Stack className="col-md-6" gap={2}>
-                <Form.Group >
-                  <Form.Label>Full name</Form.Label>
-                  <Form.Control required name="fullName" value={input.fullName ?? ""} onChange={handleInputChange} autoComplete="on" />
-                </Form.Group>
-                <Form.Group >
-                  <Form.Label>Email</Form.Label>
-                  <Form.Control
-                    value={input.mail ?? ""}
-                    disabled
-                    name="mail"
-                  />
-                </Form.Group>
-                <Form.Group >
-                  <Form.Label>Phone</Form.Label>
-                  <Form.Control required name="phone" value={input.phone ?? ""} onChange={handleInputChange} autoComplete="tel" />
-                </Form.Group>
-              </Stack >
 
-              <DropdownButton variant="outline-success" title="Choose delivery address" onSelect={handleDropdown}>
+            <Stack className="col-md-6" gap={2}>
+              <Form.Group >
+                <Form.Label>Full name</Form.Label>
+                <Form.Control required name="name" value={input.name ?? ""} onChange={handleInputChange} autoComplete="on" />
+              </Form.Group>
+              <Form.Group >
+                <Form.Label>Email</Form.Label>
+                <Form.Control
+                  value={input.mail ?? ""}
+                  disabled
+                  name="mail"
+                />
+              </Form.Group>
+              <Form.Group >
+                <Form.Label>Phone</Form.Label>
+                <OverlayTrigger show={show2} placement="right" overlay={setPopover("You must add a phone number", setShow2)}>
+                  <Form.Control required name="phone" value={input.phone ?? ""} onChange={handleInputChange} autoComplete="tel" />
+                </OverlayTrigger>
+              </Form.Group>
+              <Form.Group>
+                <Form.Label>Address</Form.Label>
+                <OverlayTrigger show={show} placement="right" overlay={setPopover("Please select an address", setShow)}>
+                  <Form.Control
+                    as="textarea"
+                    value={input?.selectedAddress ?? ""}
+                    required
+                    readOnly
+                    style={{
+                      height: "5.5em",
+                    }}
+                  />
+                </OverlayTrigger>
+              </Form.Group>
+              <DropdownButton variant="outline-success" title="Choose delivery address" className="mt-2" onSelect={handleDropdown} >
                 {
                   order.user !== undefined
                     ? order.user.address!.map(addr => {
                       return (
-                        <Dropdown.Item key={addr.id} eventKey={addr.id} active={addr.id === editAddress.id}>{addr.completeAddress.substring(0, 40)}</Dropdown.Item>
+                        <Dropdown.Item key={addr.id} eventKey={addr.id} >{addr.completeAddress.substring(0, 40)}</Dropdown.Item>
                       );
                     })
                     : null
                 }
-                {/* <Dropdown.Item eventKey="1" active>Action</Dropdown.Item>
-              <Dropdown.Item eventKey="2">Another action</Dropdown.Item>
-              <Dropdown.Item eventKey="3">Active Item</Dropdown.Item> */}
                 <Dropdown.Divider />
                 <Dropdown.Item eventKey="99" >Add new address</Dropdown.Item>
               </DropdownButton  >
 
-            </Stack>
-            <AddNewAddress show={showAddNew} hide={setShowAddNew} writeMessage={writeMessage} editAddress={editAddress} />
+
+            </Stack >
+
+
             <hr />
-            {/* <Wrapper apiKey="AIzaSyDCTQ1_GSpfRU2tyKg78QLkN8BeaGQr4Ho" render={render}>
-              <ListGroup className="mb-3">
-                <ListGroup.Item>
-                  <Row>
-                    <Col className="py-2" md={2}>
-                      <small className="text-muted">Contact</small>
-                    </Col>
-                    <Col>
-                      <div>{order.userName}</div>
-                      <small>{order.user?.mail}</small>
-                    </Col>
-                    <Col>
-                      <div><small className="text-muted">Phone</small></div>
-                      {order.user?.phone}
-                    </Col>
-                  </Row>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <Row>
-                    <Col className="py-2" md={2}>
-                      <small className="text-muted">Address</small>
-                    </Col>
-                    <Col className="py-2">
-                      <span>{order.user?.address}</span>
-                    </Col>
-                  </Row>
-                </ListGroup.Item>
-                <ListGroup.Item>
-                  <GoogleMap pin={order.user?.address_pos} address={order.user?.address} onNewPosition={onNewPosition} />
-                </ListGroup.Item>
-
-                <ListGroup.Item action onClick={() => setModalShow(true)}>
-                  <Row>
-                    <Col className="py-2" md={2}>
-                      <small className="text-muted">Delivery time</small>
-                    </Col>
-                    <Col className="py-2">Tue 28 Sep (12:00 - 12:30)</Col>
-                  </Row>
-                </ListGroup.Item>
-              </ListGroup>
-
-            </Wrapper> */}
             <h4>Payment</h4>
             <hr />
             <ListGroup>
@@ -221,9 +234,9 @@ export default function OrderSummary() {
                   </ListGroup>
                 </Card.Body>
                 <Card.Footer className="d-flex justify-content-end">
-                  <Link href="/order/progress" passHref>
-                    <Button variant="success" onClick={confirmation}> Confirm order </Button>
-                  </Link>
+
+                  <Button variant="success" onClick={confirmation}> Confirm order </Button>
+
                 </Card.Footer>
               </Card>
             </div>
@@ -232,7 +245,7 @@ export default function OrderSummary() {
       </Container>
       <ScheduleOrder modalShow={modalShow} handleClose={handleClose} />
 
-    </Layout>
+    </Layout >
   );
 }
 function ScheduleOrder({ modalShow, handleClose }: { modalShow: boolean, handleClose: () => void }) {

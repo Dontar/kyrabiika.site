@@ -14,7 +14,15 @@ export default function OrderProgress() {
   return (
     <Layout>
       <Container className="mt-5 p-5">
-        <h2 className="text-center">Delivery</h2>
+        <h2 className="text-center">Delivery status:
+          <span className="status text-center">{` ${order.progress}`}</span>
+          <style jsx>{`
+          .status {
+          font: italic small-caps bold 2rem cursive;
+          }`
+          }</style>
+        </h2>
+
         <div style={{ height: "8em" }} />
         <Row className="mb-2">
           <Col className={classes({ "text-center": true, "text-muted": order.progress !== "Processing" })}>

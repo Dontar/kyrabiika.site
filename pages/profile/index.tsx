@@ -1,6 +1,7 @@
-import React from "react";
-import { useSession } from "next-auth/react";
+import React, { useEffect } from "react";
+import { getSession, useSession } from "next-auth/react";
 import Router, { useRouter } from "next/router";
+import type { GetServerSideProps, GetServerSidePropsContext } from "next";
 
 import Col from "react-bootstrap/Col";
 import Row from "react-bootstrap/Row";
@@ -11,9 +12,41 @@ import Container from "react-bootstrap/Container";
 import Layout from "../../lib/comps/Layout";
 import UserProfile from "../../lib/comps/profile/UserProfile";
 import UserAddresses from "../../lib/comps/profile/UserAddresses";
+import UserOrders from "../../lib/comps/profile/UserOrders";
+import { connect, UserModel } from "../../lib/db/Connection";
+import { convert } from "../../lib/utils/Utils";
+
+// export const getServerSideProps: GetServerSideProps = async (context: GetServerSidePropsContext) => {
+//   await connect();
+//   const { req } = context;
+//   const session = await getSession({ req });
+
+//   if (!session) {
+//     return {
+//       redirect: {
+//         destination: "/",
+//         permanent: false,
+//       },
+//     };
+//   }
+//   const orders = JSON.stringify(await UserModel
+//     .findOne({ mail: session?.user.email ?? "" })
+//     .select("orders")
+//     .lean({ autopopulate: true }));
+
+
+//   return {
+//     props: {
+//       userOrders: orders
+//     }
+//   };
+// };
 
 export default function Profile() {
+
   const router = useRouter();
+  const { location } = router.query;
+
   const { status } = useSession({
     required: true,
     onUnauthenticated() {
@@ -27,10 +60,11 @@ export default function Profile() {
     return null;
   }
 
+
   return (
     <Layout>
       <Container fluid className="mt-2">
-        <Tab.Container defaultActiveKey="#profile">
+        <Tab.Container defaultActiveKey={location && !Array.isArray(location) ? `#${location}` : "#profile"}>
           <Row>
             <Col md={2} className="mb-3">
               <ListGroup className="position-sticky" style={{ top: "4em" }} variant="flush">
@@ -44,13 +78,11 @@ export default function Profile() {
                 <Tab.Pane eventKey="#profile" title="Profile">
                   <UserProfile />
                 </Tab.Pane>
-                <Tab.Pane eventKey="#addresses" title="Adresses">
+                <Tab.Pane eventKey="#addresses" title="Addresses">
                   <UserAddresses />
                 </Tab.Pane>
                 <Tab.Pane eventKey="#orders" title="Orders">
-                  <h3>Orders</h3>
-                  <hr />
-
+                  <UserOrders />
                 </Tab.Pane>
               </Tab.Content>
             </Col>

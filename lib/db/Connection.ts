@@ -17,7 +17,8 @@ export const OrderModel: Model<Order> = models.Order || model("Order", new Schem
   items: [
     {
       item: { type: Schema.Types.ObjectId, ref: "MenuItem", autopopulate: true },
-      count: Number
+      count: Number,
+      _id: false
     }
   ],
   date: Date,
@@ -34,7 +35,7 @@ export const OrderModel: Model<Order> = models.Order || model("Order", new Schem
   name: String,
   mail: String,
   phone: String,
-  selectedAddress: String
+  selectedAddress: String,
 }));
 
 export const UserModel: Model<User> = models.User || model("User", new Schema({
@@ -54,7 +55,6 @@ export const UserModel: Model<User> = models.User || model("User", new Schema({
     entrance: String,
     floor: String,
     apartment: String,
-    phone: String,
     address_pos: {
       lat: Number,
       lng: Number
