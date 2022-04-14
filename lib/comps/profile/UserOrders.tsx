@@ -38,7 +38,7 @@ export default function UserOrders() {
   return (
     <>
       <Container  >
-        <TabHeader title="User Addresses" />
+        <TabHeader title="User Orders" />
         <Row xl={2} className="justify-content-center">
           <Col xl={8}>
             <Stack direction="vertical" gap={2}>

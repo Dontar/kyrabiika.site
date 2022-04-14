@@ -78,11 +78,11 @@ export default function Profile() {
                 <Tab.Pane eventKey="#profile" title="Profile">
                   <UserProfile />
                 </Tab.Pane>
-                <Tab.Pane eventKey="#addresses" title="Addresses">
-                  <UserAddresses />
-                </Tab.Pane>
                 <Tab.Pane eventKey="#orders" title="Orders">
                   <UserOrders />
+                </Tab.Pane>
+                <Tab.Pane eventKey="#addresses" title="Addresses">
+                  <UserAddresses />
                 </Tab.Pane>
               </Tab.Content>
             </Col>

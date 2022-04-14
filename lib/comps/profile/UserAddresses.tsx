@@ -354,7 +354,7 @@ export function AddNewAddress({ show, hide, writeMessage, editAddress }: AddNewA
           : (e: React.FormEvent<HTMLFormElement>) => handleSubmit(e, "put")
       }>
         <Row >
-          <Form.Group as={Col} lg="12" className="mb-2" disable controlId="validationFull">
+          <Form.Group as={Col} lg="12" className="mb-2" controlId="validationFull">
             <Form.Label>Complete address</Form.Label>
             <Form.Control
               as="textarea"

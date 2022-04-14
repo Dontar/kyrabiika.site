@@ -1,5 +1,6 @@
 import React, { ReactElement, useState, useContext, useEffect } from "react";
 import { useRouter } from "next/router";
+import Link from "next/link";
 
 import Button from "react-bootstrap/Button";
 import Card from "react-bootstrap/Card";
@@ -18,18 +19,11 @@ import CloseButton from "react-bootstrap/CloseButton";
 
 
 import Layout from "../../lib/comps/Layout";
-import Link from "next/link";
-
 import { OrderItemRow } from "../../lib/comps/OrderItemRow";
 import { useOrderContext } from "../../lib/comps/OrderContext";
 import { formatter } from "../../lib/utils/Utils";
-import { AddNewAddress } from "../../lib/comps/profile/UserAddresses";
 import { APIMessageContext } from "../../lib/comps/GlobalMessageHook";
-
-import GoogleMap from "../../lib/comps/GoogleMap";
-import { Status, Wrapper } from "@googlemaps/react-wrapper";
-import { LoggedInUser, Order } from "../../lib/db/DbTypes";
-import DropdownMenu from "react-bootstrap/esm/DropdownMenu";
+import { Order } from "../../lib/db/DbTypes";
 import rest, { FetchError } from "../../lib/utils/rest-client";
 
 type returnOrderSave = {
@@ -40,7 +34,7 @@ type returnOrderSave = {
 
 export default function OrderSummary() {
   const [modalShow, setModalShow] = useState(false);
-  const [input, setInput] = useState<Order | {}>({});
+  const [input, setInput] = useState<Partial<Order>>({});
   const [show, setShow] = useState(false);
   const [show2, setShow2] = useState(false);
 
@@ -87,21 +81,20 @@ export default function OrderSummary() {
       const [{ completeAddress }] = address;
       setInput(input => ({ ...input, selectedAddress: completeAddress }));
     }
-    console.log(input)
   };
 
   const confirmation = async () => {
-    if (!(input.phone?.length > 0)) {
+    if (!(input.phone && input.phone.length > 0)) {
       setShow2(true);
       return;
     }
-    if (!(input.selectedAddress?.length > 0)) {
+    if (!(input.selectedAddress && input.selectedAddress.length > 0)) {
       setShow(true);
       return;
     }
     setShow(false);
     const date = new Date().toString().slice(0, 33);
-    console.log(input)
+
     try {
       const response: returnOrderSave = await rest.post("/api/order", { ...input, date, progress: "Confirmed" });
       writeMessage("success", response.message);
