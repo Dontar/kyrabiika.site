@@ -21,6 +21,14 @@ function useOrderState() {
         setItems([...items, { item, count }]);
       }
     },
+    changeItemCount(item: OrderItem, count: number) {
+      const orderItem = items.find(i => i.item == item.item);
+      if (orderItem) {
+        orderItem.count = count;
+        setItems([...items]);
+      }
+    },
+
     delItem(item: OrderItem) {
       const idx = items.findIndex(i => i.item.name == item.item.name);
       items.splice(idx, 1);
@@ -53,14 +61,14 @@ function useOrderState() {
       return this.items.length > 0;
     },
     get deliveryTax(): number {
-      return 2.0;
+      return this.orderPrice < 20 ? 2.0 : 0;
     },
     get finalOrderPrice(): number {
       return this.orderPrice + this.deliveryTax;
     },
-    get order(): Order {
-      return { items, progress, user: user! as User, date: new Date() };
-    }
+    // get order(): Order {
+    //   return { items, progress, user: user! as User, date: new Date() };
+    // }
   };
 }
 

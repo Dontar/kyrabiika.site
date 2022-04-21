@@ -18,7 +18,7 @@ import { TabHeader } from "../TabHeader";
 const totalSum = (order: Order | undefined) => {
   return order?.items.reduce((a, x) => (
     a += x.count * x.item.price
-  ), 0).toFixed(2).split(".").join(",");
+  ), order.delivery).toFixed(2).split(".").join(",");
 };
 
 export default function UserOrders() {
@@ -60,7 +60,7 @@ export default function UserOrders() {
                       </Card.Body>
                     </Card>
                   </button>
-                ))
+                )).reverse()
               }
             </Stack>
             <OrderDetails show={showDetails} hide={() => setShowDetails(false)} selectedOrder={selectedOrder} />
@@ -98,18 +98,18 @@ export function OrderDetails({ show, hide, selectedOrder }: OrderDetails) {
         }
         <hr />
         <Row>
+          <Col xs={9}>Delivery cost</Col>
+          <Col xs={3} style={{ textAlign: "right" }}>{selectedOrder?.delivery === 0 ? "Free" : `${selectedOrder?.delivery},00 лв.`}</Col>
+        </Row>
+        <Row>
           <Col xs={9}>Total amount</Col>
           <Col xs={3} style={{ textAlign: "right" }}>{`${totalSum(selectedOrder)} лв.`}</Col>
         </Row>
-        <Row>
-          <Col xs={9}>Delivery cost</Col>
-          <Col xs={3} style={{ textAlign: "right" }}>{"Free"}</Col>
-        </Row>
-        <hr />
+        {/* <hr />
         <Row>
           <Col xs={9}>Total cost</Col>
           <Col xs={3} style={{ textAlign: "right" }}>{`${totalSum(selectedOrder)} лв.`}</Col>
-        </Row>
+        </Row> */}
       </Modal.Body>
       <Modal.Footer>
         <Button variant="primary" onClick={() => { hide(); console.log(selectedOrder); order.setItems(selectedOrder ? selectedOrder.items : []); }}>

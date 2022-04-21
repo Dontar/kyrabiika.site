@@ -94,9 +94,10 @@ export default function OrderSummary() {
     }
     setShow(false);
     const date = new Date().toString().slice(0, 33);
+    const delivery = order.deliveryTax;
 
     try {
-      const response: returnOrderSave = await rest.post("/api/order", { ...input, date, progress: "Confirmed" });
+      const response: returnOrderSave = await rest.post("/api/order", { ...input, date, delivery, progress: "Confirmed" });
       writeMessage("success", response.message);
       order.clearOrder();
       order.setProgress("Confirmed");
@@ -134,7 +135,7 @@ export default function OrderSummary() {
             <ListGroup className="mb-3">
               {order.items.length ? (
                 order.items.map((item, idx) => (
-                  <OrderItemRow key={idx} item={item} onRemove={() => order.delItem(item)} />
+                  <OrderItemRow key={idx} item={item} onRemove={() => order.delItem(item)} onChangeCount={count => order.changeItemCount(item, count)} />
                 ))
               ) : (
                 <ListGroup.Item style={{ height: "100px" }} className="text-center">

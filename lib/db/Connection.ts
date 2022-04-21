@@ -31,6 +31,7 @@ export const OrderModel: Model<Order> = models.Order || model("Order", new Schem
       "Delivered"
     ]
   },
+  delivery: Number,
   // user: { type: Schema.Types.ObjectId, ref: "User" }
   name: String,
   mail: String,

@@ -55,6 +55,7 @@ export interface Order extends MongoId {
   items: OrderItem[];
   date: Date;
   progress?: OrderProgress;
+  delivery: number;
   // user: User;
   name: string;
   mail: string;

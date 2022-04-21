@@ -77,7 +77,7 @@ export default function Order({ categories, data }: OrderProps) {
             <ListGroup className="position-sticky" style={{ top: "4em" }}>
               <OrderRow order={order} />
               {order.items.map((item, idx) => (
-                <OrderItemRow key={idx} item={item} onRemove={() => order.delItem(item)} />
+                <OrderItemRow key={idx} item={item} onRemove={() => order.delItem(item)} onChangeCount={count => order.changeItemCount(item, count)} />
               ))}
               {order.items.length > 0 && (<OrderRow order={order} />)}
             </ListGroup>
