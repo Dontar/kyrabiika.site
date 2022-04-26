@@ -25,6 +25,7 @@ import { formatter } from "../../lib/utils/Utils";
 import { APIMessageContext } from "../../lib/comps/GlobalMessageHook";
 import { Order } from "../../lib/db/DbTypes";
 import rest, { FetchError } from "../../lib/utils/rest-client";
+import useCurrentUserOrders from "../../lib/utils/callUserOrders";
 
 type returnOrderSave = {
   id: string;
@@ -40,6 +41,7 @@ export default function OrderSummary() {
 
   const router = useRouter();
   const order = useOrderContext();
+  const { data, mutate } = useCurrentUserOrders();
   const { writeMessage } = useContext(APIMessageContext);
 
   const handleClose = () => setModalShow(false);
@@ -98,11 +100,12 @@ export default function OrderSummary() {
 
     try {
       const response: returnOrderSave = await rest.post("/api/order", { ...input, date, delivery, progress: "Confirmed" });
-      writeMessage("success", response.message);
-      order.clearOrder();
+      // writeMessage("success", response.message);
       order.setProgress("Confirmed");
       order.setUser();
-      router.push("/order/progress");
+      mutate([...(data || []), { ...input, _id: response.id, date: new Date(date), delivery, progress: "Confirmed" } as Order]);
+      router.push(`/order/progress/${response.id}`);
+      order.clearOrder();
     } catch (e) {
       if (e instanceof FetchError) {
         return writeMessage("danger", e.data?.message || e.message);

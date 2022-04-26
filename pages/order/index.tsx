@@ -18,6 +18,7 @@ import { MenuItem } from "../../lib/db/DbTypes";
 import { classes, convert, formatter } from "../../lib/utils/Utils";
 import { OrderState, useOrderContext } from "../../lib/comps/OrderContext";
 import { MenuItemCard } from "../../lib/comps/MenuItemCard";
+import UserOrders from "../../lib/comps/profile/UserOrders";
 
 type OrderProps = {
   categories: string[];
@@ -80,6 +81,8 @@ export default function Order({ categories, data }: OrderProps) {
                 <OrderItemRow key={idx} item={item} onRemove={() => order.delItem(item)} onChangeCount={count => order.changeItemCount(item, count)} />
               ))}
               {order.items.length > 0 && (<OrderRow order={order} />)}
+              <div style={{ marginBottom: "2em" }}></div>
+              <UserOrders type="active" />
             </ListGroup>
           </Col>
         </Row>
