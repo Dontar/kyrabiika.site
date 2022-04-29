@@ -31,14 +31,14 @@
     "mongodb.mongodb-vscode",
     "mutantdino.resourcemonitor"
   ],
-  "features": {
-    "docker-from-docker": "latest",
-    "kubectl-helm-minikube": {
-      "helm": "latest",
-      "minikube": "none",
-      "version": "latest"
-    }
-  },
+//   "features": {
+//     "docker-from-docker": "latest",
+//     "kubectl-helm-minikube": {
+//       "helm": "latest",
+//       "minikube": "none",
+//       "version": "latest"
+//     }
+//   },
   // Use 'forwardPorts' to make a list of ports inside the container available locally.
   "forwardPorts": [
     27017
